@@ -1,0 +1,43 @@
+[build-system]
+requires = ["scikit-build-core>=0.11", "pybind11>=2.12", "cmake>=3.18", "ninja>=1.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "gragra"
+version = "0.1.0rc1"
+description = "Gravitational perturbation calculation package"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["numpy>=1.24.0"]
+
+[project.urls]
+Homepage = "https://github.com/tatsuki-washimi/gragra"
+Repository = "https://github.com/tatsuki-washimi/gragra"
+Issues = "https://github.com/tatsuki-washimi/gragra/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "ruff>=0.1.0"]
+numba = ["numba>=0.59"]
+field-io = ["h5py>=3.11.0,<3.12.0"]
+docs = ["mkdocs>=1.6.0,<1.7.0"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+
+[tool.scikit-build]
+wheel.packages = ["src/gragra"]
+wheel.py-api = "py3"
+wheel.platlib = false
+
+[tool.scikit-build.cmake.define]
+GRAGRA_BUILD_CPP = "OFF"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "RET"]
+ignore = []

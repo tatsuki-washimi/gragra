@@ -1,0 +1,8 @@
+site_name: gragra
+site_description: Gravitational perturbation calculation package
+repo_url: https://github.com/tatsuki-washimi/gragra
+docs_dir: docs_site/docs
+strict: true
+nav:
+  - Home: index.md
+  - SPECFEM3D Cartesian: specfem3d-cartesian.md
