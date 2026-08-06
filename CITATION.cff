@@ -1,7 +1,10 @@
 cff-version: 1.2.0
 message: If you use gragra, please cite this software.
 title: gragra
-version: 0.1.0rc1
+authors:
+  - family-names: Washimi
+    given-names: Tatsuki
+version: 0.1.0rc2
 date-released: 2026-08-06
 license: MIT
 repository-code: https://github.com/tatsuki-washimi/gragra

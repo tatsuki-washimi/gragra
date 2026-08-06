@@ -1,24 +1,62 @@
 # gragra
 
-`gragra` calculates Newtonian gravitational perturbations from discretised mass distributions.
+`gragra` calculates Newtonian gravitational perturbations from discretised mass
+distributions. This `v0.1.0rc2` documentation covers only a point-source smoke
+path and a SPECFEM3D Cartesian GLL input path. Python 3.11 or later is required.
 
-## SPECFEM3D Cartesian GLL input (rc1)
+The reader accepts an existing canonical schema-v1 HDF5 file for a single-file,
+time-sampled, ENU, elastic, single-material, non-PML input. It does not create
+SPECFEM input or solver output.
 
-The release candidate accepts a single-file, `time_sampled` HDF5 snapshot written by `gragra.adapters.specfem.writer`. It supports elastic, single-material, non-PML `NGNOD=8` data. The reader validates the provenance schema, on-disk dtypes, array shapes, cadence and density range before returning an immutable in-memory snapshot.
+## Install
 
-`displacement_field_acceleration` evaluates one time sample at a time after loading the snapshot. It is not an HDF5 streaming reader. NumPy is the reference backend; Numba and the optional C++ backend are checked for parity in CI.
+`gragra` is not published on PyPI. Install a GitHub Release asset or the source
+tag; see [Getting started](docs_site/docs/getting-started.md). Download
+`SHA256SUMS` with the selected asset and verify that asset in their directory:
+
+```console
+grep '  gragra-0.1.0rc2-py3-none-any.whl$' SHA256SUMS | sha256sum --check -
+```
+
+Use the [GitHub Release](https://github.com/tatsuki-washimi/gragra/releases/tag/v0.1.0rc2)
+or the [v0.1.0rc2 source tag](https://github.com/tatsuki-washimi/gragra/tree/v0.1.0rc2).
+
+## Point-source smoke check
+
+```python
+import numpy as np
+from gragra import G_SI, PointMass, point_acceleration
+
+result = point_acceleration(PointMass(1.0, [-1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0]])
+np.testing.assert_allclose(result, [[-G_SI, 0.0, 0.0]])
+assert result.shape == (1, 3)
+assert not result.flags.writeable
+```
+
+## Reader example
+
+The reader needs a canonical schema-v1 HDF5 file supplied by the caller.
 
 ```python
 from gragra.adapters.specfem.reader import read_specfem_gll_hdf5
 from gragra.observables import displacement_field_acceleration
 
-dataset = read_specfem_gll_hdf5("gll.h5", profile_density_range=(1800.0, 3500.0))
+dataset = read_specfem_gll_hdf5(
+    "existing-canonical-gll.h5", profile_density_range=(1800.0, 3500.0)
+)
 acceleration = displacement_field_acceleration(dataset, [[100.0, 0.0, 0.0]])
 ```
 
-## Reproduction
+Read the [numerical contract](docs_site/docs/contracts.md),
+[SPECFEM3D profile](docs_site/docs/specfem3d-cartesian.md),
+[backends](docs_site/docs/backends.md), [rc2 scope](docs_site/docs/rc2-scope.md),
+and [verification limits](docs_site/docs/verification.md). See
+[CONTRIBUTING.md](CONTRIBUTING.md) and [CITATION.cff](CITATION.cff).
 
-Install `.[dev,field-io]` and run `pytest -q tests/test_specfem_reader.py`. The test generates a complete synthetic HDF5 fixture with the public writer and verifies the reader, mutation rejection, independent gravity oracle and backend contract.
+## Reproduction material
+
+This repository does not distribute persistent HDF5 fixtures, solver output, or
+reproduction archives. CI creates small temporary HDF5 inputs for its checks.
 
 ## License
 

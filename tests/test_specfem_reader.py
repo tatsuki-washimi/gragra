@@ -257,6 +257,23 @@ def test_reader_rejects_required_json_key_with_non_utf8_encoding(tmp_path):
         read_specfem_gll_hdf5(path, profile_density_range=(1900.0, 3100.0))
 
 
+def test_reader_rejects_non_si_displacement_units(tmp_path):
+    h5py = pytest.importorskip("h5py")
+    path = tmp_path / "non_si_displacement_units.h5"
+    _write_time_sampled_gll(path)
+    with h5py.File(path, "a") as h5:
+        metadata = h5["/metadata"]
+        del metadata["field_units"]
+        metadata.create_dataset(
+            "field_units",
+            data='{"displacement": "km"}',
+            dtype=h5py.string_dtype(encoding="utf-8"),
+        )
+
+    with pytest.raises(ValueError, match="field_units.*displacement.*'m'"):
+        read_specfem_gll_hdf5(path, profile_density_range=(1900.0, 3100.0))
+
+
 def test_reader_rejects_dirty_source_provenance_without_hash(tmp_path):
     h5py = pytest.importorskip("h5py")
     path = tmp_path / "dirty_source_without_hash.h5"

@@ -1,8 +1,13 @@
 site_name: gragra
-site_description: Gravitational perturbation calculation package
+site_description: Gravitational perturbation calculations
 repo_url: https://github.com/tatsuki-washimi/gragra
 docs_dir: docs_site/docs
 strict: true
 nav:
   - Home: index.md
+  - Getting started: getting-started.md
+  - Numerical contract: contracts.md
   - SPECFEM3D Cartesian: specfem3d-cartesian.md
+  - Backends: backends.md
+  - rc2 scope: rc2-scope.md
+  - Verification: verification.md

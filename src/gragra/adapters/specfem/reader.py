@@ -387,7 +387,7 @@ def read_specfem_gll_hdf5(
 ) -> SpecfemGLLDataset:
     """Read a canonical schema-v1 SPECFEM GLL file into closed immutable arrays.
 
-    The certified rc1 profile accepts only time-sampled, elastic, single-material,
+    The rc2 profile accepts only time-sampled, elastic, single-material,
     non-PML data with ``NGNOD=8`` exporter output.  ``profile_density_range`` is
     deliberately required: passing ``None`` explicitly documents that an external
     density-profile range is unavailable for this input.
@@ -410,6 +410,11 @@ def read_specfem_gll_hdf5(
             raise ValueError("rc1 reader requires solver_kind='specfem3d_cartesian'")
         if provenance["coordinate_convention"] != "ENU":
             raise ValueError("metadata coordinate_convention must be 'ENU'")
+        field_units = provenance["field_units"]
+        if field_units.get("displacement") != "m":
+            raise ValueError(
+                "metadata field_units.displacement must be 'm' for the rc1 reader"
+            )
         if provenance["element_id_method"] != schema.ADOPTED_ELEMENT_ID_METHOD:
             raise ValueError("rc1 reader requires the adopted element_id_method")
 
