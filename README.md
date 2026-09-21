@@ -8,6 +8,28 @@ The reader accepts an existing canonical schema-v1 HDF5 file for a single-file,
 time-sampled, ENU, elastic, single-material, non-PML input. It does not create
 SPECFEM input or solver output.
 
+## Public verification boundary
+
+This repository verifies public candidate code and the quality of the published
+package surface. It does not verify private research branches, private data, or
+arbitrary research environments. Supported environments and environments
+actually exercised by CI are distinct; CI success does not certify arbitrary
+scientific conditions. Research-required scientific verification remains a
+local responsibility and must be run with the code, environment, inputs, and
+conditions identified for that work. Research-required scientific verification
+is therefore performed locally with the target code, environment, and
+conditions identified; GitHub Actions success is not a universal adoption
+condition for research PRs. Automatic Actions or environment matrices are not
+reintroduced without an explicit policy change. Moving execution location or
+frequency does not weaken scientific acceptance conditions.
+
+Public CI runs documentation-only checks for documentation changes. Changes to
+source, tests, builds, dependencies, workflows, scripts, or unknown paths run
+the full public checks: Python 3.11 and 3.12 reference tests, NumPy/Numba
+parity, a real C++ build and parity check, package wheel and sdist smoke tests
+in fresh environments, and a strict documentation build. These checks run on
+public standard runners and do not imply a publication or deployment step.
+
 ## Install
 
 `gragra` is not published on PyPI. Install a GitHub Release asset or the source
