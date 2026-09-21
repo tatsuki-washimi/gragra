@@ -1,37 +1,226 @@
 name: CI
+
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
+
+concurrency:
+  group: public-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+
 jobs:
-  reference:
+  policy:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.11'
-      - run: pip install '.[dev,field-io,docs]'
+      - run: python -m pip install '.[dev]'
+      - run: python -m pytest -q tests/test_ci_policy.py
+
+  changes:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.policy.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: policy
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      reason: ${{ steps.classify.outputs.reason }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - id: classify
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            {
+              echo 'docs_only=false'
+              echo 'reason=full: initial push has no base commit'
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-status --find-renames "$BASE_SHA" "$HEAD_SHA" > changes.status
+          python scripts/ci/classify_changes.py < changes.status > classification.out
+          cat classification.out >> "$GITHUB_OUTPUT"
+
+  docs:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.changes.result == 'success' && needs.changes.outputs.docs_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: changes
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+        with:
+          python-version: '3.11'
+      - run: python -m pip install '.[dev,field-io,docs]'
+      - run: ruff check .
+      - run: mkdocs build --strict
+      - run: python -m pytest -q tests/test_public_docs.py
+
+  reference:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: changes
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install '.[dev,field-io,docs]'
       - run: ruff check .
       - run: ruff format --check .
-      - run: pytest -q
+      - run: python -m pytest -q
       - run: mkdocs build --strict
+
   numba-parity:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: changes
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.11'
-      - run: pip install '.[dev,field-io,numba]'
-      - run: GRAGRA_SPECFEM_BACKEND=numba pytest -q tests/test_specfem_reader.py::test_displacement_acceleration_backend_matches_numpy_when_required
+      - run: python -m pip install '.[dev,field-io,numba]'
+      - run: GRAGRA_SPECFEM_BACKEND=numba python -m pytest -q tests/test_specfem_reader.py::test_displacement_acceleration_backend_matches_numpy_when_required
+
   cpp-parity:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: changes
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.11'
-      - run: CMAKE_ARGS=-DGRAGRA_BUILD_CPP=ON pip install '.[dev,field-io,docs]'
-      - run: GRAGRA_SPECFEM_BACKEND=cpp pytest -q tests/test_specfem_reader.py::test_displacement_acceleration_backend_matches_numpy_when_required
+      - name: Build and install the C++ backend from a copied tree
+        run: |
+          set -euo pipefail
+          source_copy=$(mktemp -d)
+          build_cwd=$(mktemp -d)
+          cp -a "$GITHUB_WORKSPACE"/. "$source_copy"/
+          cd "$build_cwd"
+          CMAKE_ARGS=-DGRAGRA_BUILD_CPP=ON python -m pip install "$source_copy[dev,field-io,docs]"
+          python - <<'PY'
+          import os
+          import pathlib
+          import gragra
+          import gragra._cpp_backend as backend
+          from gragra.kernels._cpp_required import ALL_REQUIRED
+
+          missing = [name for name in ALL_REQUIRED if not hasattr(backend, name)]
+          if missing:
+              raise SystemExit(f"missing required C++ symbols: {missing}")
+          if pathlib.Path(gragra.__file__).resolve().is_relative_to(
+              pathlib.Path(os.environ["CHECKOUT_ROOT"]).resolve()
+          ):
+              raise SystemExit(f"source-tree import: {gragra.__file__}")
+          PY
+        env:
+          CHECKOUT_ROOT: ${{ github.workspace }}
+      - name: Run strict C++ parity outside the checkout
+        run: |
+          set -euo pipefail
+          test_cwd=$(mktemp -d)
+          cd "$test_cwd"
+          GRAGRA_SPECFEM_BACKEND=cpp python -m pytest -q "$GITHUB_WORKSPACE/tests/test_specfem_reader.py::test_displacement_acceleration_backend_matches_numpy_when_required"
+
+  package-smoke:
+    if: github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public' && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: changes
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+        with:
+          python-version: '3.11'
+      - name: Build artifacts and test them in fresh environments
+        run: |
+          set -euo pipefail
+          artifact_dir=$(mktemp -d)
+          python -m pip install build
+          python -m build --wheel --sdist --outdir "$artifact_dir"
+          for artifact in "$artifact_dir"/*.whl "$artifact_dir"/*.tar.gz; do
+            venv_dir=$(mktemp -d)
+            python -m venv "$venv_dir"
+            "$venv_dir/bin/python" -m pip install "$artifact"
+            "$venv_dir/bin/python" - <<PY
+          import pathlib
+          import gragra
+
+          checkout = pathlib.Path(r"$GITHUB_WORKSPACE").resolve()
+          imported = pathlib.Path(gragra.__file__).resolve()
+          if checkout == imported or checkout in imported.parents:
+              raise SystemExit(f"source-tree import: {imported}")
+          print(imported)
+          PY
+          done
+
+  required:
+    if: always() && github.repository == 'tatsuki-washimi/gragra' && github.event.repository.visibility == 'public'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [policy, changes, docs, reference, numba-parity, cpp-parity, package-smoke]
+    steps:
+      - name: Require the selected public checks
+        env:
+          POLICY: ${{ needs.policy.result }}
+          CHANGES: ${{ needs.changes.result }}
+          DOCS: ${{ needs.docs.result }}
+          REFERENCE: ${{ needs.reference.result }}
+          NUMBA: ${{ needs.numba-parity.result }}
+          CPP: ${{ needs.cpp-parity.result }}
+          PACKAGE: ${{ needs.package-smoke.result }}
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
+        run: |
+          set -euo pipefail
+          for status in "$POLICY" "$CHANGES" "$DOCS" "$REFERENCE" "$NUMBA" "$CPP" "$PACKAGE"; do
+            case "$status" in
+              failure|cancelled)
+                echo "selected check ended with $status"
+                exit 1
+                ;;
+            esac
+          done
+          [[ "$POLICY" == success ]] || { echo "policy=$POLICY"; exit 1; }
+          [[ "$CHANGES" == success ]] || { echo "changes=$CHANGES"; exit 1; }
+          case "$DOCS_ONLY" in
+            true)
+              [[ "$DOCS" == success ]] || { echo "docs=$DOCS"; exit 1; }
+              [[ "$REFERENCE" == skipped ]] || { echo "reference=$REFERENCE"; exit 1; }
+              [[ "$NUMBA" == skipped ]] || { echo "numba-parity=$NUMBA"; exit 1; }
+              [[ "$CPP" == skipped ]] || { echo "cpp-parity=$CPP"; exit 1; }
+              [[ "$PACKAGE" == skipped ]] || { echo "package-smoke=$PACKAGE"; exit 1; }
+              ;;
+            false)
+              [[ "$DOCS" == skipped ]] || { echo "docs=$DOCS"; exit 1; }
+              [[ "$REFERENCE" == success ]] || { echo "reference=$REFERENCE"; exit 1; }
+              [[ "$NUMBA" == success ]] || { echo "numba-parity=$NUMBA"; exit 1; }
+              [[ "$CPP" == success ]] || { echo "cpp-parity=$CPP"; exit 1; }
+              [[ "$PACKAGE" == success ]] || { echo "package-smoke=$PACKAGE"; exit 1; }
+              ;;
+            *)
+              echo "invalid docs_only=$DOCS_ONLY"
+              exit 1
+              ;;
+          esac
