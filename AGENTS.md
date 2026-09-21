@@ -7,7 +7,11 @@ research branches, private data, or arbitrary research environments.
 Supported environments and environments actually tested by public CI are
 distinct. CI success does not certify arbitrary scientific conditions. Run
 research-required scientific verification locally with the exact code,
-environment, inputs, and conditions identified for the work.
+environment, inputs, and conditions identified for the work. GitHub Actions
+success is not a universal adoption condition for research PRs. Automatic
+Actions or environment matrices are not reintroduced without an explicit
+policy change; moving execution location or frequency does not weaken
+scientific acceptance conditions.
 
 Public CI selects documentation-only checks for documentation-only changes.
 Source, tests, build, dependency, workflow, script, and unknown changes select

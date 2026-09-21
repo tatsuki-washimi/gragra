@@ -16,7 +16,12 @@ arbitrary research environments. Supported environments and environments
 actually exercised by CI are distinct; CI success does not certify arbitrary
 scientific conditions. Research-required scientific verification remains a
 local responsibility and must be run with the code, environment, inputs, and
-conditions identified for that work.
+conditions identified for that work. Research-required scientific verification
+is therefore performed locally with the target code, environment, and
+conditions identified; GitHub Actions success is not a universal adoption
+condition for research PRs. Automatic Actions or environment matrices are not
+reintroduced without an explicit policy change. Moving execution location or
+frequency does not weaken scientific acceptance conditions.
 
 Public CI runs documentation-only checks for documentation changes. Changes to
 source, tests, builds, dependencies, workflows, scripts, or unknown paths run

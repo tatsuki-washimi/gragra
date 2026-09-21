@@ -18,6 +18,10 @@ Supported environments are not the same as environments actually tested by CI.
 CI success does not certify arbitrary scientific conditions. Run research-
 required scientific verification locally with the exact code, environment,
 inputs, and conditions relevant to the claim, and record those conditions in
-the change description or accompanying research log.
+the change description or accompanying research log. GitHub Actions success is
+not a universal adoption condition for research PRs. Automatic Actions or
+environment matrices are not reintroduced without an explicit policy change;
+moving execution location or frequency does not weaken scientific acceptance
+conditions.
 
 The workflow performs no publication, deployment, or upload operation.
