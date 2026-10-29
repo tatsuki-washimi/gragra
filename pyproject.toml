@@ -153,6 +153,20 @@ extend-exclude = [
 [tool.ruff.format]
 # Format-only exemptions for pinned bytes whose lint stays enabled (see the record).
 exclude = [
+    # Unformatted at dev fixed point b19ccbb; formatting would break AC-007 review bytes.
+    "src/gragra/_periodic_fourier.py",
+    "src/gragra/_plotting/_contribution.py",
+    "src/gragra/_plotting/_formula_latex.py",
+    "src/gragra/_plotting/_result_field.py",
+    "src/gragra/analytic/cavity_cuboid.py",
+    "src/gragra/analytic/cavity_sphere.py",
+    "src/gragra/analytic/uniform_sphere.py",
+    "src/gragra/analytic/values.py",
+    "src/gragra/integrators/generic.py",
+    "src/gragra/kernels/generic_backend.py",
+    "src/gragra/research/rayleigh_timefit.py",
+    "src/gragra/results/_context.py",
+    "src/gragra/results/_time_grid.py",
     "src/gragra/analytic/stochastic_bodywave.py",
     "src/gragra/analytic/stochastic_rayleigh.py",
     "src/gragra/observables/stochastic_temperature.py",
@@ -172,3 +186,12 @@ exclude = [
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "RET"]
 ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Dev fixed-point parity (AC-007): stylistic rules only; numerics unchanged.
+"src/gragra/analytic/_validation.py" = ["E501", "SIM103"]
+"src/gragra/analytic/cavity_cuboid.py" = ["E501", "RET505"]
+"src/gragra/analytic/cavity_sphere.py" = ["E501", "N806", "SIM300"]
+"src/gragra/analytic/values.py" = ["E501", "F401"]
+"src/gragra/research/rayleigh_timefit.py" = ["E501"]
+"src/gragra/results/_context.py" = ["E501"]

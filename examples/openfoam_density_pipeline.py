@@ -34,7 +34,7 @@ from gragra.observables import (  # noqa: E402
 )
 
 _EXPORT = (
-    "foamToVTK -case /home/washimi/work/gragra-research/2026-09-11-second-wave/"
+    "foamToVTK -case /path/to/your/openfoam/case/"
     "W6/reproduction-v2/case -time 0,.125 -useTimeName -ascii -noPointValues "
     "-polyhedra none -fields '(rho delta_rho C Vc)'"
 )
