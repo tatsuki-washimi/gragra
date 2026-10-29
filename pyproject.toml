@@ -95,8 +95,9 @@ validation = [
 [tool.pytest.ini_options]
 markers = [
     "slow: convergence/benchmark tests excluded from the default run (Phase 16-a). Run explicitly with `pytest -m slow`.",
+    "research: external solver fixtures, ANNA, or non-public execution context; excluded from public CI.",
 ]
-addopts = "-m 'not slow'"
+addopts = "-m 'not slow and not research'"
 pythonpath = ["."]
 
 [tool.scikit-build]

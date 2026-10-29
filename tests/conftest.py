@@ -194,3 +194,36 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
         )
         for report in skipped:
             reporter.write_line(f"  {report.nodeid}")
+
+
+_RESEARCH_TEST_BASENAMES = frozenset(
+    {
+        "test_reproduce_report.py",
+        "test_anna_comparison_contract.py",
+        "test_wave4_environment.py",
+        "test_wave5_environment_transport.py",
+        "test_wave6_environment_acoustic.py",
+        "test_cupy_registry_contract.py",
+    }
+)
+
+
+def pytest_collection_modifyitems(config, items):  # noqa: ARG001
+    """Tag research-only modules so public CI can exclude them."""
+    for item in items:
+        path = Path(str(item.fspath))
+        name = path.name
+        rel = path.as_posix()
+        if name.startswith("test_research_"):
+            item.add_marker(pytest.mark.research)
+            continue
+        if name in _RESEARCH_TEST_BASENAMES:
+            item.add_marker(pytest.mark.research)
+            continue
+        if rel.endswith(
+            (
+                "tests/oracles/gen1/test_frozen_refinement_trace_audit.py",
+                "tests/oracles/gen1/test_refinement_trace_observer_v3.py",
+            )
+        ):
+            item.add_marker(pytest.mark.research)
