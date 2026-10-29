@@ -1,4 +1,4 @@
-"""Provenance collection for the SPECFEM3D Cartesian GLL certified export.
+"""Provenance collection for the SPECFEM3D Cartesian GLL export.
 
 Implements the reusable pieces of gragra's solver-import contract (the
 common and SPECFEM3D-specific required provenance items, plus the
@@ -9,7 +9,7 @@ runtime executable/library capture (``runtime_binary_manifest``), the ``t0``/
 ``f_resolved_estimate`` extraction contracts, the ``pml_mask_hash`` canonical
 encoding, and :func:`assemble_provenance`, which folds all of the above plus
 caller-supplied scalars into the single flat provenance dict that
-``writer.py`` (Step 6) will later write to ``/metadata``.
+``writer.py`` writes to ``/metadata``.
 
 Scope discipline (do not re-derive elsewhere -- see the module docstrings of
 ``schema.py``/``specfem_bin.py`` for the same discipline applied to their
@@ -22,11 +22,11 @@ slices):
 - This module does **not** perform the provenance required-key audit
   (existence/type/value-range checks against ``schema.required_keys()`` /
   ``schema.conditionally_required_keys()``). That is ``writer.py``'s
-  (Step 6, which raises ``ValueError`` at write time) and Tier A4's
-  (``tests/_tier_a_checks.py::check_a4_masks_scalars_provenance``, an
-  independent read-back audit) responsibility. Duplicating the check here
-  would let the two drift apart -- see :func:`assemble_provenance`'s
-  docstring for the explicit statement of this boundary.
+  (which raises ``ValueError`` at write time) and the scientific
+  read-back checks in ``tests/_tier_a_checks.py`` responsibility. Duplicating
+  the check here would let the two drift apart -- see
+  :func:`assemble_provenance`'s docstring for the explicit statement of this
+  boundary.
 - Caller-supplied scalar values whose *type/on-disk-encoding* is defined by
   ``specfem_bin.py``'s ``RecordLayout`` (``endianness``,
   ``record_marker_bytes``) or its integer-kind auto-detection
@@ -60,7 +60,7 @@ import hashlib
 import re
 import subprocess
 from collections.abc import Callable, Mapping, Sequence
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Final
 
 import numpy as np
@@ -261,7 +261,7 @@ def compute_mesh_input_hash(
 
 #: (argv, cwd) -> captured stdout text. Injected by callers/tests instead of
 #: calling ``subprocess`` directly, so tests never actually invoke `git`/
-#: `ldd` (S1 plan Step 5 test list).
+#: `ldd`.
 CommandRunner = Callable[[Sequence[str], Path], str]
 
 
@@ -390,7 +390,7 @@ def collect_build_identity(
     SPECFEM3D source worktree (ref: solver_import_contract.md, common
     required items, source-build branch).
 
-    Only the ``source`` build form is implemented -- the certified
+    Only the ``source`` build form is implemented -- the documented
     profile builds SPECFEM3D from a source worktree, not a packaged binary
     (``build_kind == "package"`` is out of this function's scope; a caller
     targeting that form must construct its own dict per the contract's
@@ -482,7 +482,11 @@ def _parse_ldd_output(output: str) -> list[dict[str, object]]:
         if target is None:
             # No "=>" clause: either the vdso (no backing file) or the
             # dynamic loader itself, named by its own absolute path.
-            resolved = name if name.startswith("/") else None
+            resolved = (
+                name
+                if name.startswith("/") or PureWindowsPath(name).is_absolute()
+                else None
+            )
         elif target == "not found":
             resolved = None
         else:
@@ -503,7 +507,7 @@ def capture_executable(
 
     **Usage note (do not weaken)**: this function must be called
     **immediately before** the executable actually runs (the ``capture-run``
-    CLI wrapper, Step 6, is the intended caller) -- capturing "the binary
+    CLI wrapper is the intended caller) -- capturing "the binary
     currently on PATH" after the fact (e.g. via a later ``which``) does not
     guarantee it is the binary that produced the output being described,
     per solver_import_contract.md's discussion of why
@@ -574,7 +578,7 @@ def collect_exporter_identity(
         The exporter code's identity (a commit SHA or content hash). This
         function does not compute it -- "the exporter code" is the whole
         gragra checkout that produced this HDF5, not a single file this
-        module could canonically hash on its own; the caller (Step 6)
+        module could canonically hash on its own; the caller
         supplies it (e.g. by resolving gragra's own repo HEAD, or an
         installed-package content hash for a non-editable install).
     gragra_version, python_version, numpy_version
@@ -763,7 +767,7 @@ def parse_f_resolved_estimate(output_generate_databases_txt_path) -> float:
 # ===========================================================================
 # 6. pml_mask_hash
 #    ref: solver_import_contract.md, new-dataset rationale /
-#    SPECFEM3D certified-specific items (pml_mask_hash canonical encoding).
+#    SPECFEM3D profile-specific items (pml_mask_hash canonical encoding).
 # ===========================================================================
 
 
@@ -830,11 +834,11 @@ def assemble_provenance(
     layout: str = schema.LAYOUT_SINGLE_FILE,
     **scalars: object,
 ) -> dict[str, object]:
-    """Assemble every Step 5 provenance component into a single flat dict.
+    """Assemble every provenance component into a single flat dict.
 
     This function **does not validate required-ness, type, or value range**
     of any key (neither its own explicit parameters nor ``**scalars``) --
-    that is entirely the responsibility of ``writer.py`` (Step 6, which
+    that is entirely the responsibility of ``writer.py`` (which
     raises ``ValueError`` from ``schema.required_keys()`` /
     ``schema.conditionally_required_keys()`` at write time) and Tier A4's
     independent read-back audit
@@ -842,7 +846,7 @@ def assemble_provenance(
     Re-deriving that check here would create a second, driftable copy of
     the required-key logic that ``schema.py`` already owns as the single
     source of truth -- this function's only job is to *collect and merge*,
-    not to gate.
+    not to perform any additional schema check.
 
     Structured components (each produced by another function in this
     module):
@@ -863,7 +867,7 @@ def assemble_provenance(
       ``static`` (mesh-only) output: these keys have no applicable target
       at all there.
     - ``upstream_constants`` (optional): the actually-measured upstream
-      constant values (e.g. from the ``GRAGRA_SPECFEM_SOURCE``-gated
+      constant values (e.g. from the optional ``GRAGRA_SPECFEM_SOURCE``
       cross-check in ``test_specfem_schema.py``) recorded for traceability
       under the ``upstream_constants`` key -- supplementary, not a
       ``schema.py``-defined required key.

@@ -40,30 +40,24 @@ Physics conventions and formulation notes:
   the values here correspond to the **wall** term of `cavity_sphere.py`'s
   ``bulk``/``wall``/``total`` (= bulk + wall) breakdown -- **not**
   ``total``.
-- Small-cavern approximation (common to all four constants; the Table 1
+- Small-cavern approximation (common to all five Table 1 rows; the Table 1
   caption states they are "valid in the small-cavern approximation"): the
   cavity dimensions are assumed small compared with the seismic wavelength
   (equivalent, in `cavity_sphere.py`'s notation, to the limit of the
   dimensionless wavenumber ``x = k*R -> 0``), so that the displacement
-  vector ``xi`` may be treated as uniform over the entire cavity wall. In
-  that limit the acceleration's dependence on the relative geometry
-  ``Delta = r'_source - r_target`` disappears and the acceleration
-  direction is fixed by the displacement direction ``xi_hat`` alone -- a
-  purely local relation (Harms et al. 2022 Sec. 2.4). The functions in this
-  module are therefore **not** kernels that follow the ``Delta`` sign
+  vector ``xi`` may be treated as uniform over the entire cavity wall. This
+  scalar API accepts an amplitude in a direction selected by its caller; it
+  does not claim that a general non-spherical coupling tensor maps every
+  displacement parallel to itself. The functions in this module are therefore
+  **not** kernels that follow the ``Delta`` sign
   convention of `kernel_contract.md` Sec. 3 directly; the sign follows
   Eq. (7)'s ``delta_a_low = -4*pi*G*rho/3 * xi``, the same negative sign as
   the existing wall term `spherical_cavity_wall`.
-- Reference point (Harms et al. 2022 Table 1, p. 5):
-  - "Arbitrary" (sphere) / "3D center" (cube): the **volumetric center** of
-    the cavity (the whole-space isolated-closed-surface case, to which the
-    six existing conditions of `kernel_contract.md` Sec. 2.2 apply).
-  - "2D center on floor" (cube floor-center, half sphere, elongated cuboid
-    2:1:1): the horizontal (2D) center point of the cavity **floor** --
-    note that this is *not* the cavity's volumetric center. It is a
-    half-space geometry touching the free surface, and is covered by the
-    floor/free-surface extension conditions (image-method equivalence)
-    rather than by the whole-space conditions above.
+- Table 1 labels are preserved without adding geometry: ``"arbitrary"``
+  for the sphere, ``"3D center"`` for the cube, and ``"2D center on
+  floor"`` for the remaining three rows. The table alone does not specify a
+  free-surface boundary condition, an image construction, a direction, or a
+  one-sided limiting prescription for the floor rows.
 """
 
 from typing import Literal
@@ -76,18 +70,15 @@ CavernShape = Literal["sphere", "cube", "half_sphere", "elongated_cuboid_2to1to1
 TestMassLocation = Literal["arbitrary", "center_3d", "floor_center_2d"]
 
 # Harms et al. 2022, Table 1 (p. 5 of 16). Keys are (cavern_shape,
-# test_mass_location) pairs; only the four combinations tabulated in the
+# test_mass_location) pairs; only the five combinations tabulated in the
 # source are valid (this is a lookup table, not a general product space).
 #
-# "sphere"/"arbitrary" and "cube"/"center_3d" are the whole-space closed-
-# manifold case (kernel_contract.md Sec.2.2's existing six conditions);
-# 4*pi/3 is an exact closed form (Eq.7), not a numerically-fitted value, so
-# it is computed rather than hardcoded as a decimal.
+# The sphere/arbitrary and cube/center_3d labels are distinct Table 1 rows.
+# Their common value 4*pi/3 is retained as the exact scalar expression.
 #
-# The remaining three are floor/free-surface cases; the source states these
-# were "obtained analytically or by numerical integration" (Sec.2.4) and
-# quotes them to 2 significant figures only -- no higher-precision value is
-# available from the source, so these remain literal constants.
+# The remaining three are bounded Table 1 lookups. The source gives no extra
+# significant figures, so these remain literal constants and are not tensor
+# components, traces, or a free-surface/image-method model.
 _SCA_WALL_COUPLING_TABLE: dict[tuple[CavernShape, TestMassLocation], float] = {
     ("sphere", "arbitrary"): 4.0 * np.pi / 3.0,
     ("cube", "center_3d"): 4.0 * np.pi / 3.0,
@@ -120,11 +111,11 @@ def sca_wall_coupling_factor(
         is a **finite** cuboid with side-length ratio 2:1:1 (elongated along
         the horizontal) -- not a non-finite/tunnel-like geometry.
     test_mass_location : {"arbitrary", "center_3d", "floor_center_2d"}
-        Where the test mass sits relative to the cavern. ``"arbitrary"``
-        (sphere only, by point symmetry) and ``"center_3d"`` (cube) are the
-        whole-space volumetric-center case; ``"floor_center_2d"`` is the
-        horizontal (2D) center of the cavern floor, a floor/free-surface
-        geometry (see module docstring).
+        Table 1 location label. ``"arbitrary"`` is retained verbatim for the
+        sphere and is not a synonym for its center. ``"center_3d"`` labels
+        the cube row. ``"floor_center_2d"`` is a bounded source lookup only;
+        Table 1 alone does not define its boundary condition, tensor
+        interpretation, direction, or one-sided limit.
 
     Returns
     -------
@@ -134,7 +125,7 @@ def sca_wall_coupling_factor(
     Raises
     ------
     ValueError
-        If ``(cavern_shape, test_mass_location)`` is not one of the four
+        If ``(cavern_shape, test_mass_location)`` is not one of the five
         combinations tabulated in Harms et al. 2022 Table 1.
     """
     key = (cavern_shape, test_mass_location)
@@ -187,9 +178,9 @@ def sca_wall_acceleration(
     density_kg_m3 : float
         Medium background mass density in kg/m^3 (positive).
     displacement_m : float
-        Ground displacement amplitude in meters (positive; direction is the
-        caller's responsibility -- the small-cavern-limit acceleration is
-        parallel to the displacement direction, Harms et al. 2022 Sec.2.4).
+        Ground displacement amplitude in meters (positive). It is the scalar
+        amplitude for this Table 1 lookup, not a statement that a general
+        non-spherical tensor response is parallel to displacement.
 
     Returns
     -------

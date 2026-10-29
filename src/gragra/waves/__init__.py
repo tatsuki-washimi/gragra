@@ -17,6 +17,12 @@ from gragra.waves.phase import (
     plane_wave_complex_factor,
     plane_wave_phase,
 )
+from gragra.waves.plane import (
+    PlanePWave,
+    PlaneWave,
+    PlaneWaveSources,
+    directional_power_average,
+)
 from gragra.waves.polarization import (
     displacement_direction,
     p_wave_polarization,
@@ -31,6 +37,10 @@ from gragra.waves.rayleigh import (
 from gragra.waves.stochastic import StochasticPSParameters, stochastic_ps_realization
 
 __all__ = [
+    "PlaneWave",
+    "PlanePWave",
+    "PlaneWaveSources",
+    "directional_power_average",
     "normalize_directions",
     "orthonormal_basis_from_direction",
     "p_wave_polarization",

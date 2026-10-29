@@ -1,4 +1,83 @@
-site/
-dist/
+# === Local AI tooling ===
+# .harness/ holds the local AI agent harness (hooks, agents, rules, skills,
+# workflows). The tool directories below are symlinks into .harness/ plus
+# generated per-tool config and personal permission settings
+# (e.g. .claude/settings.local.json). None of this is part of the package
+# and it must not be published.
+.harness/
+.claude/
+.codex/
+.gemini/
+.agent/
+CLAUDE.md
+AGENTS.md
+paseo.json
+
+# === Python build, packaging, caches ===
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+*.o
+*.a
+CMakeCache.txt
+CMakeFiles/
+.ruff_cache/
+.pytest_cache/
+# MkDocs build output (mkdocs.yml has no explicit site_dir, so `mkdocs build`
+# writes to ./site/). The built site is a generated artifact; the sources live
+# in docs_site/.
+site/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# === Virtual environments ===
+.venv/
+venv/
+env/
+
+# === Editor / OS noise ===
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# === Generated artifacts (see .harness/rules/common/scope.md) ===
+# Computation/verification outputs (CSV / PNG / result JSON / large binaries)
+# are never committed. Intentional figures or reference data under docs/ and
+# tests/ are re-included by the negation patterns below.
+*.csv
+*.png
+result*.json
+*.npy
+*.npz
+*.h5
+*.hdf5
+!docs/**/*.png
+!docs/**/*.csv
+# Documentation-site assets. The blanket *.csv / *.png excludes above were
+# written when docs/ was the only documentation tree, so their re-inclusions
+# only cover docs/**. Without the line below, a diagram or reference dataset
+# placed under docs_site/docs/assets/ is silently never committed: the local
+# build stays green, the CI clean checkout has no such file, and MkDocs does
+# not treat a missing image as an error -- so CI stays green too and the
+# local documentation site simply loses the figure. Keep source assets visible
+# to a clean checkout.
+!docs_site/docs/assets/**
+!tests/**/*.csv
+!tests/**/*.npy
+!tests/**/*.npz
+!tests/**/*.h5
+!tests/**/*.hdf5
+
+# === References / Large Binaries ===
+*.pdf
+*.zip

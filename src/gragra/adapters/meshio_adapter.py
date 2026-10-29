@@ -12,8 +12,8 @@ from gragra.fields.surface_orientation import (
     check_triangle_orientation,
     reorient_triangles,
 )
-from gragra.sources.surface import SurfaceMassSheetSource
-from gragra.sources.volume import VolumeElementSource
+from gragra.gravity_sources.surface import SurfaceMassSheetSource
+from gragra.gravity_sources.volume import VolumeElementSource
 
 if TYPE_CHECKING:
     from gragra.fields.surface_orientation import OrientationReport

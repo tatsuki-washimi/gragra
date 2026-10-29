@@ -19,8 +19,8 @@ def _import_gwexpy():
         return gwexpy
     except ImportError as e:
         raise ImportError(
-            "gwexpy is not installed in the current environment. "
-            "Please install gwexpy to use this adapter."
+            "GWexpy adapter import failed; reinstall gragra with its runtime "
+            "dependencies."
         ) from e
 
 

@@ -1,9 +1,9 @@
-"""HDF5 writer for the SPECFEM3D Cartesian GLL certified export.
+"""HDF5 writer for the SPECFEM3D Cartesian GLL export.
 
 Implements the ``mesh_type="gll"`` canonical HDF5 write path: dataset
 creation per ``schema.DATASET_SPECS``, the ``/metadata`` provenance encoding
 dispatch (scalar attribute / JSON dataset / plain-text dataset -- schema.py
-section 7), the required-provenance-key gate (delegating to ``schema.required_keys``
+section 7), the required-provenance-key check (delegating to ``schema.required_keys``
 / ``schema.conditionally_required_keys`` rather than a hand-written list),
 and the 4 total-volume/mass scalar invariants (computed here, in
 element_id-ascending canonical order, from the arrays the caller already

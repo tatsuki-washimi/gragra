@@ -4,9 +4,9 @@ import numpy as np
 
 from gragra.array_types import ComplexArray, FloatArray
 from gragra.constants import G_SI
+from gragra.gravity_sources import PointMass, PointMassCloud, WeightedPointSource
 from gragra.integrators.point_direct import direct_point_sum
-from gragra.sources import PointMass, PointMassCloud, WeightedPointSource
-from gragra.targets import TargetPoints
+from gragra.targets.points import TargetPoints
 
 
 def point_potential(

@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "description": "M3 直接 Fourier（P3/P4/P5/I）の受入表。計画 §8 の閾値と試験設定、C0c で確定した P5 の初期分割係数、必須の試験 ID を固定する。受入判定はこの表を緩めず、満たせない場合は失敗または適用限界として報告する。",
+  "thresholds": {
+    "P3": {
+      "max_normalized_error": 1e-12,
+      "reference_stability": 1e-14
+    },
+    "P4_P5_integration": {
+      "max_normalized_error": 1e-8,
+      "reference_stability": 1e-10
+    },
+    "reference_stability_meaning": "80 桁から 100 桁の参照で同じ判定となること（P3 は 80 桁の Newton oracle）"
+  },
+  "scale_definitions": {
+    "physical_fixture": "S = GM/L^p。p = 1, 2, 3 はそれぞれ potential, acceleration, gradient。L は解析的に分かる最小離隔。P3 は各時刻の局所尺度 GM/r(t)^p も使う",
+    "synthetic_fixture": "合成応答は各観測量 1 SI 単位。P4 と統合の尺度は target, 成分, 観測量ごとのベクトル",
+    "P5": "係数の尺度は S·W（W は窓長、単位は応答×秒）",
+    "small_amplitude_fixture": "純粋な微小振幅の fixture は、その信号振幅を尺度にする。大きな DC に微小振幅が重なる場合は別の試験群とし、有限精度の相殺限界を別に報告する",
+    "zero_coefficients": "ゼロ係数にも同じ正の尺度を使う",
+    "acceptance_error": "求積器の許容差とは別に、fixture 尺度（P5 は S·W）で正規化して測る"
+  },
+  "test_settings": {
+    "P4": {
+      "atol": "1e-10·S",
+      "atol_coefficient": 1e-10,
+      "rtol": 1e-10,
+      "max_nodes": 65536,
+      "aliasing_max_nodes": 256,
+      "aliasing_tau_min": "T/4",
+      "aliasing_expected_initial_N": 64,
+      "control_tau_min": "T/1024",
+      "control_max_nodes": 65536
+    },
+    "P5": {
+      "atol": "1e-10·S·W",
+      "atol_coefficient": 1e-10,
+      "rtol": 1e-10,
+      "limit": "max(10000, 4·n_init)",
+      "cache_size_bytes": 8388608,
+      "epsabs": 1.0,
+      "epsrel": 0.0,
+      "norm": "max",
+      "workers": 1,
+      "quadrature": "GK21 (SciPy quad_vec default)",
+      "tau_min": "窓長 W の 1/8（cosine と sinc 系）。Gaussian は 1e-4 s",
+      "f_max_hz": 16.0,
+      "frequencies_hz": [0.0, 0.125, 1.0, 4.0, 16.0],
+      "delta_s": 0.25,
+      "cosine": {"amplitude": 1.0, "phase": 0.3, "frequency_hz": 2.0},
+      "gaussian": {"amplitude": 1.0, "centre_s": 0.37, "sigma_s": 1e-4, "window_s": [-2.0, 2.0]}
+    },
+    "memory": {
+      "managed_budget_bytes": 67108864,
+      "scope": "ライブラリが管理する配列の予算。プロセス全体の RSS ではない"
+    },
+    "phase_cycle_limit": 1e6
+  },
+  "p5_panel_rule": {
+    "c1": 8,
+    "c2": 0.25,
+    "rule": "Δt_panel = min(c1·τ_min, c2/f_max)、n_init = ceil(W/Δt_panel)",
+    "candidates": {"c1": [4, 8, 16], "c2": [0.125, 0.25, 0.5]},
+    "decision": "全 fixture で status==0 かつ正規化誤差 ≤ 1e-8 を満たす組のうち、計画の候補 (8, 1/4) が満たすためこれを採用。満たさない場合は最大評価回数が最小の組（同順位は c1, c2 の昇順）",
+    "source": "p5_panel_probe.json（リポジトリ外の証拠ディレクトリ p3p4p5-20261018/c0/）",
+    "all_nine_combos_pass": true
+  },
+  "p5_fixture_n_init": {
+    "gaussian_A1_tc0.37_sigma1e-4_win-2_2": 5000,
+    "sinc_W0.5_start-1.0": 32,
+    "sinc_W0.5_start0.0": 32,
+    "sinc_W0.5_start0.25": 32,
+    "sinc_W1.0_start-1.0": 64,
+    "sinc_W1.0_start0.0": 64,
+    "sinc_W1.0_start0.25": 64,
+    "sinc_W4.0_start-1.0": 256,
+    "sinc_W4.0_start0.0": 256,
+    "sinc_W4.0_start0.25": 256,
+    "cosine_W0.5_start-1.0": 32,
+    "cosine_W0.5_start0.0": 32,
+    "cosine_W0.5_start0.25": 32,
+    "cosine_W1.0_start-1.0": 64,
+    "cosine_W1.0_start0.0": 64,
+    "cosine_W1.0_start0.25": 64,
+    "cosine_W4.0_start-1.0": 256,
+    "cosine_W4.0_start0.0": 256,
+    "cosine_W4.0_start0.25": 256
+  },
+  "p5_measured_evaluations": {
+    "gaussian_A1_tc0.37_sigma1e-4_win-2_2": 214223,
+    "sinc_W0.5_start-1.0": 1437,
+    "sinc_W0.5_start0.0": 1437,
+    "sinc_W0.5_start0.25": 1437,
+    "sinc_W1.0_start-1.0": 2781,
+    "sinc_W1.0_start0.0": 2781,
+    "sinc_W1.0_start0.25": 2781,
+    "sinc_W4.0_start-1.0": 10845,
+    "sinc_W4.0_start0.0": 10845,
+    "sinc_W4.0_start0.25": 10845,
+    "cosine_W0.5_start-1.0": 1437,
+    "cosine_W0.5_start0.0": 1437,
+    "cosine_W0.5_start0.25": 1437,
+    "cosine_W1.0_start-1.0": 2781,
+    "cosine_W1.0_start0.0": 2781,
+    "cosine_W1.0_start0.25": 2781,
+    "cosine_W4.0_start-1.0": 10845,
+    "cosine_W4.0_start0.0": 10845,
+    "cosine_W4.0_start0.25": 10845
+  },
+  "p5_max_evaluations": {
+    "rule": "ceil(2·E / 1000)·1000",
+    "gaussian_A1_tc0.37_sigma1e-4_win-2_2": 429000,
+    "sinc_W0.5_start-1.0": 3000,
+    "sinc_W0.5_start0.0": 3000,
+    "sinc_W0.5_start0.25": 3000,
+    "sinc_W1.0_start-1.0": 6000,
+    "sinc_W1.0_start0.0": 6000,
+    "sinc_W1.0_start0.25": 6000,
+    "sinc_W4.0_start-1.0": 22000,
+    "sinc_W4.0_start0.0": 22000,
+    "sinc_W4.0_start0.25": 22000,
+    "cosine_W0.5_start-1.0": 3000,
+    "cosine_W0.5_start0.0": 3000,
+    "cosine_W0.5_start0.25": 3000,
+    "cosine_W1.0_start-1.0": 6000,
+    "cosine_W1.0_start0.0": 6000,
+    "cosine_W1.0_start0.25": 6000,
+    "cosine_W4.0_start-1.0": 22000,
+    "cosine_W4.0_start0.0": 22000,
+    "cosine_W4.0_start0.25": 22000
+  },
+  "p4_expected_representation": {
+    "descriptor": "AmplitudeSpectrumRepresentation(record_interpretation=PERIODIC)",
+    "coefficients": "A_0 = C_0, A_n = 2 C_n (n > 0)",
+    "note": "§9-4 は承認済み。意味は連続時間の直接 Fourier 級数係数（規約の C0-5 追補節を参照）"
+  },
+  "required_cases": {
+    "C0": [
+      "c0_normalize_relative_times_accept_and_reject",
+      "c0_gps_phase_integer_path_mpmath",
+      "c0_tref_shift_identity",
+      "c0_quadrature_error_reason_contract",
+      "c0_memory_budget_memory_error",
+      "c0_result_type_fourier_nonuniform_dc",
+      "c0_result_type_amplitude_nonuniform_dc"
+    ],
+    "P3": [
+      "p3_single_time_sampled_pose_newton_oracle",
+      "p3_order_and_duplicates_preserved",
+      "p3_translation_newton_oracle",
+      "p3_nontrivial_rotation_newton_oracle",
+      "p3_three_observables_match_point_observables",
+      "p3_frame_transform",
+      "p3_g_applied_once_matches_point_observables",
+      "p3_collision_value_error",
+      "p3_insufficient_budget_memory_error",
+      "p3_single_point_cost_measurement"
+    ],
+    "P4": [
+      "p4_constant_coefficients",
+      "p4_harmonics_1_2_7",
+      "p4_amplitudes_1_0p1_1e-10",
+      "p4_phases_0_0p37",
+      "p4_periods_0p5_1_2",
+      "p4_requested_orders_and_tref_shift",
+      "p4_aliasing_cos128_independent_check_mismatch",
+      "p4_aliasing_cos256_independent_check_mismatch",
+      "p4_aliasing_control_fine_grid_matches_zero",
+      "p4_nonperiodic_input_not_periodic",
+      "p4_tau_min_omitted_value_error",
+      "p4_phase_integer_path_gps_scale",
+      "p4_phase_float_path_inside_range",
+      "p4_phase_float_path_outside_range_value_error",
+      "p4_estimate_bounds_tracemalloc_peak",
+      "p4_insufficient_budget_memory_error"
+    ],
+    "P5": [
+      "p5_sinc_window_analytic",
+      "p5_cosine_window_analytic",
+      "p5_window_lengths_0p5_1_4",
+      "p5_window_starts_m1_0_0p25",
+      "p5_frequency_grid_0_0p125_1_4_16",
+      "p5_singleton_and_dc",
+      "p5_high_frequency_and_cancellation",
+      "p5_component_masking_amplitude_1_and_1e-8",
+      "p5_narrow_gaussian_tau_min_given_matches",
+      "p5_narrow_gaussian_tau_min_omitted_value_error",
+      "p5_negative_control_sign_flip_fails",
+      "p5_negative_control_double_amplitude_fails",
+      "p5_callback_exception_propagates",
+      "p5_nonfinite_callback_raises",
+      "p5_max_evaluations_exceeded_reason",
+      "p5_limit_below_4_ninit_value_error",
+      "p5_initial_panel_uses_frequency_bound",
+      "p5_window_phase_range_boundary_value_error",
+      "p5_quad_status_nonzero_runtime_error",
+      "p5_tref_window_closed_form"
+    ],
+    "I": [
+      "i_circular_motion_acceleration_n1_closed_form",
+      "i_passage_window_mpmath_integral",
+      "i_epoch_zero_relative_time_alignment",
+      "i_end_to_end_newton_response_fourier",
+      "i_fft_auxiliary_comparison",
+      "i_descriptor_amplitude_periodic_roundtrip",
+      "i_descriptor_fourier_one_sided_roundtrip",
+      "i_gps_tref_offset_phase_identity",
+      "i_memory_budget_propagation"
+    ]
+  },
+  "test_node_map": {
+    "_note": "required_cases の各 ID を、実在する pytest の関数（parametrize は関数名まで）に対応づける。C0 は C0a で実装済み。P3/P4/P5/I は各レーンが自分の担当分を埋める。C0 の共有試験は、Fourier と amplitude の両方の ID に現れる。",
+    "C0": {
+      "c0_normalize_relative_times_accept_and_reject": [
+        "tests/test_continuous_contract.py::test_normalize_scalar_becomes_length_one_in_seconds",
+        "tests/test_continuous_contract.py::test_normalize_converts_units_and_preserves_order_and_duplicates",
+        "tests/test_continuous_contract.py::test_normalize_rejects_invalid_times"
+      ],
+      "c0_gps_phase_integer_path_mpmath": [
+        "tests/test_continuous_contract.py::test_integer_path_applies_to_decimal_periods",
+        "tests/test_continuous_contract.py::test_integer_phase_matches_mpmath_at_gps_scale"
+      ],
+      "c0_tref_shift_identity": [
+        "tests/test_continuous_contract.py::test_tref_shift_multiplies_periodic_phase_by_exp_plus_i_harmonic",
+        "tests/test_continuous_contract.py::test_tref_shift_window_transform_multiplies_by_exp_plus_i_f_tau"
+      ],
+      "c0_quadrature_error_reason_contract": [
+        "tests/test_continuous_contract.py::test_quadrature_error_accepts_each_reason",
+        "tests/test_continuous_contract.py::test_quadrature_error_rejects_unknown_reason",
+        "tests/test_continuous_contract.py::test_quadrature_error_rejects_wrong_diagnostic_keys",
+        "tests/test_continuous_contract.py::test_quadrature_error_rejects_mismatched_reason"
+      ],
+      "c0_memory_budget_memory_error": [
+        "tests/test_continuous_contract.py::test_memory_budget_raises_when_exceeded"
+      ],
+      "c0_result_type_fourier_nonuniform_dc": [
+        "tests/test_continuous_contract.py::test_fourier_context_accepts_nonuniform_and_dc_frequencies",
+        "tests/test_continuous_contract.py::test_evaluation_result_constructs_and_validates",
+        "tests/test_continuous_contract.py::test_evaluation_result_select_narrows_observables",
+        "tests/test_continuous_contract.py::test_frequency_axis_slice_keeps_labels_and_values",
+        "tests/test_continuous_contract.py::test_spectral_units_and_labels_are_carried"
+      ],
+      "c0_result_type_amplitude_nonuniform_dc": [
+        "tests/test_continuous_contract.py::test_amplitude_context_accepts_nonuniform_and_dc_frequencies",
+        "tests/test_continuous_contract.py::test_evaluation_result_constructs_and_validates",
+        "tests/test_continuous_contract.py::test_evaluation_result_select_narrows_observables",
+        "tests/test_continuous_contract.py::test_frequency_axis_slice_keeps_labels_and_values",
+        "tests/test_continuous_contract.py::test_spectral_units_and_labels_are_carried"
+      ]
+    },
+    "P3": {
+      "p3_single_time_sampled_pose_newton_oracle": [],
+      "p3_order_and_duplicates_preserved": [],
+      "p3_translation_newton_oracle": [],
+      "p3_nontrivial_rotation_newton_oracle": [],
+      "p3_three_observables_match_point_observables": [],
+      "p3_frame_transform": [],
+      "p3_g_applied_once_matches_point_observables": [],
+      "p3_collision_value_error": [],
+      "p3_insufficient_budget_memory_error": [],
+      "p3_single_point_cost_measurement": []
+    },
+    "P4": {
+      "p4_constant_coefficients": [],
+      "p4_harmonics_1_2_7": [],
+      "p4_amplitudes_1_0p1_1e-10": [],
+      "p4_phases_0_0p37": [],
+      "p4_periods_0p5_1_2": [],
+      "p4_requested_orders_and_tref_shift": [],
+      "p4_aliasing_cos128_independent_check_mismatch": [],
+      "p4_aliasing_cos256_independent_check_mismatch": [],
+      "p4_aliasing_control_fine_grid_matches_zero": [],
+      "p4_nonperiodic_input_not_periodic": [],
+      "p4_tau_min_omitted_value_error": [],
+      "p4_phase_integer_path_gps_scale": [],
+      "p4_phase_float_path_inside_range": [],
+      "p4_phase_float_path_outside_range_value_error": [],
+      "p4_estimate_bounds_tracemalloc_peak": [],
+      "p4_insufficient_budget_memory_error": []
+    },
+    "P5": {
+      "p5_sinc_window_analytic": [],
+      "p5_cosine_window_analytic": [],
+      "p5_window_lengths_0p5_1_4": [],
+      "p5_window_starts_m1_0_0p25": [],
+      "p5_frequency_grid_0_0p125_1_4_16": [],
+      "p5_singleton_and_dc": [],
+      "p5_high_frequency_and_cancellation": [],
+      "p5_component_masking_amplitude_1_and_1e-8": [],
+      "p5_narrow_gaussian_tau_min_given_matches": [],
+      "p5_narrow_gaussian_tau_min_omitted_value_error": [],
+      "p5_negative_control_sign_flip_fails": [],
+      "p5_negative_control_double_amplitude_fails": [],
+      "p5_callback_exception_propagates": [],
+      "p5_nonfinite_callback_raises": [],
+      "p5_max_evaluations_exceeded_reason": [],
+      "p5_limit_below_4_ninit_value_error": [],
+      "p5_initial_panel_uses_frequency_bound": [],
+      "p5_window_phase_range_boundary_value_error": [],
+      "p5_quad_status_nonzero_runtime_error": [],
+      "p5_tref_window_closed_form": []
+    },
+    "I": {
+      "i_circular_motion_acceleration_n1_closed_form": [],
+      "i_passage_window_mpmath_integral": [],
+      "i_epoch_zero_relative_time_alignment": [],
+      "i_end_to_end_newton_response_fourier": [],
+      "i_fft_auxiliary_comparison": [],
+      "i_descriptor_amplitude_periodic_roundtrip": [],
+      "i_descriptor_fourier_one_sided_roundtrip": [],
+      "i_gps_tref_offset_phase_identity": [],
+      "i_memory_budget_propagation": []
+    }
+  },
+  "failure_policy": "閾値、試験設定、P5 の初期分割係数を、結果を見て変更してはならない。満たせなければ失敗または適用限界として報告する。"
+}

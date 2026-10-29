@@ -19,7 +19,7 @@ from gragra.geometry._grid import (
     _validate_positive_scalar,
 )
 from gragra.geometry.surface_mesh import MeshResolution, PrimitiveSurfaceMesh
-from gragra.sources import WeightedPointSource
+from gragra.gravity_sources import WeightedPointSource
 
 
 @dataclass(frozen=True)

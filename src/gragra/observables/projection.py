@@ -4,9 +4,9 @@ import numpy as np
 
 from gragra._arrays import as_xyz_vector
 from gragra.array_types import ComplexArray, FloatArray
+from gragra.gravity_sources import PointMass, PointMassCloud, WeightedPointSource
 from gragra.observables.acceleration import point_acceleration
-from gragra.sources import PointMass, PointMassCloud, WeightedPointSource
-from gragra.targets import TargetPoints
+from gragra.targets.points import TargetPoints
 
 
 def project_vectors(

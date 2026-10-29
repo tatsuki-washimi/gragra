@@ -1,11 +1,11 @@
 """Fortran unformatted sequential-record binary readers for SPECFEM3D Cartesian.
 
-Implements the "static data" reading half of the certified exporter path
+Implements the "static data" reading half of the documented exporter path
 for the decompose (``xdecompose_mesh``) output tree: ``proc*_ibool.bin`` /
 ``proc*_{x,y,z}.bin`` / ``proc*_rho.bin`` / ``proc*_displ_{X,Y,Z}_it*.bin``
-(per-rank movie volume snapshots, primary -- real pilot-verified 2026-08-03,
-S1 Step 8) / ``displ_{X,Y,Z}_it*.bin`` (whole-mesh movie volume snapshots,
-fallback -- audit-recorded but not reproduced by the S1 pilot build) /
+(per-rank movie volume snapshots, primary -- real pilot-verified 2026-08-03)
+/ ``displ_{X,Y,Z}_it*.bin`` (whole-mesh movie volume snapshots, fallback --
+described by the upstream layout but not reproduced by the pilot build) /
 ``proc*_Database`` / ``part_array.vtk``.
 
 Provenance: this module is an **independent implementation** written from
@@ -30,7 +30,7 @@ which explicitly flags this as a possible **subrecord split** (some Fortran
 runtimes split a single WRITE whose payload exceeds ~2 GiB into several
 physical sub-records; this module does not attempt to reassemble those).
 
-Auto-detection ladder (per the S1 plan Step 4): endianness, record-marker
+Auto-detection ladder: endianness, record-marker
 width (4 or 8 bytes), and default ``INTEGER`` kind are none of them assumed
 in advance. :func:`detect_record_layout` tries the four marker-dtype
 candidates (``<i4``, ``>i4``, ``<i8``, ``>i8``) against the **whole file**:
@@ -320,11 +320,11 @@ def read_rho(path, nspec: int, ngll: int) -> tuple[np.ndarray, RecordLayout]:
     ``rho_vp**2 / (4/3*mu + kappa)`` (``vp`` here is the **P-wave velocity**
     material parameter, not a particle velocity), a *derived* quantity that
     differs from the true ``rho0`` by a small systematic relative offset
-    (~9e-8 in the pilot measurement -- ``docs/validation/specfem_s1_tier_a.md``
+    (~9e-8 in the pilot measurement -- ``docs/validation/specfem_pilot_checks.md``
     §5 A3 / ``docs/design/specfem_upstream_gravity_audit.md:301``). This
-    near-equivalence holds only under the certified profile's isotropic
+    near-equivalence holds only under the documented profile's isotropic
     elastic, self-consistent-material-parameters assumption -- it must not
-    be assumed for a non-certified material configuration. Which quantity a
+    be assumed for a different material configuration. Which quantity a
     given file actually holds is recorded by the exporter under the
     ``density_source`` provenance key -- this reader has no way to know or guess
     which one it is; callers must track ``density_source`` separately from
@@ -376,7 +376,7 @@ def gather_element_coordinates(ibool: np.ndarray, xyz: np.ndarray) -> np.ndarray
 # 3. displ_{X,Y,Z}_it*.bin (volume displacement snapshots)
 #
 # Two real on-disk layouts exist for the movie volume displacement snapshot
-# files (2026-08-03, S1 Step 8 real-pilot findings):
+# files (2026-08-03 real-pilot findings):
 #
 # - **per-rank (primary)**: ``proc{rank:06d}_displ_{X,Y,Z}_it{it:06d}.bin``
 #   under LOCAL_PATH, one file set per MPI rank. Each file is a single
@@ -389,14 +389,14 @@ def gather_element_coordinates(ibool: np.ndarray, xyz: np.ndarray) -> np.ndarray
 #   .elements) -- i.e. the same order :func:`recover_element_ids` recovers
 #   for this rank, so re-combining into the canonical element_id-ascending
 #   mesh array uses the identical index permutation the mesh read already
-#   computed. This is the layout the S1 pilot's actual SPECFEM3D CPU build
+#   computed. This is the layout the pilot's actual SPECFEM3D CPU build
 #   writes; treat it as the default expectation for new solver builds.
 # - **whole-mesh (fallback)**: ``displ_{X,Y,Z}_it{it:06d}.bin``, a single
 #   file set covering all ``NSPEC`` elements at once (movie-volume binary
 #   format, real-run byte-size verified: ``NSPEC=12800`` gives
 #   ``4 + 4*125*12800 + 4 = 6_400_008`` bytes). This is a **different**
-#   real SPECFEM3D run/build than the S1 pilot -- it was not reproduced by
-#   the pilot's own build, but is real and documented, so this reader keeps
+#   real SPECFEM3D run/build than the pilot -- it was not reproduced by
+#   the pilot's own build, but is documented, so this reader keeps
 #   it as a fallback for solver configurations that write this way instead.
 #
 # :func:`detect_displacement_layout` distinguishes the two purely from
@@ -494,7 +494,7 @@ def read_displacement_snapshots(
     dirpath, nspec: int, ngll: int, glob_pattern: str = "displ_*_it*.bin"
 ) -> tuple[np.ndarray, list[int], RecordLayout]:
     """Read a set of ``displ_{X,Y,Z}_it######.bin`` **whole-mesh** volume
-    movie snapshot files (six-digit ``it``, per the audit-confirmed naming)
+    movie snapshot files (six-digit ``it``, per the documented naming)
     and bundle each timestep's 3 components into one array.
 
     This is the **fallback** layout -- see the section-3 module comment
@@ -504,8 +504,7 @@ def read_displacement_snapshots(
     Component-letter -> axis mapping is a direct X/Y/Z write (this is only
     valid under ``SUPPRESS_UTM_PROJECTION=.true.`` -- with UTM projection
     active the components are E/N/Z in a projected frame instead; enforcing
-    that precondition is a certified-profile gate concern (Step 6), not
-    this reader's).
+    that precondition is an input-profile check, not this reader's).
 
     Raises ``ValueError`` if any ``it`` value is missing one or more of the
     three components (this also transitively catches an inconsistent ``it``
@@ -647,7 +646,7 @@ class DatabaseElement:
 
 @dataclass(frozen=True)
 class DatabaseContents:
-    """Parsed contents of one ``proc*_Database`` file (the subset Step 4
+    """Parsed contents of one ``proc*_Database`` file (the subset
     needs: node block, material block, element block). Everything after
     the element block (boundary headers/records, CPML count, MPI
     interfaces) is consumed generically by :func:`read_records` (which
@@ -690,7 +689,7 @@ def parse_database(path) -> DatabaseContents:
     ``x,y,z`` [float64]) -> ``ndef, nundef`` -> defined-material records x
     ``ndef`` (17 float64 each) -> (``nundef`` undefined/tomography material
     records, skipped generically -- their layout is solver-version-specific
-    and irrelevant to the certified MVP profile) -> ``nspec_local`` ->
+    and irrelevant to the documented profile) -> ``nspec_local`` ->
     element records x ``nspec_local`` (``iloc, mat1, mat2`` + 8 local node
     ids) -> everything else (boundary/CPML/interfaces), read but not
     interpreted.
@@ -793,7 +792,7 @@ def parse_database(path) -> DatabaseContents:
         )
 
     # Everything past this point (boundary headers/records, nspec_cpml,
-    # interfaces) is intentionally not semantically parsed (Step 4 scope).
+    # interfaces) is intentionally not semantically parsed in this reader.
     # `read_records()` already consumed and validated the ENTIRE file's
     # record structure up front (every remaining [marker][payload][marker]
     # against this same detected layout, exactly to EOF) -- so reaching

@@ -1,5 +1,5 @@
-"""Command-line interface for the SPECFEM3D Cartesian GLL certified exporter
-(Step 6): ``export`` (the main entry point) and ``capture-run`` (the
+"""Command-line interface for the SPECFEM3D Cartesian GLL exporter:
+``export`` (the main entry point) and ``capture-run`` (the
 runtime-executable-identity capture wrapper).
 
 Usage
@@ -11,7 +11,7 @@ Usage
         --specfem-dir /path/to/run --mode static -o out.h5
 
     python -m gragra.adapters.specfem capture-run \\
-        --manifest solver_manifest.json --role solver \\
+        --manifest solver_runtime.json --role solver \\
         -- /path/to/bin/xspecfem3D
 
 ``capture-run`` calls ``provenance.capture_executable`` **immediately before**
@@ -38,7 +38,7 @@ from gragra.adapters.specfem import schema as _schema
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m gragra.adapters.specfem",
-        description="SPECFEM3D Cartesian GLL certified/smoke exporter (S1).",
+        description="SPECFEM3D Cartesian GLL exporter.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -59,7 +59,7 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=("static", "time_sampled"),
         default="static",
         dest="output_sampling_kind",
-        help="'static' (mesh-only, Tier A gate) or 'time_sampled' (non-certified).",
+        help="'static' (mesh-only) or 'time_sampled' (displacement snapshots).",
     )
     export_p.add_argument(
         "--ngll", type=int, nargs=3, default=None, metavar=("NX", "NY", "NZ")
@@ -78,7 +78,12 @@ def _build_parser() -> argparse.ArgumentParser:
         "capture-run",
         help="Capture an executable's runtime identity, then exec the given command.",
     )
-    capture_p.add_argument("--manifest", required=True, type=Path)
+    capture_p.add_argument(
+        "--manifest",
+        required=True,
+        type=Path,
+        help="Output runtime metadata JSON.",
+    )
     capture_p.add_argument("--role", required=True)
     capture_p.add_argument(
         "command", nargs=argparse.REMAINDER, help="Command to run, after '--'."

@@ -73,6 +73,48 @@ def _resolve_coherent_acceleration_contract(backend: str):
     )
 
 
+def coherent_point_potential(
+    source_positions_m: list | tuple | np.ndarray,
+    weights_kg: list | tuple | np.ndarray,
+    targets_m: list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+    backend: str = "numpy",
+) -> np.ndarray:
+    """Calculate coherent gravitational potential at target points.
+
+    Returns negative gravitational potential Phi = -G * sum(w_j / r_j).
+    Output shape is (M, *P), dtype follows weights (real -> float64,
+    complex -> complex128).
+    """
+    if backend == "cupy":
+        from gragra.kernels.parametric import _validate_inputs_parametric
+
+        _validate_inputs_parametric(
+            source_positions_m, weights_kg, targets_m, softening_m, chunk_size
+        )
+
+    contract = _resolve_coherent_parametric_contract(
+        backend, "potential_contract_parametric"
+    )
+
+    pot_gfree = contract(
+        sources_xyz=source_positions_m,
+        weights=weights_kg,
+        targets_xyz=targets_m,
+        softening_m=softening_m,
+        chunk_size=chunk_size,
+    )
+    # Physics convention: potential is -G * integral
+    pot = -G_SI * pot_gfree
+
+    pot = np.asarray(pot)
+    pot = pot.copy()
+    pot.setflags(write=False)
+    return pot
+
+
 def coherent_point_acceleration(
     source_positions_m: list | tuple | np.ndarray,
     weights_kg: list | tuple | np.ndarray,

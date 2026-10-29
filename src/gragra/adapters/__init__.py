@@ -1,15 +1,46 @@
 """Adapters package for external ecosystem integrations."""
 
-from gragra.adapters.coherent_combination import (
-    CoherentTotal,
-    DirectionalComplexKernel,
-    coherent_total,
-    volume_transfer_kernel,
+from gragra.adapters.field_series_hdf5 import (
+    read_fixed_mesh_series_hdf5,
+    write_fixed_mesh_series_hdf5,
+    write_observable_series_hdf5,
+)
+from gragra.adapters.finite_body_mesh import (
+    cell_density_from_group_tags,
+    to_unstructured_displacement_field,
 )
 from gragra.adapters.gwexpy_adapter import (
     to_gwexpy_scalar_field,
     to_gwexpy_tensor_field,
     to_gwexpy_vector_field,
+)
+from gragra.adapters.gwexpy_density_series import (
+    from_gwexpy_density_phasors,
+    from_gwexpy_density_series,
+    from_gwexpy_density_time_series,
+    to_gwexpy_density_phasors,
+    to_gwexpy_density_series,
+    to_gwexpy_density_time_series,
+)
+from gragra.adapters.gwexpy_displacement_series import (
+    from_gwexpy_displacement_series,
+    to_gwexpy_displacement_series,
+)
+from gragra.adapters.gwexpy_observable import (
+    GwexpyObservableBundle,
+    ObservableArrayBundle,
+    from_gwexpy_observable,
+    to_gwexpy_observable,
+)
+from gragra.adapters.gwexpy_source import (
+    DensitySnapshotArrayBundle,
+    GwexpyDensitySnapshotBundle,
+    from_gwexpy_density_snapshot,
+    to_gwexpy_density_snapshot,
+)
+from gragra.adapters.gwexpy_surface_density_series import (
+    from_gwexpy_surface_density_series,
+    to_gwexpy_surface_density_series,
 )
 from gragra.adapters.hdf5_field import (
     DifferentiableDiscreteBackgroundDensity,
@@ -35,12 +66,17 @@ from gragra.adapters.meshio_adapter import (
     to_surface_mass_sheet,
     to_volume_element_source,
 )
+from gragra.adapters.openfoam_density import (
+    OpenFOAMDensitySnapshot,
+    load_openfoam_density,
+)
 from gragra.adapters.specfem import (
     ExportConfig,
     SpecfemGLLDataset,
     export_specfem_gll_hdf5,
     read_specfem_gll_hdf5,
 )
+from gragra.adapters.specfem.streaming import SpecfemGLLStreamReader
 
 __all__ = [
     "TriangleSurfaceMesh",
@@ -53,13 +89,31 @@ __all__ = [
     "select_group_tag",
     "to_surface_mass_sheet",
     "to_volume_element_source",
+    "to_unstructured_displacement_field",
+    "cell_density_from_group_tags",
+    "OpenFOAMDensitySnapshot",
+    "load_openfoam_density",
     "to_gwexpy_scalar_field",
     "to_gwexpy_vector_field",
     "to_gwexpy_tensor_field",
-    "DirectionalComplexKernel",
-    "CoherentTotal",
-    "volume_transfer_kernel",
-    "coherent_total",
+    "GwexpyObservableBundle",
+    "ObservableArrayBundle",
+    "to_gwexpy_observable",
+    "from_gwexpy_observable",
+    "GwexpyDensitySnapshotBundle",
+    "DensitySnapshotArrayBundle",
+    "to_gwexpy_density_snapshot",
+    "from_gwexpy_density_snapshot",
+    "to_gwexpy_density_series",
+    "from_gwexpy_density_series",
+    "to_gwexpy_density_time_series",
+    "from_gwexpy_density_time_series",
+    "to_gwexpy_density_phasors",
+    "from_gwexpy_density_phasors",
+    "to_gwexpy_displacement_series",
+    "from_gwexpy_displacement_series",
+    "to_gwexpy_surface_density_series",
+    "from_gwexpy_surface_density_series",
     "lebedev_grid",
     "check_mesh_quality",
     "load_trimesh",
@@ -69,6 +123,10 @@ __all__ = [
     "from_hdf5_field",
     "from_hdf5_unstructured_field",
     "read_hdf5_background_density",
+    "read_fixed_mesh_series_hdf5",
+    "write_fixed_mesh_series_hdf5",
+    "write_observable_series_hdf5",
+    "SpecfemGLLStreamReader",
     "iter_hdf5_field_snapshots",
     "from_hdf5_batched_weights",
     "ExportConfig",

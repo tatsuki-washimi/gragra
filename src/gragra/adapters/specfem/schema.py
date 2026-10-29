@@ -1,4 +1,4 @@
-"""Canonical schema definition for the SPECFEM3D Cartesian GLL certified export.
+"""Canonical schema definition for the SPECFEM3D Cartesian GLL export.
 
 This module is the **single source of truth** for the ``mesh_type="gll"``
 canonical HDF5 schema ("schema (a)") defined in gragra's solver-import
@@ -10,10 +10,8 @@ the contract is revised, this module's refs may drift; treat the *documents*
 as authoritative and this module's refs as a pointer, not a copy.
 
 Design goal: both ``writer.py`` (which raises ``ValueError`` on missing
-provenance) and the independent Tier A4 provenance audit in the test suite
-must consume the *same* required-key table -- so a key added/removed here
-automatically changes both the writer's validation and the audit, instead of
-the two drifting apart.
+provenance) and the scientific schema checks in the test suite consume the
+same required-key table, so the writer and checks cannot drift apart.
 
 This module is **numpy-only**. It must never import ``h5py`` (or any other
 optional dependency) -- see ``gragra/adapters/hdf5_field.py`` for the
@@ -101,8 +99,8 @@ ELEMENT_ID_METHODS: Final[tuple[str, ...]] = (
     ELEMENT_ID_METHOD_CORNER_NODE_TUPLE,
 )
 
-#: The method the S1 certified profile (external mesh + xdecompose_mesh) has
-#: frozen on, per specfem_import.md's 2026-08-03 real-data investigation
+#: The method the documented profile (external mesh + xdecompose_mesh) uses,
+#: per specfem_import.md's real-data investigation
 #: (Step 0.5): partition round-trip verified for NPROC=3/4/8 on the pilot
 #: mesh. ``"corner_node_tuple"`` remains a defined (but unused) fallback.
 ADOPTED_ELEMENT_ID_METHOD: Final[str] = ELEMENT_ID_METHOD_PRE_PARTITION_GLOBAL_INDEX
@@ -117,7 +115,7 @@ ADOPTED_ELEMENT_ID_METHOD: Final[str] = ELEMENT_ID_METHOD_PRE_PARTITION_GLOBAL_I
 #    the pilot commit cc2e9ffa layout).
 # ===========================================================================
 
-#: (NGLLX, NGLLY, NGLLZ) expected for the certified profile.
+#: (NGLLX, NGLLY, NGLLZ) expected for the documented profile.
 EXPECTED_NGLL: Final[tuple[int, int, int]] = (5, 5, 5)
 EXPECTED_GAUSSALPHA: Final[float] = 0.0
 EXPECTED_GAUSSBETA: Final[float] = 0.0
@@ -261,7 +259,7 @@ DATASET_SPECS: Final[dict[str, DatasetSpec]] = {
         required=True,
         notes=(
             "One-based material label (SPECFEM3D convention; values < 1 "
-            "are rejected for the certified profile). ref: "
+            "are rejected for the documented profile). ref: "
             "solver_import_contract.md L269, L368-372."
         ),
     ),
@@ -288,9 +286,9 @@ DATASET_SPECS: Final[dict[str, DatasetSpec]] = {
         notes=(
             "Required only when element_id_method == "
             "'corner_node_tuple' (see element_corner_nodes_required()); "
-            "optional for all other methods. The S1 certified profile uses "
+            "optional for all other methods. The documented profile uses "
             "ADOPTED_ELEMENT_ID_METHOD (pre_partition_global_index), so "
-            "this dataset is not written by S1. ref: "
+            "this dataset is not written by that profile. ref: "
             "solver_import_contract.md L271, L346-356."
         ),
     ),
@@ -345,7 +343,7 @@ DATASET_SPECS: Final[dict[str, DatasetSpec]] = {
         unit=None,
         output_modes=_TIME_SAMPLED_ONLY,
         required=False,
-        notes="Diagnostic-only; never used for certified integration. ref: L276.",
+        notes="Diagnostic-only; not used for quantitative integration. ref: L276.",
     ),
     PATH_DIAGNOSTICS_CURL: DatasetSpec(
         path=PATH_DIAGNOSTICS_CURL,
@@ -354,7 +352,7 @@ DATASET_SPECS: Final[dict[str, DatasetSpec]] = {
         unit=None,
         output_modes=_TIME_SAMPLED_ONLY,
         required=False,
-        notes="Diagnostic-only; never used for certified integration. ref: L277.",
+        notes="Diagnostic-only; not used for quantitative integration. ref: L277.",
     ),
 }
 
@@ -446,7 +444,7 @@ def unflatten_index(
 
 
 # ===========================================================================
-# 7. Provenance key tables (3 groups, per the S1 plan Step 1)
+# 7. Provenance key tables (three groups)
 # ===========================================================================
 
 #: Free-text tags describing when a key becomes required *purely as a
@@ -458,8 +456,8 @@ def unflatten_index(
 #: ``conditionally_required_keys()`` instead.
 BaseRequiredWhen = Literal["always", "time_sampled", "never_base"]
 
-#: How a key's value is encoded on disk (§provenance encoding, S1 plan Step
-#: 1 item 5): true scalars (and the fixed-shape ngll_shape int64[3]) are
+#: How a key's value is encoded on disk: true scalars (and the fixed-shape
+#: ngll_shape int64[3]) are
 #: `/metadata` *attributes*; structured objects are canonical-JSON *vlen str
 #: datasets* under `/metadata/<key>`; full-text content (Par_file text, the
 #: mesh/manifest file-listing text that mesh_input_hash/par_file_hash were
@@ -733,7 +731,7 @@ COMMON_PROVENANCE_KEYS: Final[dict[str, ProvenanceKeySpec]] = {
 }
 
 # --- 7b. SPECFEM3D-specific required items ---------------------------------
-# ref: solver_import_contract.md L1044-1125 (SPECFEM3D certified-specific
+# ref: solver_import_contract.md (SPECFEM3D profile-specific
 # items); specfem_import.md, element_id-construction / t0-acquisition
 # contract (t0/t0_source/t0_crosscheck).
 SPECFEM_PROVENANCE_KEYS: Final[dict[str, ProvenanceKeySpec]] = {
@@ -760,7 +758,7 @@ SPECFEM_PROVENANCE_KEYS: Final[dict[str, ProvenanceKeySpec]] = {
         "always",
         "solver_import_contract.md L389-395",
         "[NGLLX, NGLLY, NGLLZ] -- note this is an array-valued attribute, "
-        "not a JSON dataset (S1 plan item 5).",
+        "not a JSON dataset.",
     ),
     "element_id_method": ProvenanceKeySpec(
         "element_id_method",
@@ -887,9 +885,8 @@ SPECFEM_PROVENANCE_KEYS: Final[dict[str, ProvenanceKeySpec]] = {
         ),
         recommended=True,
     ),
-    # --- Step 6 addition (2026-08-03): these four keys were collected by
-    # Step 5's specfem_bin.RecordLayout / integer-kind auto-detection but not
-    # yet registered in this required-key table (Step 5 commit note). They
+    # --- Additional profile keys (2026-08-03): these four keys are collected
+    # by specfem_bin.RecordLayout / integer-kind auto-detection. They
     # are SPECFEM-specific structural facts about the on-disk binary layout
     # that hold regardless of output_sampling_kind, so they are
     # unconditionally required ("always"), not "recommended".
@@ -898,9 +895,9 @@ SPECFEM_PROVENANCE_KEYS: Final[dict[str, ProvenanceKeySpec]] = {
         "bool",
         "scalar_attr",
         "always",
-        "specfem_import.md, certified profile / implementation facts",
+        "specfem_import.md, documented profile / implementation facts",
         (
-            "Must be True for the certified profile -- the displ_{X,Y,Z} "
+            "Must be True for the documented profile -- the displ_{X,Y,Z} "
             "component-letter -> axis mapping is only a direct X/Y/Z write "
             "under SUPPRESS_UTM_PROJECTION=.true.."
         ),
@@ -1061,7 +1058,7 @@ def required_keys(output_sampling_kind: str) -> frozenset[str]:
     output_interval_steps, f_content_max_method) -- see
     ``conditionally_required_keys()`` for those.
 
-    Both ``writer.py`` (Step 6) and Tier A4 (``check_a4_masks_scalars_
+    Both ``writer.py`` and Tier A4 (``check_a4_masks_scalars_
     provenance``) must call this function rather than re-deriving the set,
     so that a key added/removed here changes both consumers at once.
     """
@@ -1186,7 +1183,7 @@ def check_value_type(name: str, value: object) -> bool:
 
 # ===========================================================================
 # 8. Canonical JSON encoding (for `encoding == "json_dataset"` keys)
-#    ref: S1 plan Step 1 item 6.
+#    Canonical JSON encoding for structured metadata.
 # ===========================================================================
 
 

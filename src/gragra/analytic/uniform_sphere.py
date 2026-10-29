@@ -1,8 +1,13 @@
 """Analytical benchmark solutions for a uniform density sphere."""
+from __future__ import annotations
 
 import numpy as np
 
-from gragra._arrays import as_xyz_table, as_xyz_vector
+from gragra.analytic._validation import (
+    validate_real_xyz_table,
+    validate_real_xyz_vector,
+)
+from gragra.analytic.values import GFreeGravityValues
 from gragra.array_types import ComplexArray, FloatArray
 
 
@@ -32,8 +37,8 @@ def _validate_sphere_inputs(
     if not np.isfinite(dens):
         raise ValueError("density_kg_m3 must be finite")
 
-    center = as_xyz_vector("center_m", center_m)
-    targets = as_xyz_table("targets_m", targets_m)
+    center = validate_real_xyz_vector(center_m, "center_m")
+    targets = validate_real_xyz_table(targets_m, "targets_m")
 
     return center, r_val, dens, targets
 
@@ -206,3 +211,35 @@ def uniform_sphere_gradient(
 
     out.setflags(write=False)
     return out
+
+
+def uniform_sphere_observables_g_free(
+    center_m: list | tuple | np.ndarray,
+    radius_m: float,
+    density_kg_m3: float | complex,
+    targets_m: list | tuple | np.ndarray,
+) -> GFreeGravityValues:
+    """Calculate G-free potential, acceleration, and gradient of a uniform sphere.
+
+    Parameters
+    ----------
+    center_m : array-like, shape (3,)
+        Coordinates of the sphere center in meters.
+    radius_m : float
+        Radius of the sphere in meters (must be positive).
+    density_kg_m3 : float or complex
+        Mass density in kg/m^3 (real or complex).
+    targets_m : array-like, shape (M, 3)
+        Coordinates of the target points in meters.
+
+    Returns
+    -------
+    GFreeGravityValues
+        Immutable container holding potential (M,), acceleration (M, 3),
+        and gradient (M, 3, 3) in G-free units.
+    """
+    pot = uniform_sphere_potential(center_m, radius_m, density_kg_m3, targets_m)
+    acc = uniform_sphere_acceleration(center_m, radius_m, density_kg_m3, targets_m)
+    grad = uniform_sphere_gradient(center_m, radius_m, density_kg_m3, targets_m)
+    return GFreeGravityValues(potential=pot, acceleration=acc, gradient=grad)
+

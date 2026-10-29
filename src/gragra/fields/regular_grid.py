@@ -7,7 +7,7 @@ import numpy.typing as npt
 
 from gragra._arrays import _check_no_bool
 from gragra.array_types import ComplexArray, FloatArray
-from gragra.sources.volume import VolumeElementSource
+from gragra.gravity_sources.volume import VolumeElementSource
 
 
 def _validate_axis(
