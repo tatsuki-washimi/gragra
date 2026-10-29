@@ -252,12 +252,14 @@ def test_normal_critical_and_input_contracts():
         points, wave_type="SV", **(kw | {"incidence_angle_rad": critical})
     )
     assert np.isfinite(at.gradient).all()
+    vp, vs = np.sqrt(2.0), 1.0
+    critical_angle = np.arcsin(vs / vp)
     with pytest.raises(ValueError, match="degenerate"):
         halfspace_psv_reflection(
             wave_type="SV",
-            v_p_m_s=np.sqrt(2),
-            v_s_m_s=1.0,
-            incidence_angle_rad=np.pi / 4,
+            v_p_m_s=vp,
+            v_s_m_s=vs,
+            incidence_angle_rad=critical_angle,
         )
 
 
