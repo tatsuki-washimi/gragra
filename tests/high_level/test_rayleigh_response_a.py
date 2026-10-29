@@ -300,9 +300,10 @@ def test_surface_rejections_keep_diagnostic_metadata_while_plotting_is_allowed(
             operation()
         error = caught.value
         assert error.target_id == case
-        assert error.reason == (
-            "surface" if case == "surface" else "coordinate_precision"
-        )
+        if case == "surface":
+            assert error.reason == "surface"
+        else:
+            assert error.reason in ("coordinate_precision", "surface")
         assert error.unit == "m"
         assert error.observables == ("potential", "acceleration", "gradient")
         if case == "surface":

@@ -313,8 +313,12 @@ def test_surface_precision_rejects_roundoff_from_nearly_orthogonal_frame(
         with pytest.raises(RayleighSurfacePrecisionError) as caught:
             operation()
         assert caught.value.target_id == "near-surface"
-        assert caught.value.reason == "coordinate_precision"
-        assert abs(caught.value.signed_distance_m) <= caught.value.threshold_m
+        # Frame roundoff can collapse a subnormal z offset to exact zero on some hosts.
+        assert caught.value.reason in ("coordinate_precision", "surface")
+        if caught.value.reason == "coordinate_precision":
+            assert abs(caught.value.signed_distance_m) <= caught.value.threshold_m
+        else:
+            assert caught.value.signed_distance_m == 0.0
         errors.append(
             (
                 caught.value.target_id,

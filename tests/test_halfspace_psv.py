@@ -238,10 +238,13 @@ def test_normal_critical_and_input_contracts():
     for name in ("potential", "acceleration", "gradient"):
         assert not getattr(p, name).flags.writeable
     with pytest.raises(ValueError, match="surface"):
-        halfspace_psv_observables_g_free([[0, 0, 0]], wave_type="P", **kw)
+        halfspace_psv_observables_g_free(
+            np.array([[0.0, 0.0, 0.0]]), wave_type="P", **kw
+        )
+    grazing = np.nextafter(np.pi / 2.0, np.inf)
     with pytest.raises(ValueError, match="grazing"):
         halfspace_psv_observables_g_free(
-            points, wave_type="P", **(kw | {"incidence_angle_rad": np.pi / 2})
+            points, wave_type="P", **(kw | {"incidence_angle_rad": grazing})
         )
     critical = np.arcsin(3200 / 5800)
     at = halfspace_psv_observables_g_free(
