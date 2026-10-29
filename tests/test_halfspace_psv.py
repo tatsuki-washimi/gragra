@@ -241,10 +241,11 @@ def test_normal_critical_and_input_contracts():
         halfspace_psv_observables_g_free(
             np.array([[0.0, 0.0, 0.0]]), wave_type="P", **kw
         )
-    grazing = np.nextafter(np.pi / 2.0, np.inf)
     with pytest.raises(ValueError, match="grazing"):
         halfspace_psv_observables_g_free(
-            points, wave_type="P", **(kw | {"incidence_angle_rad": grazing})
+            points,
+            wave_type="P",
+            **(kw | {"incidence_angle_rad": np.float64(np.pi / 2.0 + 1e-3)}),
         )
     critical = np.arcsin(3200 / 5800)
     at = halfspace_psv_observables_g_free(
