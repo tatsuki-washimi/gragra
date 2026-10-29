@@ -57,11 +57,18 @@ Physics conventions and formulation notes:
   satisfies the far-field point-mass limit ``a -> rho*V*Delta/r^3``
   (verified symbolically and numerically in this module's tests).
 """
+from __future__ import annotations
 
 import numpy as np
 
 from gragra._arrays import as_xyz_table, as_xyz_vector
-from gragra.analytic._validation import validate_scalar_input
+from gragra.analytic._validation import (
+    validate_nonnegative_scalar_input,
+    validate_real_xyz_table,
+    validate_real_xyz_vector,
+    validate_scalar_input,
+)
+from gragra.analytic.values import GFreeGravityValues
 from gragra.array_types import FloatArray
 
 
@@ -182,3 +189,300 @@ def cuboid_filled_internal_field(
 
     out.setflags(write=False)
     return out
+
+
+def _safe_log_arg(w: float, u: float, v: float) -> float:
+    """Evaluate w + sqrt(u^2 + v^2 + w^2) safely without catastrophic cancellation."""
+    r = np.sqrt(u * u + v * v + w * w)
+    if w >= 0.0:
+        return float(w + r)
+    num = u * u + v * v
+    if num == 0.0:
+        return 0.0
+    return float(num / (r - w))
+
+
+def _corner_term_phi(x: float, y: float, z: float) -> float:
+    """One corner evaluation of the potential antiderivative F1 (Nagy et al. 2000)."""
+    r = np.sqrt(x * x + y * y + z * z)
+    if r == 0.0:
+        return 0.0
+    total = 0.0
+    if x != 0.0 and y != 0.0:
+        arg_z = _safe_log_arg(z, x, y)
+        if arg_z > 0.0:
+            total += x * y * np.log(arg_z)
+    if y != 0.0 and z != 0.0:
+        arg_x = _safe_log_arg(x, y, z)
+        if arg_x > 0.0:
+            total += y * z * np.log(arg_x)
+    if z != 0.0 and x != 0.0:
+        arg_y = _safe_log_arg(y, z, x)
+        if arg_y > 0.0:
+            total += z * x * np.log(arg_y)
+    if x != 0.0:
+        total -= 0.5 * x * x * np.arctan(y * z / (x * r))
+    if y != 0.0:
+        total -= 0.5 * y * y * np.arctan(z * x / (y * r))
+    if z != 0.0:
+        total -= 0.5 * z * z * np.arctan(x * y / (z * r))
+    return total
+
+
+def _corner_term_diag(u: float, v: float, w: float) -> float:
+    """One corner evaluation of diagonal gradient term atan(v*w / (u*R))."""
+    r = np.sqrt(u * u + v * v + w * w)
+    if r == 0.0 or u == 0.0:
+        return 0.0
+    return float(np.arctan(v * w / (u * r)))
+
+
+def _single_point_potential(half_lengths: np.ndarray, point: np.ndarray) -> float:
+    rel_lo = -half_lengths - point
+    rel_hi = half_lengths - point
+    xs = (rel_lo[0], rel_hi[0])
+    ys = (rel_lo[1], rel_hi[1])
+    zs = (rel_lo[2], rel_hi[2])
+    total = 0.0
+    for i, x in enumerate(xs):
+        for j, y in enumerate(ys):
+            for k, z in enumerate(zs):
+                s = (-1.0) ** (i + j + k)
+                total += s * _corner_term_phi(x, y, z)
+    return total
+
+
+def _diff_log_pair(u: float, v: float, w0: float, w1: float) -> float:
+    """Evaluate ln(w0 + r0) - ln(w1 + r1) stably, including when u=v=0.
+
+    Algebraic formulation:
+    - If w1 <= 0 (both w0 < 0 and w1 <= 0):
+      (w0 + r0) / (w1 + r1) = [rho_perp^2 / (r0 - w0)] / [rho_perp^2 / (r1 - w1)]
+                            = (r1 - w1) / (r0 - w0)
+      which is strictly positive and finite even when u = v = 0.
+    - If w0 >= 0 (both w0 >= 0 and w1 > 0):
+      (w0 + r0) / (w1 + r1) is strictly positive and finite.
+    - If w0 < 0 < w1:
+      w0 + r0 = rho_perp^2 / (r0 - w0), so
+      (w0 + r0) / (w1 + r1) = rho_perp^2 / ((r0 - w0) * (w1 + r1)).
+      For valid observation points (not on the material edge/vertex of the cuboid),
+      rho_perp^2 > 0 strictly.
+    """
+    rho2 = u * u + v * v
+    r0 = np.sqrt(rho2 + w0 * w0)
+    r1 = np.sqrt(rho2 + w1 * w1)
+    if w1 <= 0.0:
+        return float(np.log((r1 - w1) / (r0 - w0)))
+    elif w0 >= 0.0:
+        return float(np.log((w0 + r0) / (w1 + r1)))
+    else:
+        denom = (r0 - w0) * (w1 + r1)
+        if rho2 == 0.0 or denom == 0.0:
+            return 0.0
+        return float(np.log(rho2 / denom))
+
+
+def _single_point_gradient(half_lengths: np.ndarray, point: np.ndarray) -> np.ndarray:
+    rel_lo = -half_lengths - point
+    rel_hi = half_lengths - point
+    xs = (rel_lo[0], rel_hi[0])
+    ys = (rel_lo[1], rel_hi[1])
+    zs = (rel_lo[2], rel_hi[2])
+    g = np.zeros((3, 3), dtype=np.float64)
+
+    # Diagonals: 8-corner sum of arctan terms
+    for i, x in enumerate(xs):
+        for j, y in enumerate(ys):
+            for k, z in enumerate(zs):
+                s = (-1.0) ** (i + j + k)
+                g[0, 0] += s * _corner_term_diag(x, y, z)
+                g[1, 1] += s * _corner_term_diag(y, z, x)
+                g[2, 2] += s * _corner_term_diag(z, x, y)
+
+    # Off-diagonals: evaluate pairwise log difference along paired axis
+    # Gamma_xy: paired along z (k in {0, 1})
+    for i, x in enumerate(xs):
+        for j, y in enumerate(ys):
+            s = (-1.0) ** (i + j)
+            g[0, 1] -= s * _diff_log_pair(x, y, zs[0], zs[1])
+
+    # Gamma_xz: paired along y (j in {0, 1})
+    for i, x in enumerate(xs):
+        for k, z in enumerate(zs):
+            s = (-1.0) ** (i + k)
+            g[0, 2] -= s * _diff_log_pair(x, z, ys[0], ys[1])
+
+    # Gamma_yz: paired along x (i in {0, 1})
+    for j, y in enumerate(ys):
+        for k, z in enumerate(zs):
+            s = (-1.0) ** (j + k)
+            g[1, 2] -= s * _diff_log_pair(y, z, xs[0], xs[1])
+
+    g[1, 0] = g[0, 1]
+    g[2, 0] = g[0, 2]
+    g[2, 1] = g[1, 2]
+    return g
+
+
+def _is_on_cuboid_boundary(
+    points_rel: np.ndarray,
+    half_lengths: np.ndarray,
+    atol: float | None = None,
+) -> np.ndarray:
+    """Detect whether target points lie on the cuboid material boundary.
+
+    A point is on the material boundary if it lies within `atol` of any of the
+    six bounding faces of the cuboid [-hx, hx] x [-hy, hy] x [-hz, hz].
+    If `atol` is None, it defaults to 1e-12 * max(half_lengths), scaling
+    with the cuboid dimensions.
+    """
+    if atol is None:
+        atol = 1e-12 * float(np.max(half_lengths))
+    abs_pts = np.abs(points_rel)
+    within_box = np.all(abs_pts <= half_lengths + atol, axis=-1)
+    on_any_face = np.any(np.isclose(abs_pts, half_lengths, atol=atol, rtol=0.0), axis=-1)
+    return within_box & on_any_face
+
+
+def _validate_cuboid_inputs(
+    center_m: list | tuple | np.ndarray,
+    lengths_m: list | tuple | np.ndarray,
+    density_kg_m3: float,
+    targets_m: list | tuple | np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
+    center = validate_real_xyz_vector(center_m, "center_m")
+    lengths = validate_real_xyz_vector(lengths_m, "lengths_m")
+    if np.any(lengths <= 0.0):
+        raise ValueError("lengths_m must be positive")
+    rho = validate_nonnegative_scalar_input(density_kg_m3, "density_kg_m3")
+    targets = validate_real_xyz_table(targets_m, "targets_m")
+    return center, lengths, rho, targets
+
+
+def cuboid_potential_g_free(
+    center_m: list | tuple | np.ndarray,
+    lengths_m: list | tuple | np.ndarray,
+    density_kg_m3: float,
+    targets_m: list | tuple | np.ndarray,
+) -> FloatArray:
+    """Calculate G-free gravitational potential of a uniform cuboid (rectangular prism).
+
+    Physical unit: kg / m.
+    """
+    center, lengths, rho, targets = _validate_cuboid_inputs(
+        center_m, lengths_m, density_kg_m3, targets_m
+    )
+    half_lengths = lengths / 2.0
+    rel_pts = targets - center
+    out = np.empty(targets.shape[0], dtype=np.float64)
+    for m in range(targets.shape[0]):
+        out[m] = rho * _single_point_potential(half_lengths, rel_pts[m])
+    out.setflags(write=False)
+    return out
+
+
+def cuboid_acceleration_g_free(
+    center_m: list | tuple | np.ndarray,
+    lengths_m: list | tuple | np.ndarray,
+    density_kg_m3: float,
+    targets_m: list | tuple | np.ndarray,
+) -> FloatArray:
+    """Calculate G-free gravitational acceleration vector of a uniform cuboid.
+
+    Physical unit: kg / m^2.
+    """
+    center, lengths, rho, targets = _validate_cuboid_inputs(
+        center_m, lengths_m, density_kg_m3, targets_m
+    )
+    half_lengths = lengths / 2.0
+    rel_pts = targets - center
+    out = np.empty((targets.shape[0], 3), dtype=np.float64)
+    for m in range(targets.shape[0]):
+        out[m] = _single_point_field(half_lengths, rel_pts[m])
+    out *= rho
+    out.setflags(write=False)
+    return out
+
+
+def cuboid_gradient_g_free(
+    center_m: list | tuple | np.ndarray,
+    lengths_m: list | tuple | np.ndarray,
+    density_kg_m3: float,
+    targets_m: list | tuple | np.ndarray,
+) -> FloatArray:
+    """Calculate G-free gravity gradient tensor of a uniform cuboid.
+
+    Physical unit: kg / m^3.
+    Rejects points on the material boundary of the cuboid.
+    """
+    center, lengths, rho, targets = _validate_cuboid_inputs(
+        center_m, lengths_m, density_kg_m3, targets_m
+    )
+    half_lengths = lengths / 2.0
+    rel_pts = targets - center
+    boundary_mask = _is_on_cuboid_boundary(rel_pts, half_lengths)
+    if np.any(boundary_mask):
+        first_idx = int(np.where(boundary_mask)[0][0])
+        raise ValueError(
+            f"target point at index {first_idx} ({targets[first_idx]}) lies on the cuboid boundary "
+            "where gravity gradient is discontinuous or singular"
+        )
+    out = np.empty((targets.shape[0], 3, 3), dtype=np.float64)
+    for m in range(targets.shape[0]):
+        out[m] = rho * _single_point_gradient(half_lengths, rel_pts[m])
+    out.setflags(write=False)
+    return out
+
+
+def cuboid_observables_g_free(
+    center_m: list | tuple | np.ndarray,
+    lengths_m: list | tuple | np.ndarray,
+    density_kg_m3: float,
+    targets_m: list | tuple | np.ndarray,
+) -> GFreeGravityValues:
+    """Calculate G-free potential, acceleration, and gradient of a uniform cuboid.
+
+    Parameters
+    ----------
+    center_m : array-like, shape (3,)
+        Center of the cuboid in meters.
+    lengths_m : array-like, shape (3,)
+        Full side lengths (Lx, Ly, Lz) in meters, all positive.
+    density_kg_m3 : float
+        Uniform mass density in kg/m^3 (positive).
+    targets_m : array-like, shape (M, 3)
+        Observation target points in meters. Points lying on the cuboid
+        material boundary are rejected.
+
+    Returns
+    -------
+    GFreeGravityValues
+        Immutable container holding potential (M,), acceleration (M, 3),
+        and gradient (M, 3, 3) in G-free units.
+    """
+    center, lengths, rho, targets = _validate_cuboid_inputs(
+        center_m, lengths_m, density_kg_m3, targets_m
+    )
+    half_lengths = lengths / 2.0
+    rel_pts = targets - center
+    boundary_mask = _is_on_cuboid_boundary(rel_pts, half_lengths)
+    if np.any(boundary_mask):
+        first_idx = int(np.where(boundary_mask)[0][0])
+        raise ValueError(
+            f"target point at index {first_idx} ({targets[first_idx]}) lies on the cuboid boundary "
+            "where gravity gradient is discontinuous or singular"
+        )
+
+    n_targets = targets.shape[0]
+    pot = np.empty(n_targets, dtype=np.float64)
+    acc = np.empty((n_targets, 3), dtype=np.float64)
+    grad = np.empty((n_targets, 3, 3), dtype=np.float64)
+
+    for m in range(n_targets):
+        pt = rel_pts[m]
+        pot[m] = rho * _single_point_potential(half_lengths, pt)
+        acc[m] = rho * _single_point_field(half_lengths, pt)
+        grad[m] = rho * _single_point_gradient(half_lengths, pt)
+
+    return GFreeGravityValues(potential=pot, acceleration=acc, gradient=grad)
+

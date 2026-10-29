@@ -6,7 +6,7 @@ import numpy as np
 
 from gragra._arrays import _check_no_bool, as_xyz_table
 from gragra.array_types import ComplexArray, FloatArray
-from gragra.sources.weighted_points import WeightedPointSource
+from gragra.gravity_sources.weighted_points import WeightedPointSource
 
 
 @dataclass(frozen=True)

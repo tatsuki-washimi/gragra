@@ -1,14 +1,13 @@
-"""SPECFEM3D Cartesian certified exporter subpackage (gragra.adapters.specfem).
+"""SPECFEM3D Cartesian GLL exporter subpackage (gragra.adapters.specfem).
 
-This subpackage implements the SPECFEM3D Cartesian certified GLL export and
-rc1 reader paths.  The exporter reads a SPECFEM3D run tree and writes
+This subpackage implements the SPECFEM3D Cartesian GLL export and
+reader paths. The exporter reads a SPECFEM3D run tree and writes
 gragra's canonical HDF5 layout (``mesh_type="gll"``).  The reader loads the
 same closed HDF5 layout into immutable GLL blocks for the acceleration path.
 
-"Certified" here means **self-certified by the gragra maintainer against
-gragra's own written contract for a named solver profile**. It is not a
-third-party audit, not accreditation, and not an endorsement by the
-SPECFEM3D project or any other body.
+The exporter and reader implement a documented solver input profile. They
+check structural and numerical input conditions needed by the scientific
+conversion; they do not make claims about the physical setup of a solver run.
 
 Module layout:
 
@@ -19,11 +18,11 @@ Module layout:
   discovery, Database parsing.
 - ``gll.py`` -- GLL point/weight generation, trilinear Jacobian,
   quadrature volume.
-- ``provenance.py`` -- Par_file/hash/manifest/build-identity/runtime-manifest/
+- ``provenance.py`` -- Par_file/hash/build-identity/runtime metadata/
   cadence provenance collection.
 - ``writer.py`` -- h5py-lazy-import dataset writing, metadata encoding,
   the 4 scalar invariants.
-- ``export.py`` -- ``ExportConfig`` (frozen dataclass), profile gate,
+- ``export.py`` -- ``ExportConfig`` (frozen dataclass), profile check,
   orchestration, self-check.
 - ``cli.py`` / ``__main__.py`` -- export entry point + ``capture-run``
   subcommand.

@@ -7,7 +7,7 @@ import numpy as np
 
 from gragra._arrays import _check_no_bool, as_xyz_table
 from gragra.array_types import ComplexArray, FloatArray
-from gragra.sources.surface import SurfaceMassSheetSource
+from gragra.gravity_sources.surface import SurfaceMassSheetSource
 
 if TYPE_CHECKING:
     from gragra.fields.surface_orientation import OrientationReport
@@ -139,7 +139,7 @@ class SurfaceDisplacementField:
         """Compute the surface mass perturbation and return a sheet source.
 
         ``delta_sigma = delta_rho * (u_face . n_hat)`` is folded per triangle into
-        a :class:`~gragra.sources.surface.SurfaceMassSheetSource`, whose
+        a :class:`~gragra.gravity_sources.surface.SurfaceMassSheetSource`, whose
         ``as_weighted_source()`` yields the mass elements ``delta_m =
         delta_sigma * area``.
 

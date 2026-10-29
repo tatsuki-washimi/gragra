@@ -6,14 +6,16 @@ import numpy as np
 
 from gragra._arrays import as_xyz_table
 from gragra.array_types import ComplexArray, FloatArray
+from gragra.gravity_sources import PointMass, PointMassCloud, WeightedPointSource
 from gragra.kernels.inverse_square import (
     acceleration_contract,
     dipole_contract,
+    displacement_gradient_contract,
+    displacement_potential_contract,
     gradient_contract,
     potential_contract,
 )
-from gragra.sources import PointMass, PointMassCloud, WeightedPointSource
-from gragra.targets import TargetPoints
+from gragra.targets.points import TargetPoints
 
 
 def _normalize_source(
@@ -203,17 +205,18 @@ def direct_point_sum(
     return contract_fn(s_xyz, w, t_xyz, softening_m=softening_m, chunk_size=chunk_size)
 
 
-def direct_point_dipole_sum(
+def direct_point_displacement_sum(
     mass_kg: list | tuple | np.ndarray,
     displacement_m: list | tuple | np.ndarray,
     sources_xyz: list | tuple | np.ndarray,
     targets: TargetPoints | list | tuple | np.ndarray,
     *,
+    observable: str = "acceleration",
     softening_m: float = 0.0,
     chunk_size: int | None = None,
     backend: str = "numpy",
 ) -> FloatArray | ComplexArray:
-    """Execute G-free vector-weight (dipole/total) integration.
+    """Execute a G-free source-displacement derivative integration.
 
     Unlike ``direct_point_sum``, this takes raw ``mass_kg``/``displacement_m``
     arrays directly rather than a ``WeightedPointSource``, because the
@@ -235,15 +238,18 @@ def direct_point_dipole_sum(
         Source coordinates table of shape (N, 3) in meters.
     targets : TargetPoints or array-like
         The target observation points.
+    observable : str, optional
+        Source-displacement derivative to calculate: ``'potential'``,
+        ``'acceleration'`` (default), or ``'gradient'``.
     softening_m : float, optional
         Plummer softening parameter. Defaults to 0.0.
     chunk_size : int, optional
         Chunk size for source-axis loop. Defaults to None.
     backend : str, optional
-        The calculation backend: ``'numpy'`` (default), ``'numba'``,
-        ``'cpp'``, or ``'cupy'`` (GPU; requires a CuPy wheel matching the
-        local CUDA/ROCm runtime and a working CUDA device).
-
+        The calculation backend. Potential and gradient support ``'numpy'``
+        and ``'numba'``. Acceleration preserves the existing ``'numpy'``,
+        ``'numba'``, ``'cpp'``, and ``'cupy'`` implementations. C++ and CuPy
+        remain unsupported for the new potential and gradient derivatives.
 
     Returns
     -------
@@ -251,6 +257,65 @@ def direct_point_dipole_sum(
         Calculated G-free displacement-transfer result.
     """
     t_xyz = _normalize_targets(targets)
+
+    supported_observables = ("potential", "acceleration", "gradient")
+    if observable not in supported_observables:
+        raise ValueError(
+            "Unsupported observable: must be one of "
+            f"{list(supported_observables)}, got {observable}"
+        )
+
+    supported_backends = ("numpy", "numba", "cpp", "cupy")
+    if backend not in supported_backends:
+        raise ValueError(
+            "Unsupported backend: must be 'numpy', 'numba', 'cpp', or 'cupy', "
+            f"got '{backend}'"
+        )
+
+    if observable != "acceleration":
+        if backend == "numba":
+            # Validate before the optional dependency import so malformed
+            # inputs retain the shared contract even when Numba is absent.
+            from gragra.kernels.inverse_square import _validate_dipole_inputs
+
+            _validate_dipole_inputs(
+                sources_xyz,
+                mass_kg,
+                displacement_m,
+                t_xyz,
+                softening_m,
+                chunk_size,
+            )
+            numba_kernels = _import_numba_kernels()
+            contract_fn = {
+                "potential": numba_kernels.displacement_potential_contract,
+                "gradient": numba_kernels.displacement_gradient_contract,
+            }[observable]
+            return contract_fn(
+                sources_xyz,
+                mass_kg,
+                displacement_m,
+                t_xyz,
+                softening_m=softening_m,
+                chunk_size=chunk_size,
+            )
+        if backend != "numpy":
+            raise NotImplementedError(
+                f"backend='{backend}' does not implement displacement-transfer "
+                f"{observable}; use backend='numpy' or 'numba'"
+            )
+        contract_fn = {
+            "potential": displacement_potential_contract,
+            "gradient": displacement_gradient_contract,
+        }[observable]
+        return contract_fn(
+            sources_xyz,
+            mass_kg,
+            displacement_m,
+            t_xyz,
+            softening_m=softening_m,
+            chunk_size=chunk_size,
+        )
 
     if backend == "numpy":
         contract_fn = dipole_contract
@@ -266,12 +331,6 @@ def direct_point_dipole_sum(
         )
         contract_fn = _import_cupy_kernels().dipole_contract
 
-    else:
-        raise ValueError(
-            "Unsupported backend: must be 'numpy', 'numba', 'cpp', or 'cupy', "
-            f"got '{backend}'"
-        )
-
     return contract_fn(
         sources_xyz,
         mass_kg,
@@ -279,4 +338,56 @@ def direct_point_dipole_sum(
         t_xyz,
         softening_m=softening_m,
         chunk_size=chunk_size,
+    )
+
+
+def direct_point_dipole_sum(
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    sources_xyz: list | tuple | np.ndarray,
+    targets: TargetPoints | list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+    backend: str = "numpy",
+) -> FloatArray | ComplexArray:
+    """Execute G-free vector-weight (dipole/total) integration.
+
+    This compatibility entry point preserves the argument order, backend
+    dispatch, and exception behavior that predate
+    :func:`direct_point_displacement_sum`. It takes raw ``mass_kg`` and
+    ``displacement_m`` arrays because the displacement vector is not a
+    ``WeightedPointSource.weights_kg``-compatible quantity.
+
+    Parameters
+    ----------
+    mass_kg : array-like
+        Finite, real, non-negative background mass elements, shape ``(N,)``.
+    displacement_m : array-like
+        Real or complex displacement vectors, shape ``(N, 3)``.
+    sources_xyz : array-like
+        Source coordinates, shape ``(N, 3)``.
+    targets : TargetPoints or array-like
+        Target coordinates.
+    softening_m : float, optional
+        Plummer softening length in meters.
+    chunk_size : int, optional
+        Source-axis chunk size.
+    backend : str, optional
+        ``'numpy'``, ``'numba'``, ``'cpp'``, or ``'cupy'``.
+
+    Returns
+    -------
+    FloatArray or ComplexArray
+        G-free acceleration response with shape ``(M, 3)``.
+    """
+    return direct_point_displacement_sum(
+        mass_kg,
+        displacement_m,
+        sources_xyz,
+        targets,
+        observable="acceleration",
+        softening_m=softening_m,
+        chunk_size=chunk_size,
+        backend=backend,
     )

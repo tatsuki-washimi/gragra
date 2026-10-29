@@ -7,11 +7,9 @@ from gragra.waves.directions import normalize_directions
 def lebedev_grid(order: int) -> tuple[FloatArray, FloatArray]:
     """Generate a Lebedev spherical-quadrature grid (directions + normalized weights).
 
-    Thin wrapper over ``scipy.integrate.lebedev_rule`` (scipy >= 1.15). Returns
-    directions and weights in exactly the form ``DirectionalComplexKernel`` /
-    ``volume_transfer_kernel`` expect, so the result is drop-in for the next-8
-    coherent-combination adapter. The Lebedev *integrators* (ObservationGeometry,
-    VolumeIntegrator, surface accumulation) remain a nn-sus-side concern (Stays).
+    Thin wrapper over ``scipy.integrate.lebedev_rule`` (scipy >= 1.15).
+    Returns unit directions and normalized quadrature weights. Lebedev
+    integration itself is outside this adapter.
 
     Some supported orders (13/25/27) carry negative quadrature weights; the
     returned wnorm can contain negatives (sum is still 1).

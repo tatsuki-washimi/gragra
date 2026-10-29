@@ -1,9 +1,9 @@
 """GLL quadrature rule and trilinear-hexahedron Jacobian for the SPECFEM3D
-Cartesian certified GLL export (numerical core).
+Cartesian GLL export (numerical core).
 
-This module provides the two numerical ingredients the certified exporter
-needs in order to build ``/mesh/quadrature_volume``, which the certified
-path fixes as ``w_mass = rho0 * J * w_x w_y w_z``:
+This module provides the two numerical ingredients the exporter
+needs in order to build ``/mesh/quadrature_volume``, which the documented
+profile fixes as ``w_mass = rho0 * J * w_x w_y w_z``:
 
 1. :func:`gll_points_weights` -- the Gauss-Lobatto-Legendre (GLL) abscissae
    and weights on ``[-1, 1]`` for a general point count ``n >= 2``.
@@ -110,8 +110,8 @@ _REFERENCE_CORNERS: Final[FloatArray] = np.array(
 _REFERENCE_CORNERS.setflags(write=False)
 
 #: Number of corner (anchor) nodes of the supported element type
-#: (``NGNOD = 8``; ``NGNOD = 27`` is out of scope for the certified profile
-#: -- see ``docs/design/specfem_import.md`` §certified profile).
+#: (``NGNOD = 8``; ``NGNOD = 27`` is outside the documented profile
+#: -- see ``docs/design/specfem_import.md``).
 N_CORNER_NODES: Final[int] = 8
 
 #: How many elements are processed per vectorized block in
@@ -217,7 +217,7 @@ def gll_points_weights(n: int) -> tuple[FloatArray, FloatArray]:
     **Rule identity.** These are the standard *Legendre* Gauss-Lobatto
     points, i.e. the ``alpha = beta = 0`` special case of the
     Gauss-Lobatto-Jacobi rule that SPECFEM3D's ``zwgljd``
-    (``src/shared/gll_library.f90``) implements. The certified profile fixes
+    (``src/shared/gll_library.f90``) implements. The documented profile fixes
     ``GAUSSALPHA = GAUSSBETA = 0`` (recorded as
     ``schema.EXPECTED_GAUSSALPHA`` / ``schema.EXPECTED_GAUSSBETA``, checked
     against the real source tree by ``tests/test_specfem_schema.py``), so
@@ -244,8 +244,8 @@ def gll_points_weights(n: int) -> tuple[FloatArray, FloatArray]:
     Note that upstream's ``zwgljd`` additionally refuses ``n == 2`` with a
     "minimum number of Gauss-Lobatto points for the SEM is 3" stop; that is
     an SEM-specific restriction on the *solver's* element order, not a
-    property of the rule, so ``n == 2`` is accepted here (it is only ever
-    used by tests, never by the certified export, which uses
+    property of the rule, so ``n == 2`` is accepted here (it is used by
+    tests; the documented export uses
     ``schema.EXPECTED_NGLL``).
     """
     if not isinstance(n, (int, np.integer)) or isinstance(n, bool):
@@ -424,7 +424,7 @@ def _block_quadrature_volume(
     # eps * |X| / L (|X| = distance from the origin, L = element size).
     # Measured on a 1 m element at |X| = 1e6 m: ~5e-11 relative error without
     # recentring vs ~1e-16 with it -- i.e. the difference between failing and
-    # passing the Tier A2 rtol < 1e-12 gate. Subtracting the mean is exact in
+    # passing the quadrature rtol < 1e-12 check. Subtracting the mean is exact in
     # IEEE arithmetic here (Sterbenz: the mean and each corner are within a
     # factor of two of each other), so the recentred element is an exact
     # translate of the original and the volume is unchanged.

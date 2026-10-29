@@ -287,6 +287,208 @@ def gradient_contract_complex_jit(
 
 
 @numba.njit(parallel=True, cache=True)
+def displacement_potential_contract_real_jit(
+    sources_xyz: np.ndarray,
+    mass: np.ndarray,
+    disp: np.ndarray,
+    targets_xyz: np.ndarray,
+    eps2: float,
+    collision_source_index: np.ndarray,
+) -> np.ndarray:
+    """Accumulate the real source-displacement derivative of potential."""
+    m = len(targets_xyz)
+    n = len(sources_xyz)
+    out = np.zeros(m, dtype=np.float64)
+    for i in numba.prange(m):
+        tx = targets_xyz[i, 0]
+        ty = targets_xyz[i, 1]
+        tz = targets_xyz[i, 2]
+        s = 0.0
+        for j in range(n):
+            dx = sources_xyz[j, 0] - tx
+            dy = sources_xyz[j, 1] - ty
+            dz = sources_xyz[j, 2] - tz
+            r2 = dx * dx + dy * dy + dz * dz
+            if eps2 == 0.0 and r2 == 0.0:
+                if collision_source_index[i] == -1:
+                    collision_source_index[i] = j
+                continue
+            q = r2 + eps2
+            z = dx * disp[j, 0] + dy * disp[j, 1] + dz * disp[j, 2]
+            s += mass[j] * z / (q * np.sqrt(q))
+        out[i] = s
+    return out
+
+
+@numba.njit(parallel=True, cache=True)
+def displacement_potential_contract_complex_jit(
+    sources_xyz: np.ndarray,
+    mass: np.ndarray,
+    disp: np.ndarray,
+    targets_xyz: np.ndarray,
+    eps2: float,
+    collision_source_index: np.ndarray,
+) -> np.ndarray:
+    """Accumulate the complex source-displacement derivative of potential."""
+    m = len(targets_xyz)
+    n = len(sources_xyz)
+    out = np.zeros(m, dtype=np.complex128)
+    for i in numba.prange(m):
+        tx = targets_xyz[i, 0]
+        ty = targets_xyz[i, 1]
+        tz = targets_xyz[i, 2]
+        s = 0.0 + 0.0j
+        for j in range(n):
+            dx = sources_xyz[j, 0] - tx
+            dy = sources_xyz[j, 1] - ty
+            dz = sources_xyz[j, 2] - tz
+            r2 = dx * dx + dy * dy + dz * dz
+            if eps2 == 0.0 and r2 == 0.0:
+                if collision_source_index[i] == -1:
+                    collision_source_index[i] = j
+                continue
+            q = r2 + eps2
+            z = dx * disp[j, 0] + dy * disp[j, 1] + dz * disp[j, 2]
+            s += mass[j] * z / (q * np.sqrt(q))
+        out[i] = s
+    return out
+
+
+@numba.njit(parallel=True, cache=True)
+def displacement_gradient_contract_real_jit(
+    sources_xyz: np.ndarray,
+    mass: np.ndarray,
+    disp: np.ndarray,
+    targets_xyz: np.ndarray,
+    eps2: float,
+    collision_source_index: np.ndarray,
+) -> np.ndarray:
+    """Accumulate the real source-displacement derivative of gradient."""
+    m = len(targets_xyz)
+    n = len(sources_xyz)
+    out = np.zeros((m, 3, 3), dtype=np.float64)
+    for i in numba.prange(m):
+        tx = targets_xyz[i, 0]
+        ty = targets_xyz[i, 1]
+        tz = targets_xyz[i, 2]
+        g00 = 0.0
+        g01 = 0.0
+        g02 = 0.0
+        g10 = 0.0
+        g11 = 0.0
+        g12 = 0.0
+        g20 = 0.0
+        g21 = 0.0
+        g22 = 0.0
+
+        for j in range(n):
+            dx = sources_xyz[j, 0] - tx
+            dy = sources_xyz[j, 1] - ty
+            dz = sources_xyz[j, 2] - tz
+            r2 = dx * dx + dy * dy + dz * dz
+            if eps2 == 0.0 and r2 == 0.0:
+                if collision_source_index[i] == -1:
+                    collision_source_index[i] = j
+                continue
+            q = r2 + eps2
+            sqrt_q = np.sqrt(q)
+            inv_q5 = 3.0 / (q * q * sqrt_q)
+            inv_q7 = 15.0 / (q * q * q * sqrt_q)
+            d0 = disp[j, 0]
+            d1 = disp[j, 1]
+            d2 = disp[j, 2]
+            z = dx * d0 + dy * d1 + dz * d2
+
+            g00 += mass[j] * (inv_q5 * (2.0 * d0 * dx + z) - inv_q7 * dx * dx * z)
+            g01 += mass[j] * (inv_q5 * (d0 * dy + dx * d1) - inv_q7 * dx * dy * z)
+            g02 += mass[j] * (inv_q5 * (d0 * dz + dx * d2) - inv_q7 * dx * dz * z)
+            g10 += mass[j] * (inv_q5 * (d1 * dx + dy * d0) - inv_q7 * dy * dx * z)
+            g11 += mass[j] * (inv_q5 * (2.0 * d1 * dy + z) - inv_q7 * dy * dy * z)
+            g12 += mass[j] * (inv_q5 * (d1 * dz + dy * d2) - inv_q7 * dy * dz * z)
+            g20 += mass[j] * (inv_q5 * (d2 * dx + dz * d0) - inv_q7 * dz * dx * z)
+            g21 += mass[j] * (inv_q5 * (d2 * dy + dz * d1) - inv_q7 * dz * dy * z)
+            g22 += mass[j] * (inv_q5 * (2.0 * d2 * dz + z) - inv_q7 * dz * dz * z)
+
+        out[i, 0, 0] = g00
+        out[i, 0, 1] = g01
+        out[i, 0, 2] = g02
+        out[i, 1, 0] = g10
+        out[i, 1, 1] = g11
+        out[i, 1, 2] = g12
+        out[i, 2, 0] = g20
+        out[i, 2, 1] = g21
+        out[i, 2, 2] = g22
+    return out
+
+
+@numba.njit(parallel=True, cache=True)
+def displacement_gradient_contract_complex_jit(
+    sources_xyz: np.ndarray,
+    mass: np.ndarray,
+    disp: np.ndarray,
+    targets_xyz: np.ndarray,
+    eps2: float,
+    collision_source_index: np.ndarray,
+) -> np.ndarray:
+    """Accumulate the complex source-displacement derivative of gradient."""
+    m = len(targets_xyz)
+    n = len(sources_xyz)
+    out = np.zeros((m, 3, 3), dtype=np.complex128)
+    for i in numba.prange(m):
+        tx = targets_xyz[i, 0]
+        ty = targets_xyz[i, 1]
+        tz = targets_xyz[i, 2]
+        g00 = 0.0 + 0.0j
+        g01 = 0.0 + 0.0j
+        g02 = 0.0 + 0.0j
+        g10 = 0.0 + 0.0j
+        g11 = 0.0 + 0.0j
+        g12 = 0.0 + 0.0j
+        g20 = 0.0 + 0.0j
+        g21 = 0.0 + 0.0j
+        g22 = 0.0 + 0.0j
+
+        for j in range(n):
+            dx = sources_xyz[j, 0] - tx
+            dy = sources_xyz[j, 1] - ty
+            dz = sources_xyz[j, 2] - tz
+            r2 = dx * dx + dy * dy + dz * dz
+            if eps2 == 0.0 and r2 == 0.0:
+                if collision_source_index[i] == -1:
+                    collision_source_index[i] = j
+                continue
+            q = r2 + eps2
+            sqrt_q = np.sqrt(q)
+            inv_q5 = 3.0 / (q * q * sqrt_q)
+            inv_q7 = 15.0 / (q * q * q * sqrt_q)
+            d0 = disp[j, 0]
+            d1 = disp[j, 1]
+            d2 = disp[j, 2]
+            z = dx * d0 + dy * d1 + dz * d2
+
+            g00 += mass[j] * (inv_q5 * (2.0 * d0 * dx + z) - inv_q7 * dx * dx * z)
+            g01 += mass[j] * (inv_q5 * (d0 * dy + dx * d1) - inv_q7 * dx * dy * z)
+            g02 += mass[j] * (inv_q5 * (d0 * dz + dx * d2) - inv_q7 * dx * dz * z)
+            g10 += mass[j] * (inv_q5 * (d1 * dx + dy * d0) - inv_q7 * dy * dx * z)
+            g11 += mass[j] * (inv_q5 * (2.0 * d1 * dy + z) - inv_q7 * dy * dy * z)
+            g12 += mass[j] * (inv_q5 * (d1 * dz + dy * d2) - inv_q7 * dy * dz * z)
+            g20 += mass[j] * (inv_q5 * (d2 * dx + dz * d0) - inv_q7 * dz * dx * z)
+            g21 += mass[j] * (inv_q5 * (d2 * dy + dz * d1) - inv_q7 * dz * dy * z)
+            g22 += mass[j] * (inv_q5 * (2.0 * d2 * dz + z) - inv_q7 * dz * dz * z)
+
+        out[i, 0, 0] = g00
+        out[i, 0, 1] = g01
+        out[i, 0, 2] = g02
+        out[i, 1, 0] = g10
+        out[i, 1, 1] = g11
+        out[i, 1, 2] = g12
+        out[i, 2, 0] = g20
+        out[i, 2, 1] = g21
+        out[i, 2, 2] = g22
+    return out
+
+
+@numba.njit(parallel=True, cache=True)
 def dipole_contract_real_jit(
     sources_xyz: np.ndarray,
     mass: np.ndarray,
@@ -518,6 +720,74 @@ def dipole_contract(
         )
     else:
         out = dipole_contract_real_jit(
+            sources, mass, disp, targets, eps2, collision_source_index
+        )
+
+    _check_collisions(collision_source_index, eps)
+    out.setflags(write=False)
+    return out
+
+
+def displacement_potential_contract(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets_xyz: list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+) -> FloatArray | ComplexArray:
+    """Numba accelerated G-free displacement potential contraction.
+
+    ``chunk_size`` is accepted and validated for backend parity, but compiled
+    CPU kernels process the source axis in one fixed-order pass.
+    """
+    sources, mass, disp, targets, eps, _ = _validate_dipole_inputs(
+        sources_xyz, mass_kg, displacement_m, targets_xyz, softening_m, chunk_size
+    )
+    collision_source_index = np.full(len(targets), -1, dtype=np.int64)
+    eps2 = eps**2
+
+    if np.iscomplexobj(disp):
+        out = displacement_potential_contract_complex_jit(
+            sources, mass, disp, targets, eps2, collision_source_index
+        )
+    else:
+        out = displacement_potential_contract_real_jit(
+            sources, mass, disp, targets, eps2, collision_source_index
+        )
+
+    _check_collisions(collision_source_index, eps)
+    out.setflags(write=False)
+    return out
+
+
+def displacement_gradient_contract(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets_xyz: list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+) -> FloatArray | ComplexArray:
+    """Numba accelerated G-free displacement gravity-gradient contraction.
+
+    ``chunk_size`` is accepted and validated for backend parity, but compiled
+    CPU kernels process the source axis in one fixed-order pass.
+    """
+    sources, mass, disp, targets, eps, _ = _validate_dipole_inputs(
+        sources_xyz, mass_kg, displacement_m, targets_xyz, softening_m, chunk_size
+    )
+    collision_source_index = np.full(len(targets), -1, dtype=np.int64)
+    eps2 = eps**2
+
+    if np.iscomplexobj(disp):
+        out = displacement_gradient_contract_complex_jit(
+            sources, mass, disp, targets, eps2, collision_source_index
+        )
+    else:
+        out = displacement_gradient_contract_real_jit(
             sources, mass, disp, targets, eps2, collision_source_index
         )
 

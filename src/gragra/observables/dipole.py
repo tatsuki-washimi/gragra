@@ -1,11 +1,14 @@
-"""Displacement transfer acceleration observable."""
+"""Point-source displacement-transfer observables."""
 
 import numpy as np
 
 from gragra.array_types import ComplexArray, FloatArray
 from gragra.constants import G_SI
-from gragra.integrators.point_direct import direct_point_dipole_sum
-from gragra.targets import TargetPoints
+from gragra.integrators.point_direct import (
+    direct_point_dipole_sum,
+    direct_point_displacement_sum,
+)
+from gragra.targets.points import TargetPoints
 
 
 def displacement_transfer_acceleration(
@@ -62,6 +65,77 @@ def displacement_transfer_acceleration(
         displacement_m,
         sources_xyz,
         targets,
+        softening_m=softening_m,
+        chunk_size=chunk_size,
+        backend=backend,
+    )
+    res = G_SI * g_free
+    res.setflags(write=False)
+    return res
+
+
+def displacement_transfer_potential(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets: TargetPoints | list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+    backend: str = "numpy",
+) -> FloatArray | ComplexArray:
+    """Calculate potential perturbation linearized in source displacement.
+
+    Parameters follow :func:`displacement_transfer_acceleration`: background
+    masses are finite, real, and non-negative; displacement vectors have
+    shape ``(N, 3)`` and may be complex amplitudes. The result has shape
+    ``(M,)`` and is read-only.
+
+    The NumPy and Numba backends implement this derivative. The G-free kernel
+    is multiplied by ``G_SI`` exactly once here.
+    """
+    g_free = direct_point_displacement_sum(
+        mass_kg,
+        displacement_m,
+        sources_xyz,
+        targets,
+        observable="potential",
+        softening_m=softening_m,
+        chunk_size=chunk_size,
+        backend=backend,
+    )
+    res = G_SI * g_free
+    res.setflags(write=False)
+    return res
+
+
+def displacement_transfer_gravity_gradient(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets: TargetPoints | list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+    backend: str = "numpy",
+) -> FloatArray | ComplexArray:
+    """Calculate gravity-gradient perturbation linearized in displacement.
+
+    Parameters follow :func:`displacement_transfer_acceleration`: background
+    masses are finite, real, and non-negative; displacement vectors have
+    shape ``(N, 3)`` and may be complex amplitudes. The result has shape
+    ``(M, 3, 3)`` and is read-only.
+
+    The NumPy and Numba backends implement this derivative. The G-free kernel
+    is multiplied by ``G_SI`` exactly once here. With Plummer softening, its trace
+    is generally nonzero as documented in ``kernel_contract.md``.
+    """
+    g_free = direct_point_displacement_sum(
+        mass_kg,
+        displacement_m,
+        sources_xyz,
+        targets,
+        observable="gradient",
         softening_m=softening_m,
         chunk_size=chunk_size,
         backend=backend,

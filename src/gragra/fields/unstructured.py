@@ -7,7 +7,7 @@ import numpy as np
 from gragra._arrays import _check_no_bool, as_xyz_table
 from gragra.array_types import ComplexArray, FloatArray
 from gragra.fields.background import BackgroundDensityModel
-from gragra.sources.volume import VolumeElementSource
+from gragra.gravity_sources.volume import VolumeElementSource
 
 
 def _tetra_geometry(

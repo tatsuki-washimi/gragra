@@ -1,6 +1,7 @@
 """Inverse square gravity kernels.
 
-Computes potential, acceleration, and gravity gradient contractions.
+Computes potential, acceleration, gravity gradient, and their first-order
+source-displacement contractions.
 All kernel contractions are G-free (do not multiply by G_SI).
 
 The chunk-loop bodies are factored into xp-agnostic private helpers
@@ -312,6 +313,69 @@ def _dipole_impl(
         out += -xp.sum(t_d * m_chunk[xp.newaxis, :, xp.newaxis], axis=1)
 
 
+def _displacement_potential_impl(
+    sources, mass, disp, targets, eps: float, c_size: int, out
+) -> None:
+    """Accumulate the source-displacement derivative of potential."""
+    n_sources = len(sources)
+    eps2 = eps**2
+
+    for start in range(0, n_sources, c_size):
+        end = min(start + c_size, n_sources)
+        diff = sources[np.newaxis, start:end, :] - targets[:, np.newaxis, :]
+        r2 = np.sum(diff**2, axis=-1)
+
+        if eps == 0.0:
+            _check_chunk_collision(np, r2, start)
+
+        q = r2 + eps2
+        z = np.einsum("mci,ci->mc", diff, disp[start:end])
+        term = z / (q * np.sqrt(q))
+        out += np.sum(term * mass[np.newaxis, start:end], axis=1)
+
+
+def _displacement_gradient_impl(
+    sources, mass, disp, targets, eps: float, c_size: int, out
+) -> None:
+    """Accumulate the source-displacement derivative of gravity gradient."""
+    n_sources = len(sources)
+    eps2 = eps**2
+    eye3 = np.eye(3)
+
+    for start in range(0, n_sources, c_size):
+        end = min(start + c_size, n_sources)
+        d_chunk = disp[start:end]
+        diff = sources[np.newaxis, start:end, :] - targets[:, np.newaxis, :]
+        r2 = np.sum(diff**2, axis=-1)
+
+        if eps == 0.0:
+            _check_chunk_collision(np, r2, start)
+
+        q = r2 + eps2
+        q5_2 = q**2 * np.sqrt(q)
+        q7_2 = q5_2 * q
+        z = np.einsum("mci,ci->mc", diff, d_chunk)
+        r_col = diff[:, :, :, np.newaxis]
+        r_row = diff[:, :, np.newaxis, :]
+        d_col = d_chunk[np.newaxis, :, :, np.newaxis]
+        d_row = d_chunk[np.newaxis, :, np.newaxis, :]
+        symmetric = (
+            d_col * r_row
+            + r_col * d_row
+            + eye3[np.newaxis, np.newaxis, :, :] * z[:, :, np.newaxis, np.newaxis]
+        )
+        term = (
+            3.0 * symmetric / q5_2[:, :, np.newaxis, np.newaxis]
+            - 15.0
+            * (r_col * r_row)
+            * z[:, :, np.newaxis, np.newaxis]
+            / q7_2[:, :, np.newaxis, np.newaxis]
+        )
+        out += np.sum(
+            term * mass[np.newaxis, start:end, np.newaxis, np.newaxis], axis=1
+        )
+
+
 def potential_contract(
     sources_xyz: list | tuple | np.ndarray,
     weights: list | tuple | np.ndarray,
@@ -524,6 +588,73 @@ def dipole_contract(
     out = np.zeros((len(targets), 3), dtype=out_dtype)
 
     _dipole_impl(np, sources, mass, disp, targets, eps, c_size, out)
+
+    out.setflags(write=False)
+    return out
+
+
+def displacement_potential_contract(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets_xyz: list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+) -> FloatArray | ComplexArray:
+    """Calculate the G-free first-order potential from source displacement.
+
+    With ``r = source - target``, ``q = r·r + softening_m**2``, and
+    ``z = r·displacement_m``, the contraction is
+    ``sum(mass_kg*z*q**(-3/2))``. It is the directional source derivative
+    of ``potential_contract`` and does not include ``G_SI``.
+
+    ``mass_kg`` is finite, real, and non-negative. ``displacement_m`` has
+    shape ``(N, 3)`` and may be real or complex. The result has shape ``(M,)``
+    and follows the displacement dtype.
+    """
+    sources, mass, disp, targets, eps, c_size = _validate_dipole_inputs(
+        sources_xyz, mass_kg, displacement_m, targets_xyz, softening_m, chunk_size
+    )
+    out_dtype = np.complex128 if np.iscomplexobj(disp) else np.float64
+    out = np.zeros(len(targets), dtype=out_dtype)
+
+    _displacement_potential_impl(sources, mass, disp, targets, eps, c_size, out)
+
+    out.setflags(write=False)
+    return out
+
+
+def displacement_gradient_contract(
+    sources_xyz: list | tuple | np.ndarray,
+    mass_kg: list | tuple | np.ndarray,
+    displacement_m: list | tuple | np.ndarray,
+    targets_xyz: list | tuple | np.ndarray,
+    *,
+    softening_m: float = 0.0,
+    chunk_size: int | None = None,
+) -> FloatArray | ComplexArray:
+    """Calculate the G-free first-order gravity gradient from displacement.
+
+    This is the target-coordinate derivative of ``dipole_contract`` and the
+    directional source derivative of ``gradient_contract``. With
+    ``r = source - target``, ``q = r·r + softening_m**2``, and
+    ``z = r·displacement_m``, each source contributes
+
+    ``mass_kg * (3*(d⊗r + r⊗d + I*z)*q**(-5/2)``
+    ``- 15*(r⊗r)*z*q**(-7/2))``.
+
+    The source axis is accumulated in chunks; no tensor spanning every source
+    is retained. The result has shape ``(M, 3, 3)``, follows the displacement
+    dtype, and does not include ``G_SI``.
+    """
+    sources, mass, disp, targets, eps, c_size = _validate_dipole_inputs(
+        sources_xyz, mass_kg, displacement_m, targets_xyz, softening_m, chunk_size
+    )
+    out_dtype = np.complex128 if np.iscomplexobj(disp) else np.float64
+    out = np.zeros((len(targets), 3, 3), dtype=out_dtype)
+
+    _displacement_gradient_impl(sources, mass, disp, targets, eps, c_size, out)
 
     out.setflags(write=False)
     return out

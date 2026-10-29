@@ -1,11 +1,11 @@
-"""Orchestration entry point for the SPECFEM3D Cartesian GLL certified/smoke
-export (Step 6): ``ExportConfig`` + the certified-profile gate + the
+"""Orchestration entry point for the SPECFEM3D Cartesian GLL
+export: ``ExportConfig`` + the documented-profile check + the
 multi-rank read/reconstruct/self-check pipeline + provenance assembly +
 delegation to ``writer.py``.
 
 Pipeline:
 
-1. Parse ``DATA/Par_file`` and run the **profile gate** first (before any
+1. Parse ``DATA/Par_file`` and run the **profile check** first (before any
    binary is touched) -- ``NGNOD != 8``, ``ATTENUATION``,
    ``PML_INSTEAD_OF_FREE_SURFACE``, ``SUPPRESS_UTM_PROJECTION``,
    ``SAVE_MESH_FILES``, ``SIMULATION_TYPE``, and (time_sampled only)
@@ -45,15 +45,12 @@ import numpy as np
 from gragra.adapters.specfem import gll, provenance, schema, specfem_bin
 from gragra.adapters.specfem import writer as _writer
 
-#: Explanatory tail appended to every certified-profile gate ``ValueError``.
-#: Deliberately prose rather than a document path: the gate's meaning is that
-#: the run is outside the *named solver profile* gragra self-certifies against
-#: its own written contract, and that statement must stay readable to someone
-#: who has only the installed package.
+#: Explanatory tail appended to profile-input ``ValueError`` messages.
+#: The message describes a documented solver profile and keeps the reason
+#: available to callers without requiring the documentation tree.
 _PROFILE_DOC_REF: Final[str] = (
-    "'certified' here means self-certified against gragra's own written"
-    " contract for this named SPECFEM3D Cartesian profile -- not a"
-    " third-party audit"
+    "this documented SPECFEM3D Cartesian profile; it is an input-scope"
+    " check, not a claim about the physical correctness of the solver run"
 )
 
 #: Relative to ExportConfig.specfem_dir -- auto-parse fallbacks for t0 /
@@ -72,7 +69,7 @@ OutputSamplingKind = Literal["static", "time_sampled"]
 
 @dataclass(frozen=True)
 class ExportConfig:
-    """Configuration for one SPECFEM3D Cartesian GLL certified/smoke export.
+    """Configuration for one SPECFEM3D Cartesian GLL export.
 
     Only ``specfem_dir``/``output_path``/``output_sampling_kind`` have no
     generic default -- everything else is either mechanically derivable
@@ -111,9 +108,9 @@ class ExportConfig:
         build-configuration fact this module has no independent way to
         verify from the binaries alone). The default,
         ``"proc_rho_bin_derived"``, is only a valid stand-in for the
-        Newtonian-gravity background density rho0 under the certified
+        Newtonian-gravity background density rho0 under the documented
         profile's isotropic-elastic, self-consistent-material-parameters
-        assumption -- do not reuse this default for a non-certified
+        assumption -- do not reuse this default for a different
         material configuration without re-deriving that the equivalence
         still holds.
     f_resolved_estimate : float | None
@@ -130,15 +127,15 @@ class ExportConfig:
         Passed to ``provenance.collect_exporter_identity``.
     runtime_manifest_entries : tuple[Mapping, ...]
         Pre-captured ``executables[]`` entries (e.g. loaded from
-        ``capture-run``-produced manifest JSON files for the mesher/
+        ``capture-run``-produced runtime metadata JSON files for the mesher/
         decompose/solver executables). The exporter's own identity entry is
         always appended automatically.
     mesh_input_files : tuple[str, ...]
         External mesh input files (relative to ``specfem_dir``, e.g. under
         ``MESH-default/``) folded into ``mesh_input_hash`` alongside
-        ``Par_file``. Empty means "hash ``Par_file`` alone" -- a degraded,
-        non-certified-profile fallback documented here rather than silently
-        assumed equivalent to the real external-mesh-route hash.
+        ``Par_file``. Empty means "hash ``Par_file`` alone". This is a reduced input
+        description and must not be confused with a full external-mesh hash.
+
     t0, t0_source, t0_crosscheck, t0_crosscheck_max_deviation, cadence,
     cadence_provenance
         ``time_sampled``-only. ``t0``/``t0_source`` auto-parsed from
@@ -212,21 +209,21 @@ class ExportConfig:
 
 
 # ===========================================================================
-# Profile gate
+# Profile input check
 # ===========================================================================
 
 
 def _require_par_value(values: dict[str, str], key: str) -> str:
     if key not in values:
         raise ValueError(
-            f"Par_file is missing required key {key!r} for the certified "
-            f"profile gate ({_PROFILE_DOC_REF})"
+            f"Par_file is missing required key {key!r} for the documented "
+            f"profile check ({_PROFILE_DOC_REF})"
         )
     return values[key]
 
 
-def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> None:
-    """Reject a SPECFEM3D configuration outside the certified profile.
+def _check_profile_inputs(values: dict[str, str], output_sampling_kind: str) -> None:
+    """Reject a SPECFEM3D configuration outside the documented profile.
 
     This is the exporter's only defence against several structural blind
     spots the rest of the pipeline cannot detect on its own -- most notably
@@ -239,13 +236,13 @@ def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> No
     )
     if ngnod != 8:
         raise ValueError(
-            "certified profile requires NGNOD=8 (8-node trilinear hexahedra "
+            "documented profile requires NGNOD=8 (8-node trilinear hexahedra "
             "-- the A2 volume oracle's structural blind spot for other node "
             f"counts), got NGNOD={ngnod} ({_PROFILE_DOC_REF})"
         )
     if provenance.par_file_value_as_bool(_require_par_value(values, "ATTENUATION")):
         raise ValueError(
-            "certified profile requires ATTENUATION=.false. (attenuation "
+            "documented profile requires ATTENUATION=.false. (attenuation "
             "introduces a systematic difference from the elastic analytic "
             f"solutions Tier B validates against), got .true. ({_PROFILE_DOC_REF})"
         )
@@ -253,7 +250,7 @@ def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> No
         _require_par_value(values, "PML_INSTEAD_OF_FREE_SURFACE")
     ):
         raise ValueError(
-            "certified profile requires PML_INSTEAD_OF_FREE_SURFACE=.false. "
+            "documented profile requires PML_INSTEAD_OF_FREE_SURFACE=.false. "
             "(a free surface must exist for the surface mass-sheet term the "
             f"profile validates), got .true. ({_PROFILE_DOC_REF})"
         )
@@ -261,7 +258,7 @@ def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> No
         _require_par_value(values, "SUPPRESS_UTM_PROJECTION")
     ):
         raise ValueError(
-            "certified profile requires SUPPRESS_UTM_PROJECTION=.true. (the "
+            "documented profile requires SUPPRESS_UTM_PROJECTION=.true. (the "
             "displ_{X,Y,Z} component-letter -> axis mapping is only a "
             f"direct X/Y/Z write under this setting), got .false. ({_PROFILE_DOC_REF})"
         )
@@ -269,7 +266,7 @@ def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> No
         _require_par_value(values, "SAVE_MESH_FILES")
     ):
         raise ValueError(
-            "certified profile requires SAVE_MESH_FILES=.true. (the static "
+            "documented profile requires SAVE_MESH_FILES=.true. (the static "
             "mesh output the mass-weight reconstruction reads from), got "
             f".false. ({_PROFILE_DOC_REF})"
         )
@@ -280,7 +277,7 @@ def _check_profile_gate(values: dict[str, str], output_sampling_kind: str) -> No
     )
     if sim_type != 1:
         raise ValueError(
-            "certified profile requires SIMULATION_TYPE=1 (an adjoint run, "
+            "documented profile requires SIMULATION_TYPE=1 (an adjoint run, "
             "SIMULATION_TYPE=3, relabels time as (NSTEP-it)*DT-t0, breaking "
             f"the t0_source/t0_crosscheck contract), got {sim_type} "
             f"({_PROFILE_DOC_REF})"
@@ -548,10 +545,10 @@ def _read_displacement_time_sampled(
     with ``displacement`` shape ``(ntime, n_elements_total, ngll, 3)`` in
     element_id-ascending canonical order (matching ``/mesh/*``'s order).
 
-    Real pilot data (2026-08-03, S1 Step 8) confirmed the **per-rank**
+    Real pilot data (2026-08-03) confirmed the **per-rank**
     layout (``proc{rank:06d}_displ_{X,Y,Z}_it######.bin``) is what the
     pilot's SPECFEM3D CPU build actually writes; the **whole-mesh** layout
-    (``displ_{X,Y,Z}_it######.bin``) remains a real, audit-recorded
+    (``displ_{X,Y,Z}_it######.bin``) remains a real, documented
     fallback for solver builds/configurations that write that way
     instead. ``displacement_layout`` (the auto-detection result) is
     recorded into provenance as a supplementary key (not schema-required)
@@ -675,7 +672,7 @@ def export_specfem_gll_hdf5(config: ExportConfig) -> Path:
     Cartesian decompose_mesh output tree, per ``config``.
 
     See the module docstring for the 6-step pipeline. Raises ``ValueError``
-    for any certified-profile violation, any structural inconsistency
+    for any profile-input violation or structural inconsistency
     between the mesh/binary files (mismatched element counts, disagreeing
     record layouts across ranks, non-contiguous recovered ``element_id``
     values, ...), or a missing required provenance input the config could
@@ -688,7 +685,7 @@ def export_specfem_gll_hdf5(config: ExportConfig) -> Path:
     par_file = provenance.parse_par_file(par_file_path)
     values = par_file["values"]
 
-    _check_profile_gate(values, config.output_sampling_kind)
+    _check_profile_inputs(values, config.output_sampling_kind)
 
     local_path = _resolve_local_path(specfem_dir, values, config.local_path)
     nproc = _detect_nproc(local_path)
@@ -709,7 +706,7 @@ def export_specfem_gll_hdf5(config: ExportConfig) -> Path:
     # quadrature_volume (below) is computed from the float64 anchors --  a
     # genuine solver-side precision asymmetry (Database node coordinates are
     # double precision; the GLL DOF arrays are float32) that would otherwise
-    # make Tier A2's rtol<1e-12 self-consistency gate structurally
+    # make the A2 rtol<1e-12 self-consistency check structurally
     # unsatisfiable (the residual would be a float32 storage artifact, not
     # a computation error). Only the 8 corners are replaced; the interior
     # GLL points have no higher-precision source and keep their
@@ -791,9 +788,9 @@ def export_specfem_gll_hdf5(config: ExportConfig) -> Path:
         t0, t0_source = _resolve_t0(config)
         cadence = _resolve_cadence(config, values)
 
-        # Real-pilot-verified layout handling (2026-08-03, S1 Step 8): the
+        # Real-pilot-verified layout handling (2026-08-03): the
         # movie volume snapshot file set is per-rank by default (real pilot
-        # data), with the whole-mesh layout audit-recorded as a fallback --
+        # data), with the whole-mesh layout documented as a fallback --
         # see _read_displacement_time_sampled's docstring and
         # specfem_bin.py's section-3 module comment for the two layouts.
         displacement, its, displacement_layout = _read_displacement_time_sampled(
