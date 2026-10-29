@@ -1,13 +1,211 @@
+# MkDocs configuration for the local gragra research documentation site.
+#
+# The local build is deliberately scoped to the research documentation tree.
+# Two settings make that scope explicit:
+#
+#   docs_dir: docs_site/docs
+#       Only what is placed under docs_site/docs/ is included in the local
+#       build. The repository's research notes under docs/ remain separate.
+#
+#   markdown_extensions.pymdownx.snippets.base_path: [docs_site, examples]
+#       `--8<--` includes resolve only under those two roots. Adding "." here
+#       would let `--8<-- "docs/plans/<anything>.md"` embed an internal
+#       planning document into a page with no error at all --
+#       check_paths: true would even confirm the path exists.
+#
+# `check_paths: true` turns a bad include into a build error.
+
 site_name: gragra
-site_description: Gravitational perturbation calculations
+site_description: >-
+  Forward calculation of Newtonian gravity perturbations from mass
+  distributions, density perturbations and displacement fields.
+site_author: Tatsuki Washimi
+
+# Same URL as [project.urls].Repository in pyproject.toml. There is
+# deliberately no `site_url`: the site is not deployed in this phase, and
+# asserting a canonical URL for a site that does not exist yet would be a
+# claim, not a configuration.
 repo_url: https://github.com/tatsuki-washimi/gragra
+repo_name: tatsuki-washimi/gragra
+edit_uri: ""
+
 docs_dir: docs_site/docs
+
+# Every warning is an error. Combined with the `validation` block below this
+# catches broken cross-references, dangling anchors and orphaned pages.
 strict: true
+#
+# `warn` is the strictest level MkDocs 1.6 accepts here: the validation levels
+# are 'warn' / 'info' / 'ignore' (mkdocs/config/defaults.py, `_LogLevel`), and
+# an `error` value is rejected outright as a configuration error. `warn` plus
+# `strict: true` above is what actually produces a failing build -- the two
+# settings work together, so neither should be relaxed on its own.
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Backstop only -- docs_dir scoping above is the primary boundary. These
+# patterns catch things that would otherwise be copied verbatim into the built
+# site if they were ever placed inside docs_dir by mistake: an executable
+# snippet (.py) belongs in docs_site/snippets/, and a leading-underscore or
+# dotfile name is the convention used for internal ledgers and scratch files.
+exclude_docs: |
+  *.py
+  _*
+  .*
+
+theme:
+  name: material
+  language: en
+  # GDPR: Material's default font configuration fetches Roboto from Google
+  # Fonts at page load, sending every visitor's IP address to a third party.
+  # `false` keeps typography on system fonts and makes the built site
+  # self-contained (see also extra_javascript: MathJax is vendored, not CDN).
+  font: false
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          # src/ layout: resolve `gragra.*` from the working tree rather than
+          # from whatever happens to be installed in the build environment.
+          paths: [src]
+          options:
+            # The site documents the public contract, not the implementation.
+            # Rendering source would also republish comments that were never
+            # written for an external audience.
+            show_source: false
+            # Private names never appear in the API reference.
+            filters: ["!^_"]
+            docstring_style: numpy
+            heading_level: 3
+            members_order: source
+            separate_signature: true
+            show_root_heading: true
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+
+markdown_extensions:
+# `attr_list` is required by the verification-block convention: a Material
+  # admonition carries no id attribute, so each block is preceded by an
+  # anchored heading written as `### `symbol` { #status-symbol }`. Without
+  # attr_list that anchor is not generated and every link to it fails under
+# validation.links.anchors.
+  - attr_list
+  - admonition
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      # Restricted on purpose -- see the header comment. `.` must never be
+      # added here.
+      base_path:
+        - docs_site
+        - examples
+      # A typo in an include path is a build error rather than a silently
+      # empty code block.
+      check_paths: true
+
+# Local, relative paths only. MathJax 3.2.2 (Apache-2.0) is vendored under
+# docs_site/docs/javascripts/mathjax/ together with its CHTML web fonts;
+# its license text is kept beside the component. No CDN is needed at page load.
+extra_javascript:
+  - javascripts/mathjax-config.js
+  - javascripts/mathjax/tex-mml-chtml.js
+
 nav:
   - Home: index.md
-  - Getting started: getting-started.md
-  - Numerical contract: contracts.md
-  - SPECFEM3D Cartesian: specfem3d-cartesian.md
-  - Backends: backends.md
-  - rc2 scope: rc2-scope.md
-  - Verification: verification.md
+  - Getting started:
+      - Installation: getting-started/installation.md
+      - Minimal example: getting-started/minimal-example.md
+      - Choosing extras and backends: getting-started/choosing.md
+  - Concepts:
+      - What gragra computes: concepts/model-and-scope.md
+      - Coordinates, signs and units: concepts/conventions.md
+      - Arrays, dtypes and axes: concepts/arrays.md
+      - Chunking, softening and tolerances: concepts/numerics.md
+      - Complex outputs: concepts/complex-outputs.md
+  - Guide:
+      - Observables: guide/observables.md
+      - Point sources: guide/point-sources.md
+      - Static point, grid and mesh sources: guide/static-sources.md
+      - Geometry and discretization: guide/geometry.md
+      - Volume and surface sources: guide/continuous-sources.md
+      - Rigid motion Fourier analysis: guide/rigid-motion-fourier.md
+      - Displacement and density-perturbation fields: guide/fields.md
+      - Source diagnostics: guide/source-diagnostics.md
+      - Formula LaTeX conversion: guide/formulas.md
+      - Using external meshes: guide/meshes.md
+      - Analytic benchmarks: guide/analytic-benchmarks.md
+      - Gen1 analytic models: guide/gen1-analytic-models.md
+      - Waves: guide/waves.md
+      - Coherent responses and cross statistics: guide/coherent.md
+      - Water Newtonian noise: guide/water-newtonian-noise.md
+      - Stochastic Newtonian noise: guide/stochastic-nn.md
+      - Compute backends: guide/backends.md
+  - Examples:
+      - Uniform sphere workflow: examples/uniform_sphere_workflow.md
+      - Rayleigh phasor workflow: examples/rayleigh_phasor_workflow.md
+      - Reusable Rayleigh response workflow: examples/rayleigh_response_workflow.md
+  - Numerical reference:
+      - Overview and tutorial: tutorials/numerical-reference.md
+  - External data:
+      - External field data and HDF5: external/hdf5-fields.md
+      - SPECFEM3D Cartesian: external/specfem3d.md
+  - Verification:
+      - How gragra is verified: verification/index.md
+      - Verification matrix: verification/matrix.md
+      - Literature coverage: verification/coverage.md
+      - Limitations and non-guarantees: verification/limitations.md
+  - API reference:
+      - Stability and how to read this: api/index.md
+      - Top-level API: api/top-level.md
+      - Results and spectral representations: api/results.md
+      - Interactions: api/interactions.md
+      - Sources, targets and geometry: api/core.md
+      - Fields, waves and coherent: api/physics.md
+      - Water models: api/water.md
+      - Additional APIs and internal modules: api/experimental.md
+      - Wave 4--6 independent references: api/wave456.md
+      - Numerical reference API: api/reference.md
+  - Help:
+      - Troubleshooting: help/troubleshooting.md
+      - Reproducibility and citation: help/citation.md
+      - Contributing and security: help/contributing.md

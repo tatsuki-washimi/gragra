@@ -1,0 +1,10 @@
+Figures and reference data for the documentation site live in this directory.
+
+It is kept in version control even while empty because .gitignore's blanket
+*.csv / *.png excludes required an explicit re-inclusion for this path
+(!docs_site/docs/assets/**); tests/test_docs_publication_scope.py asserts that
+re-inclusion still holds, and that assertion is clearer when the directory it
+protects actually exists.
+
+MkDocs does not copy this file into the built site: mkdocs.yml's exclude_docs
+drops dotfiles.
