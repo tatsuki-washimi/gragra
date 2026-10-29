@@ -1,0 +1,223 @@
+{
+  "authorization_pin_contract": {
+    "comparator_file_sha256": {
+      "tests/oracles/gen1/b1_exact_record_adapter.py": "3d13f6e509f3727cd0d2045a6e8eeab5f609987425ec5156386efd39f5006aea",
+      "tests/oracles/gen1/compare_stochastic_production.py": "f28cc2e6f072d47a27c1a7d188465c4c927bcb542bb4699d4f2233bcb3b4f0e4"
+    },
+    "comparator_source_blobs": {
+      "tests/oracles/gen1/b1_exact_record_adapter.py": {
+        "git_blob": "fdba6f3cd1f00c57e800940c8a967063d6b0a680",
+        "sha256": "3d13f6e509f3727cd0d2045a6e8eeab5f609987425ec5156386efd39f5006aea"
+      },
+      "tests/oracles/gen1/compare_stochastic_production.py": {
+        "git_blob": "d3c423256651db54e5bd04a54c0c86f69ecc23bb",
+        "sha256": "f28cc2e6f072d47a27c1a7d188465c4c927bcb542bb4699d4f2233bcb3b4f0e4"
+      }
+    },
+    "environment_inventory_sha256": "3d695268313426521c965b98a88746bb55a1440dd80376b098ac5d635eacc360",
+    "environment_runtime_sha256": "c5167f9017b0677bfc8139c6db7bd7adfb3f989194343d523bdb1b94c7b9542a",
+    "frozen_source_sha256": {
+      "docs/design/gen1/stochastic/B1-budget.json": "a3e321dcfd6c9825c2f7c330dbeb04c7dac0f970ff06464eb67d8cd53b79089c",
+      "docs/design/gen1/stochastic/B1-fixtures.json": "829e0e2cfd7aa915e19ad32f31abb0cdb57b0300d4854e5491f5358f0c197c05",
+      "docs/design/gen1/stochastic/B1-freeze-v2.json": "b626d3afefd41a318468624664f9d78ddf825e56a5ecaffeb83d78f7d5b2299d",
+      "docs/design/gen1/stochastic/B1-procedure-v2.json": "6e4aa87ff5d50cfdf1856e320aecfb847d283d9dd4307abaa2e247f73a340cd5",
+      "docs/design/gen1/stochastic/B1-procedure.json": "8dc1877db29da7d56a73d90c6f2d3e743fe8f3d61c9845e6d46d4a8982755f18",
+      "docs/design/gen1/stochastic/common-freeze-v2.json": "2fb87ea29c65c0f6e6aae1c3ce083f6a544e14e8e90d720a35c0d4184c0a963d",
+      "docs/design/gen1/stochastic/common-policy.json": "0b2526d5c74cc3c791986935a710119e1efae1602f487417e553e3beb3911b66",
+      "tests/oracles/gen1/TRACE-F_B1_v2-obligations.md": "82c9030da2f9aa0d8cafda6e450e29f9eeaa959657e773e3f62094439570f190",
+      "tests/oracles/gen1/b1_analytic_enclosure.py": "add7a7453157f8e54b3c298ec05a56be05ca7d0d4fd9bb04aa65e2b379149ddf",
+      "tests/oracles/gen1/b1_formal_generator.py": "5fcbcf2bd112268d6eddcdff8c0c8191281cadd3f445bf06527b769f37277ebf",
+      "tests/oracles/gen1/run_stochastic_local.py": "6dbea5099b73d8c5399ceaad2090f68a2b03f3367bd13309f5e021a81a9ddf13",
+      "tests/oracles/gen1/run_stochastic_seismic_reference.py": "88fecc0c985895588281d59891ca238f1be476e9cabd7663b92a49183b207ab7",
+      "tests/oracles/gen1/stochastic_attempt.py": "23cf6ca5b5f3f3d944ad9f71db083c0f28c4853a15e39144029ec9f8163a9201",
+      "tests/test_gen1_stochastic_pipeline.py": "550a9e373b6b4f3b3dfca498a554c1f6ca680e27dd5cf83996109ea37537a969"
+    },
+    "kernel_git_blob": "7be0818890d55350ed5bf538f676f903c3709a5e",
+    "kernel_sha256": "09dbe97ceaf635b0fd0eafdf2cb3f11ac994af276e318a684c45c00a5548be68",
+    "production_commit": "31e1a0e3cb9bca32cc7e00722580d73fcd2241d0",
+    "production_git_blobs": {
+      "src/gragra/_arrays.py": {
+        "git_blob": "94038cd3a15177e2e44deac1a6e37e525365bb7e",
+        "sha256": "b34282cc1bd12fb46bd1ab88c1fd100d74e92aa56d29a1d6b417d01736473d30"
+      },
+      "src/gragra/analytic/stochastic_bodywave.py": {
+        "git_blob": "08718162a60f484d9bc6bbbdce684492107fe829",
+        "sha256": "c622e033ac3780c3f828f1e7160f158c3a9c531dd0d64d54e7b0920f631dd429"
+      },
+      "src/gragra/constants.py": {
+        "git_blob": "5141cd989012d1320b9e0c101b00e0d0e72577c7",
+        "sha256": "9a4d109719c2b35d84d393175f83e8c59db670ba2e35cb5bac7cd270a00bdbfd"
+      },
+      "src/gragra/observables/stochastic_bodywave.py": {
+        "git_blob": "853e6a2b35bf1b31ec34e21cf88a948dfe7fa4ef",
+        "sha256": "97d85073a459b893b6f7850b2c134c50fe5793da323813f44d34ffd4aa43f8a7"
+      },
+      "src/gragra/waves/stochastic.py": {
+        "git_blob": "ac9836d790eeb78b11b2cfa769603117b4ed6b6e",
+        "sha256": "fbc92f5277468a54f33bfe3aa361754b00238934c2d1f15dca9000e0f4a8551c"
+      }
+    },
+    "production_tree": "e47d7b6a4bbb110b755138234f656b4bad248bbb",
+    "reference_sha256": {
+      "records": "0938f679cc68e6a39cfd5e3f140c5fbc82b06969a4cae275367a0bc588064bb0",
+      "review": "c8dc5adf0aaf04d20598eb1f8a11b038990f16f28a1c75f6b82d331a77398c08",
+      "seal": "44fbb36c9eb3a5c8d9f1a1a1bd12966a6a3487fee547c2371a3b70e37bec901e"
+    },
+    "source_connection_receipt_sha256": null
+  },
+  "budget_path": "docs/design/gen1/stochastic/B1-budget.json",
+  "environment": {
+    "binary_files": {
+      "numpy_core_multiarray_binary": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages/numpy/_core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+      "scipy_special_ufuncs_binary": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages/scipy/special/_ufuncs.cpython-311-x86_64-linux-gnu.so"
+    },
+    "binary_module_origins": {
+      "numpy_core_multiarray_binary": {
+        "path": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages/numpy/_core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "1535fbed1e9ac6b717e72ad9bd5c20b9f0536a21084fcadc40c00255a8f35d1d"
+      },
+      "scipy_special_ufuncs_binary": {
+        "path": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages/scipy/special/_ufuncs.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "d52a02c24e621a04f707ca6020c6f9c6f571d2255188514d80debd265dc59939"
+      }
+    },
+    "distributions": [
+      "gragra",
+      "mpmath",
+      "nnsus",
+      "numpy",
+      "scipy",
+      "sympy"
+    ],
+    "inventory_path": "/home/washimi/.local/state/gragra/gen1-production/20261002T125830Z-stochastic/reviews/p-science-b1-authorization/environment/environment-index.json",
+    "inventory_sha256": "3d695268313426521c965b98a88746bb55a1440dd80376b098ac5d635eacc360",
+    "runtime": {
+      "binary_sha256": {
+        "numpy_core_multiarray_binary": "1535fbed1e9ac6b717e72ad9bd5c20b9f0536a21084fcadc40c00255a8f35d1d",
+        "scipy_special_ufuncs_binary": "d52a02c24e621a04f707ca6020c6f9c6f571d2255188514d80debd265dc59939"
+      },
+      "distributions": {
+        "gragra": "0.2.0",
+        "mpmath": "1.3.0",
+        "nnsus": "0.1.0",
+        "numpy": "2.4.6",
+        "scipy": "1.17.1",
+        "sympy": "1.14.0"
+      },
+      "gragra_imported_before_evaluator": false,
+      "nnsus_imported": false,
+      "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+      "pth_sha256": {
+        "__editable__.nnsus-0.1.0.pth": "8cb25ec6be4ce2801eb5ad39a773ea63eab3b358f79557cddf592df82aba9342",
+        "_editable_skbc_gragra.pth": "d21f24a368a85ea656c2ef4dc86803af2ed46de54902e5631058178c702f1a03",
+        "a1_coverage.pth": "ef2ed06d19867ec669c09a804060666a9cd5e383af0a9d11aa2de79b77d448e8",
+        "distutils-precedence.pth": "2638ce9e2500e572a5e0de7faed6661eb569d1b696fcba07b0dd223da5f5d224"
+      },
+      "python_executable": "/data/conda/envs/gragra-stoch-integration-20261002/bin/python",
+      "python_realpath": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/bin/python3.11",
+      "python_version": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+      "sys_path_tail": [
+        "/data/conda/envs/gragra-stoch-integration-20261002/lib/python311.zip",
+        "/data/conda/envs/gragra-stoch-integration-20261002/lib/python3.11",
+        "/data/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/lib-dynload",
+        "/data/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages",
+        "/home/washimi/work/nn-sus/src",
+        "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002/src"
+      ]
+    },
+    "runtime_record_path": "/home/washimi/.local/state/gragra/gen1-production/20261002T125830Z-stochastic/reviews/p-science-b1-authorization/environment/runtime.json",
+    "runtime_record_sha256": "c5167f9017b0677bfc8139c6db7bd7adfb3f989194343d523bdb1b94c7b9542a",
+    "site_packages_directory": "/home/washimi/HDD8TB/conda/envs/gragra-stoch-integration-20261002/lib/python3.11/site-packages"
+  },
+  "exact_zero_fixture_ids": [
+    "zero_density",
+    "zero_psd"
+  ],
+  "fixture_path": "docs/design/gen1/stochastic/B1-fixtures.json",
+  "frozen_source_sha256": {
+    "docs/design/gen1/stochastic/B1-budget.json": "a3e321dcfd6c9825c2f7c330dbeb04c7dac0f970ff06464eb67d8cd53b79089c",
+    "docs/design/gen1/stochastic/B1-fixtures.json": "829e0e2cfd7aa915e19ad32f31abb0cdb57b0300d4854e5491f5358f0c197c05",
+    "docs/design/gen1/stochastic/B1-freeze-v2.json": "b626d3afefd41a318468624664f9d78ddf825e56a5ecaffeb83d78f7d5b2299d",
+    "docs/design/gen1/stochastic/B1-procedure-v2.json": "6e4aa87ff5d50cfdf1856e320aecfb847d283d9dd4307abaa2e247f73a340cd5",
+    "docs/design/gen1/stochastic/B1-procedure.json": "8dc1877db29da7d56a73d90c6f2d3e743fe8f3d61c9845e6d46d4a8982755f18",
+    "docs/design/gen1/stochastic/common-freeze-v2.json": "2fb87ea29c65c0f6e6aae1c3ce083f6a544e14e8e90d720a35c0d4184c0a963d",
+    "docs/design/gen1/stochastic/common-policy.json": "0b2526d5c74cc3c791986935a710119e1efae1602f487417e553e3beb3911b66",
+    "tests/oracles/gen1/TRACE-F_B1_v2-obligations.md": "82c9030da2f9aa0d8cafda6e450e29f9eeaa959657e773e3f62094439570f190",
+    "tests/oracles/gen1/b1_analytic_enclosure.py": "add7a7453157f8e54b3c298ec05a56be05ca7d0d4fd9bb04aa65e2b379149ddf",
+    "tests/oracles/gen1/b1_formal_generator.py": "5fcbcf2bd112268d6eddcdff8c0c8191281cadd3f445bf06527b769f37277ebf",
+    "tests/oracles/gen1/run_stochastic_local.py": "6dbea5099b73d8c5399ceaad2090f68a2b03f3367bd13309f5e021a81a9ddf13",
+    "tests/oracles/gen1/run_stochastic_seismic_reference.py": "88fecc0c985895588281d59891ca238f1be476e9cabd7663b92a49183b207ab7",
+    "tests/oracles/gen1/stochastic_attempt.py": "23cf6ca5b5f3f3d944ad9f71db083c0f28c4853a15e39144029ec9f8163a9201",
+    "tests/test_gen1_stochastic_pipeline.py": "550a9e373b6b4f3b3dfca498a554c1f6ca680e27dd5cf83996109ea37537a969"
+  },
+  "g_si": "6.6743e-11",
+  "procedure_path": "docs/design/gen1/stochastic/B1-procedure-v2.json",
+  "production_api_parameters": {
+    "gfree": {
+      "density_kg_m3": "KEYWORD_ONLY",
+      "frequency_hz": "KEYWORD_ONLY",
+      "p_displacement_psd_m2_hz": "KEYWORD_ONLY"
+    },
+    "si": {
+      "density_kg_m3": "KEYWORD_ONLY",
+      "frequency_hz": "KEYWORD_ONLY",
+      "p_displacement_psd_m2_hz": "KEYWORD_ONLY"
+    }
+  },
+  "production_commit": "31e1a0e3cb9bca32cc7e00722580d73fcd2241d0",
+  "production_git_blobs": {
+    "src/gragra/_arrays.py": {
+      "git_blob": "94038cd3a15177e2e44deac1a6e37e525365bb7e",
+      "sha256": "b34282cc1bd12fb46bd1ab88c1fd100d74e92aa56d29a1d6b417d01736473d30"
+    },
+    "src/gragra/analytic/stochastic_bodywave.py": {
+      "git_blob": "08718162a60f484d9bc6bbbdce684492107fe829",
+      "sha256": "c622e033ac3780c3f828f1e7160f158c3a9c531dd0d64d54e7b0920f631dd429"
+    },
+    "src/gragra/constants.py": {
+      "git_blob": "5141cd989012d1320b9e0c101b00e0d0e72577c7",
+      "sha256": "9a4d109719c2b35d84d393175f83e8c59db670ba2e35cb5bac7cd270a00bdbfd"
+    },
+    "src/gragra/observables/stochastic_bodywave.py": {
+      "git_blob": "853e6a2b35bf1b31ec34e21cf88a948dfe7fa4ef",
+      "sha256": "97d85073a459b893b6f7850b2c134c50fe5793da323813f44d34ffd4aa43f8a7"
+    },
+    "src/gragra/waves/stochastic.py": {
+      "git_blob": "ac9836d790eeb78b11b2cfa769603117b4ed6b6e",
+      "sha256": "fbc92f5277468a54f33bfe3aa361754b00238934c2d1f15dca9000e0f4a8551c"
+    }
+  },
+  "production_modules": {
+    "analytic": {
+      "path": "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002/src/gragra/analytic/stochastic_bodywave.py",
+      "sha256": "c622e033ac3780c3f828f1e7160f158c3a9c531dd0d64d54e7b0920f631dd429"
+    },
+    "constants": {
+      "path": "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002/src/gragra/constants.py",
+      "sha256": "9a4d109719c2b35d84d393175f83e8c59db670ba2e35cb5bac7cd270a00bdbfd"
+    },
+    "gragra": {
+      "path": "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002/src/gragra/__init__.py",
+      "sha256": "273487f8e001e1f98fe0e8859790552c570c08963e5204168c7968421737c8f1"
+    },
+    "observable": {
+      "path": "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002/src/gragra/observables/stochastic_bodywave.py",
+      "sha256": "97d85073a459b893b6f7850b2c134c50fe5793da323813f44d34ffd4aa43f8a7"
+    }
+  },
+  "production_repo": "/home/washimi/.config/superpowers/worktrees/gragra/stoch-integration-20261002",
+  "production_tree": "e47d7b6a4bbb110b755138234f656b4bad248bbb",
+  "reference_paths": {
+    "records": "/home/washimi/.local/state/gragra/gen1-production/20261002T125830Z-stochastic/attempts/b1-002/records.raw.jsonl",
+    "review": "/home/washimi/.local/state/gragra/gen1-production/20261002T125830Z-stochastic/reviews/r-b1-b1-002/reference-review.json",
+    "seal": "/home/washimi/.local/state/gragra/gen1-production/20261002T125830Z-stochastic/attempts/b1-002/seal.json"
+  },
+  "reference_sha256": {
+    "records": "0938f679cc68e6a39cfd5e3f140c5fbc82b06969a4cae275367a0bc588064bb0",
+    "review": "c8dc5adf0aaf04d20598eb1f8a11b038990f16f28a1c75f6b82d331a77398c08",
+    "seal": "44fbb36c9eb3a5c8d9f1a1a1bd12966a6a3487fee547c2371a3b70e37bec901e"
+  },
+  "schema_version": 1,
+  "source_connection_receipt_path": null,
+  "source_connection_receipt_sha256": null
+}

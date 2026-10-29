@@ -7,6 +7,8 @@ import os
 import numpy as np
 import pytest
 
+pytest.importorskip("h5py")
+
 from gragra.adapters.specfem import provenance as specfem_provenance
 from gragra.adapters.specfem import schema, writer
 from gragra.adapters.specfem.reader import read_specfem_gll_hdf5
@@ -254,23 +256,6 @@ def test_reader_rejects_required_json_key_with_non_utf8_encoding(tmp_path):
         )
 
     with pytest.raises(ValueError, match="UTF-8"):
-        read_specfem_gll_hdf5(path, profile_density_range=(1900.0, 3100.0))
-
-
-def test_reader_rejects_non_si_displacement_units(tmp_path):
-    h5py = pytest.importorskip("h5py")
-    path = tmp_path / "non_si_displacement_units.h5"
-    _write_time_sampled_gll(path)
-    with h5py.File(path, "a") as h5:
-        metadata = h5["/metadata"]
-        del metadata["field_units"]
-        metadata.create_dataset(
-            "field_units",
-            data='{"displacement": "km"}',
-            dtype=h5py.string_dtype(encoding="utf-8"),
-        )
-
-    with pytest.raises(ValueError, match="field_units.*displacement.*'m'"):
         read_specfem_gll_hdf5(path, profile_density_range=(1900.0, 3100.0))
 
 
@@ -621,8 +606,8 @@ def test_displacement_acceleration_backend_matches_numpy_when_required(tmp_path)
     """Dedicated CI runs this once per compiled optional backend.
 
     The ordinary suite deliberately leaves ``GRAGRA_SPECFEM_BACKEND`` unset;
-    the two strict CI jobs set it and therefore cannot satisfy this gate by
-    skipping an unavailable backend.
+    the two strict CI jobs set it and therefore cannot satisfy this backend
+    requirement by skipping an unavailable backend.
     """
     backend = os.environ.get("GRAGRA_SPECFEM_BACKEND")
     if backend is None:

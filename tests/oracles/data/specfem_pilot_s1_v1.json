@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-03T13:41:30+00:00",
+  "generator": "tests/oracles/generate_specfem_pilot_invariants.py",
+  "gragra_commit": "50b227ac9436250cbf664e335da77d2a99bd3efc",
+  "invariants": {
+    "coordinates_sha256": "sha256:1af4792a8df4ac6faf8c56298f48561f6b2a89afc10e0c921054c488f4bd0cb0",
+    "mass_by_material_kg": {
+      "1": 2.477927999999999e+18
+    },
+    "mass_by_material_kg_hex": {
+      "1": "3e7f9531af31c143"
+    },
+    "material_ids": [
+      1
+    ],
+    "mesh_input_hash": "sha256:23ec53710b19294df6b67909a7e9c3b100a6163b41154d94b53276d17d584a54",
+    "n_elements_total": 20736,
+    "ngll_shape": [
+      5,
+      5,
+      5
+    ],
+    "par_file_hash": "sha256:ba56412511018ade88ac150ec9164a82d11e036ad64de895f2490cb3e3eea33f",
+    "quadrature_volume_sha256": "sha256:a1dab1dbd585b09b8483f64b7965421c136a834cf81474bd312015a640eb2bde",
+    "schema_version": 1,
+    "total_mass_kg": 2.477927999999999e+18,
+    "total_mass_kg_hex": "3e7f9531af31c143",
+    "total_volume_m3": 1077359999999999.9,
+    "total_volume_m3_hex": "ffffc260d39e0e43"
+  },
+  "pilot": "specfem3d-cpu cc2e9ffa, MESH-s1-aniso (y*1.25, z*0.8), NPROC=4",
+  "source_h5": "/tmp/s1_artifacts/pilot_static.h5"
+}

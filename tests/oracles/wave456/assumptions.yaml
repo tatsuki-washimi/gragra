@@ -1,0 +1,11 @@
+coordinates: real
+mass: real_nonnegative
+density: real_or_complex_amplitude
+distance: positive_nonzero
+wavenumber: real_positive
+rayleigh_q_s: real_in_open_interval_0_1
+fourier_convention: exp(i_k_dot_x_minus_i_omega_t)
+surface: z_up_at_zero
+elastic_halfspace: z_less_equal_zero
+air_halfspace: z_greater_equal_zero
+targets: vacuum_side_only
