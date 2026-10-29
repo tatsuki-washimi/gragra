@@ -217,6 +217,17 @@ def pytest_collection_modifyitems(config, items):  # noqa: ARG001
         if name.startswith("test_research_"):
             item.add_marker(pytest.mark.research)
             continue
+        if name.startswith("test_stochastic_delivery_") or name.startswith(
+            "test_stochastic_family_"
+        ):
+            item.add_marker(pytest.mark.research)
+            continue
+        if name in {
+            "test_stochastic_reference_test_isolation.py",
+            "test_ruff_exclusion_identity_v1.py",
+        }:
+            item.add_marker(pytest.mark.research)
+            continue
         if name in _RESEARCH_TEST_BASENAMES:
             item.add_marker(pytest.mark.research)
             continue

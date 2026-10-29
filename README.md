@@ -1,8 +1,9 @@
 # gragra
 
 `gragra` calculates Newtonian gravitational perturbations from discretised mass
-distributions. This `v0.1.0rc2` documentation covers only a point-source smoke
-path and a SPECFEM3D Cartesian GLL input path. Python 3.11 or later is required.
+distributions, analytic models, trajectory sources, wave-driven fields, and
+finite-body material regions. Release `v0.2.0rc1` pre-release. Python 3.11 or
+3.12 is required for public CI; see `pyproject.toml` for declared support.
 
 The reader accepts an existing canonical schema-v1 HDF5 file for a single-file,
 time-sampled, ENU, elastic, single-material, non-PML input. It does not create
@@ -37,11 +38,10 @@ tag; see [Getting started](docs_site/docs/getting-started.md). Download
 `SHA256SUMS` with the selected asset and verify that asset in their directory:
 
 ```console
-grep '  gragra-0.1.0rc2-py3-none-any.whl$' SHA256SUMS | sha256sum --check -
+grep '  gragra-0.2.0rc1-' SHA256SUMS | sha256sum --check -
 ```
 
-Use the [GitHub Release](https://github.com/tatsuki-washimi/gragra/releases/tag/v0.1.0rc2)
-or the [v0.1.0rc2 source tag](https://github.com/tatsuki-washimi/gragra/tree/v0.1.0rc2).
+Use the GitHub Release tagged `v0.2.0rc1` when published.
 
 ## Point-source smoke check
 
@@ -69,11 +69,22 @@ dataset = read_specfem_gll_hdf5(
 acceleration = displacement_field_acceleration(dataset, [[100.0, 0.0, 0.0]])
 ```
 
-Read the [numerical contract](docs_site/docs/contracts.md),
-[SPECFEM3D profile](docs_site/docs/specfem3d-cartesian.md),
-[backends](docs_site/docs/backends.md), [rc2 scope](docs_site/docs/rc2-scope.md),
-and [verification limits](docs_site/docs/verification.md). See
+Read the [documentation site](docs_site/docs/index.md) built with MkDocs. See
 [CONTRIBUTING.md](CONTRIBUTING.md) and [CITATION.cff](CITATION.cff).
+
+## Snippet-backed examples
+
+```python
+--8<-- "snippets/readme_point_mass_acceleration.py"
+```
+
+```python
+--8<-- "snippets/readme_coherent_response.py"
+```
+
+```python
+--8<-- "snippets/readme_continuous_sources.py"
+```
 
 ## Reproduction material
 
