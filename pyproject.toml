@@ -4,27 +4,100 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "gragra"
-version = "0.1.0rc2"
+version = "0.2.0rc1"
 description = "Gravitational perturbation calculation package"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["numpy>=1.24.0"]
+authors = [
+    {name = "Tatsuki Washimi"},
+]
+keywords = [
+    "gravity",
+    "gravitational-perturbation",
+    "newtonian-noise",
+    "seismology",
+    "geophysics",
+    "gravitational-wave-detector",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "astropy>=7.2,<9",
+    "pandas>=2.2.3,<4",
+    "gwexpy>=0.2.3,<0.3",
+    "matplotlib>=3.10,<4",
+    "scipy>=1.15,<2",
+]
 
 [project.urls]
 Homepage = "https://github.com/tatsuki-washimi/gragra"
 Repository = "https://github.com/tatsuki-washimi/gragra"
 Issues = "https://github.com/tatsuki-washimi/gragra/issues"
+Changelog = "https://github.com/tatsuki-washimi/gragra/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "ruff>=0.1.0"]
-numba = ["numba>=0.59"]
-field-io = ["h5py>=3.11.0,<3.12.0"]
-docs = ["mkdocs>=1.6.0,<1.7.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "nbformat>=5,<6",
+    "nbclient>=0.10,<1",
+    "ipykernel>=6,<8",
+]
+docs = [
+    # Optional local documentation build dependencies.
+    "mkdocs>=1.6.0,<1.7.0",
+    "mkdocs-material>=9.7.0,<9.8.0",
+    "mkdocstrings-python>=2.0.0,<2.1.0",
+]
+reference = [
+    "mpmath>=1.3,<2",
+]
+mesh = [
+    "meshio>=5.0.0",
+]
+mesh-quality = [
+    # Superset of `mesh` for external-mesh import and quality checks.
+    "meshio>=5.0.0",
+    "trimesh>=4.12.0,<4.13.0",
+]
+numba = [
+    "numba>=0.59",
+]
+lebedev = [
+    "scipy>=1.15,<2",   # lebedev_rule added in 1.15
+]
+field-io = [
+    "h5py>=3.11.0,<3.13.0",
+]
+validation = [
+    # Independent Newton-gravity-integral oracles (PR-8a/b, tests/oracles/).
+    # scipy floor matches `lebedev` so `.[dev,validation]` alone also covers
+    # the existing scipy(=lebedev)-gated slow tests.
+    "scipy>=1.15,<2",
+    "mpmath>=1.3",
+    "sympy>=1.14,<2",
+]
+
+
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+markers = [
+    "slow: convergence/benchmark tests excluded from the default run (Phase 16-a). Run explicitly with `pytest -m slow`.",
+]
+addopts = "-m 'not slow'"
+pythonpath = ["."]
 
 [tool.scikit-build]
 wheel.packages = ["src/gragra"]
@@ -37,6 +110,63 @@ GRAGRA_BUILD_CPP = "OFF"
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+# File-level exemptions only: no directory or glob patterns. Each listed file
+# has bytes pinned by a review record: a closure source catalog or external
+# runtime manifest kept outside this repository, a tracked evidence record, or a
+# git-blob pin in a tracked validation index. Reformatting these bytes would
+# break the pinned review subject. Reasons and evidence:
+# docs/design/gen1/lint-exemptions-v1.json
+extend-exclude = [
+    "src/gragra/analytic/atmospheric/_cavity/_numerics.py",
+    "src/gragra/analytic/stochastic_acoustic.py",
+    "src/gragra/reference/_cavern.py",
+    "src/gragra/reference/_context.py",
+    "tests/oracles/gen1/b1_exact_record_adapter.py",
+    "tests/oracles/gen1/compare_stochastic_production.py",
+    "tests/oracles/gen1/derivations/verify_stochastic_rayleigh.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/bootstrap.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/deadline.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/governor.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/ledger.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/procfs.py",
+    "tests/oracles/gen1/diagnostic_runtime/v1/source_catalog.py",
+    "tests/oracles/gen1/run_stochastic_local.py",
+    "tests/oracles/gen1/stochastic_attempt.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/binding.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/coverage.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/manifest.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/retained_reference.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/runner.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/worker.py",
+    "tests/test_diagnostic_runtime_v1.py",
+    "tests/test_reference_cavern.py",
+    "tests/test_reference_contract.py",
+    "tests/test_reference_import.py",
+    "tests/test_reference_wheel.py",
+    "tests/test_stochastic_a2_v2_diagnostic.py",
+    "tests/test_stochastic_acoustic.py",
+    "tests/test_stochastic_bodywave.py",
+    "tests/test_stochastic_temperature.py",
+]
+
+[tool.ruff.format]
+# Format-only exemptions for pinned bytes whose lint stays enabled (see the record).
+exclude = [
+    "src/gragra/analytic/stochastic_bodywave.py",
+    "src/gragra/analytic/stochastic_rayleigh.py",
+    "src/gragra/observables/stochastic_temperature.py",
+    "tests/_reference_test_isolation.py",
+    "tests/conftest.py",
+    "tests/oracles/gen1/derivations/verify_non_cavity.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v1/inventory.py",
+    "tests/oracles/gen1/stochastic_formal/a2/v2/__init__.py",
+    "tests/test_gen1_b1_nonzero_generator.py",
+    "tests/test_stochastic_a2_resource_adapter.py",
+    "tests/test_stochastic_delivery_b1.py",
+    "tests/test_stochastic_family_connections_a2.py",
+    "tests/test_stochastic_rayleigh.py",
+    "tests/test_stochastic_reference_test_isolation.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "RET"]
