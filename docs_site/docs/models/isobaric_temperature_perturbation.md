@@ -4,7 +4,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric temperature  
-**Geometry:** sphere, cuboid, cylinder, grid
+**Geometry:** sphere, cuboid, cylinder
 
 Fourier, Gaussian and bounded temperature anomalies; density-to-gravity coupling
 

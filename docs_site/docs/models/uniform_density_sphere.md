@@ -119,6 +119,18 @@ test実装、文書上の検証主張、保存済みrun記録が別々に存在�
 
 - (internal evidence record)は球の内外potential/acceleration比較とcomplex densityを実装。(internal evidence record)は外部点でpotential/acceleration/gradientの一部を実装。docsは既存sphere convergenceを一bounded caseとし、最細分割の相対誤差と粗→細potential改善のみを要求、fitted slopeや各段階単調性は主張しない。保存結果はformula-ledgerが記す旧SHA向け検証一般記録で、当該球の個別結果を本revisionで再現した記録として扱わない。catalogue sphere_siは代表output probeである。
 
+### Existing discretization acceptance conditions
+
+The documented sphere refinement case uses R = 1 m, density 1000 kg/m³ and one exterior target. Its finest-spacing relative error must be at most 0.05 for each of Φ, a and Γ, with overall coarsest-to-finest improvement required for potential. These are acceptance criteria for a discretized-source path, not measured errors or a 5% accuracy claim for the analytic formula. This documentation update does not rerun that convergence case. See [documented discretization conditions](../guide/geometry.md#discretization-error).
+
+### Registered representative output probes
+
+| API | Observable | Representation | Probe |
+|---|---|---|---|
+| `gragra.observables.uniform_sphere_observables` | Φ | Static | `sphere_si` |
+| `gragra.observables.uniform_sphere_observables` | a | Static | `sphere_si` |
+| `gragra.observables.uniform_sphere_observables` | Γ | Static | `sphere_si` |
+
 ## Applicability and limitations
 
 - 球の対象領域は内外。discretization convergence evidenceは限定された単一条件。

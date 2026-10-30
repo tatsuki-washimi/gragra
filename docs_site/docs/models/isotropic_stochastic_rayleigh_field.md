@@ -69,6 +69,12 @@ Existing public documentation and original formulation context:
 Tests include Harms Eq.112 and shape/PSD/SI checks; report conditions only as coded. Test code, no rerun. No assigned committed result artifact found.
 
 
+### Registered representative output probes
+
+| API | Observable | Representation | Probe |
+|---|---|---|---|
+| `gragra.observables.stochastic_rayleigh.rayleigh_isotropic_acceleration_csd` | a | Spectral density (CSD) | `rayleigh_csd_si` |
+
 ## Applicability and limitations
 
 

@@ -94,6 +94,14 @@ Test code and stored historical records are distinct; no test or numerical probe
 
 - (internal evidence record) and (internal evidence record) implement independent reference comparisons and boundaries. formula ledger names oracle metadata and acceptance for newer cylinder/SCA lines; do not treat these as current revision reruns. On-axis validation report gives boundary tolerances 1e-12 R and 1e-12 H. catalogue cylinder_axis_si is output contract only.
 
+### Registered representative output probes
+
+| API | Observable | Representation | Probe |
+|---|---|---|---|
+| `gragra.observables.cylinder_axis_observables` | Φ | Static | `cylinder_axis_si` |
+| `gragra.observables.cylinder_axis_observables` | a | Static | `cylinder_axis_si` |
+| `gragra.observables.cylinder_axis_observables` | Γ | Static | `cylinder_axis_si` |
+
 ## Applicability and limitations
 
 - Axis API does not offer general off-axis closed form. Numerical quadrature is exploratory/reference; analytic general-point path is a separate API; not Conway claimed solution.

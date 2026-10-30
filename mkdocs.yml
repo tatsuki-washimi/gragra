@@ -171,30 +171,30 @@ nav:
       - Numerical methods: guide/numerical-methods.md
       - Models and methods catalogue: guide/model-and-method-catalogue.md
       - Model details:
-      - Uniform-density sphere: models/uniform_density_sphere.md
-      - Uniform-density cuboid: models/uniform_density_cuboid.md
-      - Oriented cuboid: models/oriented_cuboid.md
-      - Uniform-density cylinder: models/uniform_density_cylinder.md
-      - Spherical cavity and finite spherical shell: models/spherical_cavity_and_finite_spherical_shell.md
-      - Small-cavity wall approximation: models/small_cavity_wall_approximation.md
-      - Rayleigh wave at an elastic halfspace: models/rayleigh_wave_at_an_elastic_halfspace.md
-      - P/SV waves at a free surface: models/p_sv_waves_at_a_free_surface.md
-      - Individual P/SV and reflected-P benchmarks: models/individual_p_sv_and_reflected_p_benchmarks.md
-      - Causal point force: models/causal_point_force.md
-      - Prescribed point-mass translation: models/prescribed_point_mass_translation.md
-      - Small translational oscillation: models/small_translational_oscillation.md
-      - Fixed-axis rotation: models/fixed_axis_rotation.md
-      - Rigid-body time series and Fourier response: models/rigid_body_time_series_and_fourier_response.md
-      - Atmospheric acoustic halfspace: models/atmospheric_acoustic_halfspace.md
-      - Rigid acoustic cavity modes: models/rigid_acoustic_cavity_modes.md
-      - Isobaric temperature perturbation: models/isobaric_temperature_perturbation.md
-      - Frozen-advection channel water noise: models/frozen_advection_channel_water_noise.md
-      - Waterfall and spatially uncorrelated water surface: models/waterfall_and_spatially_uncorrelated_water_surface.md
-      - Water-channel inflow step: models/water_channel_inflow_step.md
-      - Isotropic stochastic Rayleigh field: models/isotropic_stochastic_rayleigh_field.md
-      - Isotropic stochastic elastic body waves: models/isotropic_stochastic_elastic_body_waves.md
-      - Stochastic atmospheric infrasound: models/stochastic_atmospheric_infrasound.md
-      - Advected atmospheric temperature turbulence: models/advected_atmospheric_temperature_turbulence.md
+          - Uniform-density sphere: models/uniform_density_sphere.md
+          - Uniform-density cuboid: models/uniform_density_cuboid.md
+          - Oriented cuboid: models/oriented_cuboid.md
+          - Uniform-density cylinder: models/uniform_density_cylinder.md
+          - Spherical cavity and finite spherical shell: models/spherical_cavity_and_finite_spherical_shell.md
+          - Small-cavity wall approximation: models/small_cavity_wall_approximation.md
+          - Rayleigh wave at an elastic halfspace: models/rayleigh_wave_at_an_elastic_halfspace.md
+          - P/SV waves at a free surface: models/p_sv_waves_at_a_free_surface.md
+          - Individual P/SV and reflected-P benchmarks: models/individual_p_sv_and_reflected_p_benchmarks.md
+          - Causal point force: models/causal_point_force.md
+          - Prescribed point-mass translation: models/prescribed_point_mass_translation.md
+          - Small translational oscillation: models/small_translational_oscillation.md
+          - Fixed-axis rotation: models/fixed_axis_rotation.md
+          - Rigid-body time series and Fourier response: models/rigid_body_time_series_and_fourier_response.md
+          - Atmospheric acoustic halfspace: models/atmospheric_acoustic_halfspace.md
+          - Rigid acoustic cavity modes: models/rigid_acoustic_cavity_modes.md
+          - Isobaric temperature perturbation: models/isobaric_temperature_perturbation.md
+          - Frozen-advection channel water noise: models/frozen_advection_channel_water_noise.md
+          - Waterfall and spatially uncorrelated water surface: models/waterfall_and_spatially_uncorrelated_water_surface.md
+          - Water-channel inflow step: models/water_channel_inflow_step.md
+          - Isotropic stochastic Rayleigh field: models/isotropic_stochastic_rayleigh_field.md
+          - Isotropic stochastic elastic body waves: models/isotropic_stochastic_elastic_body_waves.md
+          - Stochastic atmospheric infrasound: models/stochastic_atmospheric_infrasound.md
+          - Advected atmospheric temperature turbulence: models/advected_atmospheric_temperature_turbulence.md
       - Observables: guide/observables.md
       - Point sources: guide/point-sources.md
       - Static point, grid and mesh sources: guide/static-sources.md

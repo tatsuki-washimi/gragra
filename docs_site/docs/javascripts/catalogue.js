@@ -6,8 +6,15 @@
     host.dataset.initialized = "1";
     const tables = Array.from(document.querySelectorAll(".gragra-catalogue-table"));
     const rows = tables.flatMap(t => Array.from(t.querySelectorAll("tbody tr")));
+    const paths = new Map(rows.map(r => [r, JSON.parse(r.dataset.gragraPaths)]));
     const cats = [...new Set(rows.map(r => r.dataset.gragraCategory))];
-    const formats = [...new Set(rows.flatMap(r => (r.dataset.gragraFormats || "").split(" ").filter(Boolean)))];
+    const labels = {static:"Static", phasor:"Phasor", time_series:"Time series",
+      fourier_series:"Fourier series", fourier_transform:"Fourier transform",
+      spectral_density:"Spectral density", other:"Fourier amplitude (see API)"};
+    function formatKey(o) { return o.representation + (o.statistic ? ":" + o.statistic : ""); }
+    function formatLabel(o) { return labels[o.representation] + (o.statistic ? " (" + o.statistic.toUpperCase() + ")" : ""); }
+    const formats = new Map(rows.flatMap(r => paths.get(r).flatMap(p =>
+      p.outputs.map(o => [formatKey(o), formatLabel(o)]))));
     host.innerHTML = '<div class="gragra-filters" role="search" aria-label="Filter models">' +
       '<label>Search models<input type="search" data-role="search" placeholder="Model or API" aria-label="Search models"></label>' +
       '<label>Category<select data-role="category"><option value="">All categories</option></select></label>' +
@@ -22,14 +29,17 @@
     const empty = host.querySelector(".gragra-empty");
     function add(select, value, label) { const o = document.createElement("option"); o.value=value; o.textContent=label; select.appendChild(o); }
     cats.forEach(v => add(category, v, v.replace(/_/g, " ")));
-    formats.forEach(v => add(format, v, v.replace(/_/g, " ")));
+    formats.forEach((label, value) => add(format, value, label));
     function filter() {
       const term=q.value.trim().toLowerCase();
       let visible=0;
       rows.forEach(r => {
-        const words=(r.dataset.gragraSearch||"");
-        const fmts=(r.dataset.gragraFormats||"").split(" ");
-        const match=(!term||words.includes(term))&&(!category.value||r.dataset.gragraCategory===category.value)&&(!format.value||fmts.includes(format.value));
+        const common=(r.dataset.gragraSearch||"");
+        const matchesPath=paths.get(r).some(p => {
+          const words=[common,p.label,...p.api_symbols,...p.outputs.map(formatLabel)].join(" ").toLowerCase();
+          return (!term||words.includes(term))&&(!format.value||p.outputs.some(o=>formatKey(o)===format.value));
+        });
+        const match=matchesPath&&(!category.value||r.dataset.gragraCategory===category.value);
         r.hidden=!match; if(match)visible++;
       });
       tables.forEach(t => {const section=t.previousElementSibling;const any=Array.from(t.querySelectorAll("tbody tr")).some(r=>!r.hidden);t.hidden=!any;if(section&&/^H[2-6]$/.test(section.tagName))section.hidden=!any;});

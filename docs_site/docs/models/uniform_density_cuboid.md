@@ -74,6 +74,14 @@ Test implementation and documentary claims found; no checks were run for this in
 
 - (internal evidence record) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(half_lengths), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. cuboid_si contract is representative probe only.
 
+### Registered representative output probes
+
+| API | Observable | Representation | Probe |
+|---|---|---|---|
+| `gragra.observables.cuboid_observables` | Φ | Static | `cuboid_si` |
+| `gragra.observables.cuboid_observables` | a | Static | `cuboid_si` |
+| `gragra.observables.cuboid_observables` | Γ | Static | `cuboid_si` |
+
 ## Applicability and limitations
 
 - interior tr Γ=-4πGρ; exterior tr Γ=0. Numerical tolerance does not define boundary values.

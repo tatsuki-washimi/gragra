@@ -83,6 +83,15 @@ Analytic-reference and finite surface reference code exists; not run in this inv
 
 - (internal evidence record) includes spatial quadrature vs Bessel checks, tensor trace and limits; (internal evidence record) includes identities and stress limits. (internal evidence record) reports 1e-10 then 1e-12 adaptive quadrature tolerances; code/result distinction: no committed executed science result found in this pass.
 
+### Registered representative output probes
+
+| API | Observable | Representation | Probe |
+|---|---|---|---|
+| `gragra.observables.water_channel_advection_observables` | Φ | Phasor | `water_transfer_si` |
+| `gragra.observables.water_channel_advection_observables` | a | Phasor | `water_transfer_si` |
+| `gragra.observables.water_channel_advection_observables` | Γ | Phasor | `water_transfer_si` |
+| `gragra.observables.water_channel_advection_asd` | a | Spectral density (ASD) | `water_asd_si` |
+
 ## Applicability and limitations
 
 - transfer SI layer returns phasor values; ASD uses magnitude and is not a deterministic phasor. channel model's DC limit is separate API; high/low numerical limits are guarded.
