@@ -20,13 +20,47 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+The finite solid cylinder has center \(\mathbf c\), radius \(R>0\), height \(H>0\), and local symmetry axis \(z\). Density is supplied to the model separately from its geometry.
+
+![Uniform-density cylinder, 3D schematic](../assets/models/cylinder-3d.svg)
+
+*Schematic geometry; dimensions are not to scale.*
+
 - Cylinder geometry in its frame; high-level evaluator transforms arbitrary target positions to geometry frame and calls general-point analytic cylinder triple. It is not on-axis-restricted. Low-level cylinder_axis_observables remains a distinct axis-only API; general numerical and analytic APIs have separate algorithm paths.
 
 ### Equations
 
-**Existing source formula notes:**
+For a uniform cylinder centered at \(\mathbf c\), let
+\(z=x_z-c_z\), \(u_1=-H/2-z\), and \(u_2=H/2-z\). Define
 
-- On-axis representative formula in G-free convention: a_z = -2πρ[(u₂−√(u₂²+R²))−(u₁−√(u₁²+R²))]; Γzz=∂a_z/∂z and Γxx=Γyy=(-4πρ_local−Γzz)/2. General-point numeric path is quadrature; analytic path uses elliptic/series methods.
+$$
+P(u)=\frac{1}{2}\left[u\left(\sqrt{R^2+u^2}-|u|\right)
++R^2\operatorname{asinh}\left(\frac{u}{R}\right)\right],
+\qquad
+F(u)=|u|-\sqrt{R^2+u^2}.
+$$
+
+The on-axis potential and acceleration in SI units are
+
+$$
+\Phi(z)=-2\pi G\rho\left[P(u_2)-P(u_1)\right],
+\qquad
+a_z(z)=2\pi G\rho\left[F(u_2)-F(u_1)\right].
+$$
+
+By axial symmetry, the on-axis gravity-gradient tensor is diagonal, with
+
+$$
+\Gamma_{zz}=\frac{\partial a_z}{\partial z},
+\qquad
+\Gamma_{xx}=\Gamma_{yy}=\frac{-4\pi G\rho_{\mathrm{local}}-\Gamma_{zz}}{2}.
+$$
+
+Here \(\rho_{\mathrm{local}}=\rho\) for \(|z|<H/2\) and is zero outside
+the cylinder. End-face targets \(z=\pm H/2\) are rejected by the bundled
+axis API because the gradient is undefined or discontinuous there. These
+closed forms apply to targets on the cylinder axis. General-point APIs use
+separate numerical-quadrature or elliptic/series paths.
 
 ## Parameters and calculation paths
 
