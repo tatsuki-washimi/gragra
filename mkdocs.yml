@@ -163,6 +163,7 @@ nav:
       - Chunking, softening and tolerances: concepts/numerics.md
       - Complex outputs: concepts/complex-outputs.md
   - Guide:
+      - Models and methods catalogue: guide/model-and-method-catalogue.md
       - Observables: guide/observables.md
       - Point sources: guide/point-sources.md
       - Static point, grid and mesh sources: guide/static-sources.md
