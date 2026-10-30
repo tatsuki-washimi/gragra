@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Uniform-density sphere
 
-**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
+**Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
 **Geometry:** sphere

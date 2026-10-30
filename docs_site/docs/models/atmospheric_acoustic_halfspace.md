@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Atmospheric acoustic halfspace
 
-**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
+**Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
 **Geometry:** halfspace

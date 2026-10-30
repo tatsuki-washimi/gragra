@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Advected atmospheric temperature turbulence
 
-**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
+**Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic atmospheric  
 **Geometry:** atmosphere

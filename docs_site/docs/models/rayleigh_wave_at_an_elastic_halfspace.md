@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Rayleigh wave at an elastic halfspace
 
-**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
+**Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
 **Geometry:** halfspace
