@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Advected atmospheric temperature turbulence
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic atmospheric  
@@ -16,21 +18,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
+Line-of-sight/minimum-approach geometry and wind angle are scalar model parameters; no scene/mesh/cavern geometry. Plot shape reuse not material.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
-- A complete public LaTeX formulation has not yet been assembled.
+D_T(r)=c_T² r^p. G-free PSD coefficient 8π² Γ(p+2) sin(πp/2)(rho r_min c_T/T)² v^p Ω^-(p+1) B(x,theta), x=Ωr_min/v; B=e^-2x[cos²θ(k1e²-k0e²)+0.5sin²θ(k0e k2e-k1e²)]. SI ×G².
 
-## Parameters and units
+## Parameters and calculation paths
 
+### Parameters and units
 
-## APIs and calculation paths
+density_kg_m3 rho≥0; temperature_k T&gt;0; structure_coefficient_k_m_neg_p_over_2 c_T≥0; structure_exponent 0&lt;p&lt;2; wind_speed_m_s v&gt;0; minimum_approach_m r_min&gt;0; wind_axis_angle_rad θ scalar; frequency_hz f&gt;0.
 
-### T1 uniform advection projected acceleration PSD
+### Calculation paths
+
+#### T1 uniform advection projected acceleration PSD
 
 - `gragra.observables.stochastic_temperature.uniform_advection_temperature_acceleration_psd`
 
@@ -38,15 +44,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Local module implements scaled Bessel geometry and log-tail branch for float64 range; equations are local specification/transcription, not independently proven here.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
-
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -57,7 +61,9 @@ Existing public documentation and original formulation context:
 - Actual repository literature record located for Harms: (internal evidence record)
 - For Creighton, the targeted source search located local metadata in the T1 specification but no separate title/author/year/arXiv bibliography record; source identity beyond that recorded metadata is not independently established.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -72,7 +78,7 @@ Local unit/oracle test code exists; no tests were run in this inventory. T1 form
 - (internal evidence record) BASE inputs rho=1.2 kg/m³, T=293 K, c_T=0.1 K m^(-p/2), p=2/3, wind=10 m/s, r_min=5 m, theta=0; geometry factor comparison at x={0.1,0.5,1,3,10} uses scipy quad epsabs=1e-13, epsrel=2e-12, limit=300, comparison rtol=3e-11, atol=1e-14. Large-x x=50 comparison uses rtol 0.02 parallel and 0.04 transverse.
 - Separate independent oracle test code uses mpmath 35/45 decimal precision at p={0.4, 2/3, 1.3}, x={0.07,1.7,13}; checks integral identity residual &lt;1e-28 and positive-tail bound. This is test code, not execution evidence.
 
-## Applicability and limitations
+### Applicability and limitations
 
 
 **Scope note:** Strict 0&lt;p&lt;2, positive T, wind, minimum approach, positive frequencies; density and c_T nonnegative. Taylor frozen flow, uniform straight advection, homogeneous isotropic structure-function assumptions.
@@ -82,7 +88,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - No arbitrary wind field, finite-outer-scale cutoff, or spatially varying temperature-statistics API is present in this function.
 

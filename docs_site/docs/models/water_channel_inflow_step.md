@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Water-channel inflow step
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
@@ -16,21 +18,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
+An endpoint step in a linear channel. No dedicated plotting or reuse mapping was identified; the general shape helper targets basic static shapes.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - Strain Fourier amplitude = |Δa_x|/((2πf)² L_arm), L_arm default 3000 m.
 
-## Parameters and units
+## Parameters and calculation paths
 
+### Parameters and units
 
-## APIs and calculation paths
+x0_m finite m; distance_m D&gt;0 m; volume_m3 ΔV&gt;0 m³; frequency_hz f&gt;0 Hz; density_kg_m3 rho&gt;0 kg/m³ default 1000; arm_length_m L&gt;0 m default 3000 for strain companion.
 
-### Single edge-step acceleration Fourier amplitude
+### Calculation paths
+
+#### Single edge-step acceleration Fourier amplitude
 
 - `gragra.observables.water_edge_step_fourier_amplitude`
 
@@ -38,15 +44,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 The formula is documented in the API docstring. No separate derivation note was identified among the assigned files.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
-
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -56,7 +60,9 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -69,7 +75,7 @@ Existing public documentation and original formulation context:
 test_analytic_water.py has equation comparison rtol=1e-15; test code only, not run here; no committed executed result located.
 
 
-## Applicability and limitations
+### Applicability and limitations
 
 
 **Scope note:** f&gt;0, D&gt;0, ΔV&gt;0, finite x0 and positive rho; output has acceleration×time unit m/s, and MUST NOT be treated as stationary ASD.
@@ -79,7 +85,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - The API does not provide the event-rate or amplitude statistics needed to model a stationary process.
 

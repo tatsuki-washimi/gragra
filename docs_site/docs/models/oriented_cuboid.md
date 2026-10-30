@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Oriented cuboid
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
@@ -16,24 +18,26 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - API receives center_m, lengths_m, targets_m and rotation_matrix directly; it is not a Cuboid geometry object factory. The separate plotting helper takes a direct geometry/model/setup and resolves only Cuboid, Cylinder, SphericalShell; it can transform geometry coordinates through its Frame to display_frame.
 - Oriented API proper Q and inherited base cuboid boundary rejection.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - Only coordinate transform differs: acceleration Q a_local; Gamma Q Gamma_local Qᵀ; potential unchanged.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - center_m, lengths_m, density_kg_m3, targets_m; rotation_matrix explicit proper local-to-world rotation.
 
-## APIs and calculation paths
+### Calculation paths
 
-### rotated cuboid G-free/SI transport
+#### rotated cuboid G-free/SI transport
 
 - `gragra.observables.oriented_cuboid_observables`
 
@@ -41,15 +45,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** located.
+### Derivation
 
 Inherits the aligned-cuboid vertex-antiderivative derivation; the oriented wrapper applies a local-to-world coordinate transformation.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- cuboid derivation document applies to same closed form. oriented wrapper computes local_targets=(targets-center)@Q, evaluates cuboid_observables_g_free, then covariant vector/tensor transport; this is coordinate transformation, not a new physical derivation.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -60,7 +64,9 @@ Existing public documentation and original formulation context:
 
 - The foundational closed form is documented by Nagy (1966), Nagy, Papp & Benedek (2000) and its 2002 erratum, and Blakely (1995). The derivation document does not list DOIs.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -74,7 +80,7 @@ Tests and acceptance claims are recorded separately; no rerun in this task.
 
 - (internal evidence record) covers identity, translation, rotation, SI conversion. Ledger states world-coordinate Gauss reference tolerances potential/acceleration 1e-10, gradient 1e-9, atol 1e-10; integration-int63/ot-focused.meta is recorded result path in external evidence tree but not checked/reproduced here.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - No general non-cuboid geometry or arbitrary affine scaling is claimed.
 
@@ -85,7 +91,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - Catalogue has no output_contracts; no representative catalogue probe is defined.
 - Sphere geometry is not among plot_shape-supported types; direct oriented_cuboid_observables arrays are not themselves a geometry/model/setup argument. Reuse requires a separate Cuboid geometry object, with its own Frame transform.

@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Atmospheric acoustic halfspace
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
@@ -16,24 +18,26 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - z=0 interface; target points on interface rejected.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - air: potential_factor=exp(−qz)/2−cos(k_z z); ground: −exp(qz)/2. phase=exp(i horizontal·(x−phase_origin)).
 - 0&lt;θ≤π/2; grazing valid, normal incidence excluded.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - surface_pressure Pa (total surface coefficient); sound_speed m/s; frequency Hz; incidence_angle, azimuth rad; phase_origin m; reference_time GPS; k,q,k_z m⁻¹.
 
-## APIs and calculation paths
+### Calculation paths
 
-### plane-wave rigid reflection
+#### plane-wave rigid reflection
 
 - `gragra.analytic.atmospheric.acoustic_halfspace`
 
@@ -41,15 +45,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Closed form present; no independent derivation text located in inspected guide.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- implementation formulas do not establish derivation correctness.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -60,7 +64,9 @@ Existing public documentation and original formulation context:
 - source=(internal evidence record)#acoustic-halfspace; detail=approved G-free air and ground solutions and interface conditions.
 - source=gragra.constants.G_SI; detail=applied exactly once by the shared analytic bridge.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -74,7 +80,7 @@ Committed oracle fixture and (internal evidence record) exist; not run now.
 
 - (internal evidence record) is stored reference data; test code is not a newly reproduced result. Exact per-test tolerances and lineage need follow-up.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - θ in (0,π/2]; grazing has k_z=0 and q≠0.
 
@@ -85,7 +91,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - dedicated geometry illustration and exact reference record.
 

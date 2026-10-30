@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Causal point force
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
@@ -16,23 +18,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - Phi = -G mu J / r^2; a = G[(J/r^3)e + (f/(vp^2 r)-3J/r^3)mu n]; Gamma formula C,D coefficients; all three outputs.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - position m, unit direction, vp m/s, ForceHistory knots seconds/coefficients; GPS onset, sampling epoch, dt seconds and count.
 
-## APIs and calculation paths
+### Calculation paths
 
-### implemented model/API path
+#### implemented model/API path
 
 - `gragra.analytic.seismic.point_force`
 
@@ -40,15 +44,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- No separate derivation is asserted from the formula declaration alone.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -58,7 +62,9 @@ Existing public documentation and original formulation context:
 
 - Reference table records local formula-ledger Green function and causal delay moment.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -72,7 +78,7 @@ Verification method, tolerances, and artifact status recorded; tests were not ru
 
 - CAS script (internal evidence record) documents r&gt;0,c&gt;0,C1 history assumptions and J derivatives; test code only. Hand-sample (internal evidence record) uses rtol 1e-14; no saved output found.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
 
@@ -83,7 +89,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.

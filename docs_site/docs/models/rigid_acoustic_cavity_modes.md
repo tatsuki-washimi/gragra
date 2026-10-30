@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Rigid acoustic cavity modes
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
@@ -16,11 +18,11 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - No arbitrary modal amplitude plot; selected static Cuboid/Cylinder/SphericalShell plot capability only.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
@@ -28,25 +30,27 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Cylinder Ψ∝J_m(α_mn r/R)A_m(φ)cos(qπ(z+H/2)/H), J′_m(α)=0.
 - Sphere uses nth strictly positive root of spherical Bessel derivative j′_l.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - Sphere R m and l,m,n; cuboid Lx,Ly,Lz m and nx,ny,nz; cylinder R,H m and m,n,q,azimuth; pressure Pa spatial-RMS peak phasor; sound_speed m/s; f derived.
 
-## APIs and calculation paths
+### Calculation paths
 
-### Sphere Neumann mode
-
-- `gragra.analytic.atmospheric.acoustic_cavity_mode`
-
-**Path-level source-declared outputs:** Φ a Γ — Phasor
-
-### Cuboid Neumann mode
+#### Sphere Neumann mode
 
 - `gragra.analytic.atmospheric.acoustic_cavity_mode`
 
 **Path-level source-declared outputs:** Φ a Γ — Phasor
 
-### Cylinder Neumann mode
+#### Cuboid Neumann mode
+
+- `gragra.analytic.atmospheric.acoustic_cavity_mode`
+
+**Path-level source-declared outputs:** Φ a Γ — Phasor
+
+#### Cylinder Neumann mode
 
 - `gragra.analytic.atmospheric.acoustic_cavity_mode`
 
@@ -54,15 +58,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Equations documented; test/oracle code exists but is not a proof or newly run result.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- Cylinder tests check eigenfrequency, normalization and derivative-related properties; saved oracle result paths not fully assembled.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -73,7 +77,9 @@ Existing public documentation and original formulation context:
 - Sphere: (internal evidence record)#sphere-acoustic-cavity (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
 - Cuboid: (internal evidence record)#cuboid-six-faces (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); (internal evidence record) (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -87,7 +93,7 @@ Shape-specific high-level tests; not run here.
 
 - Cylinder frequency f=c_s k/(2π) rel=2e-15; gradient/Hessian finite differences use rtol 2e-8/3e-7 in selected checks. Test-code-only; other shapes have separate test suites.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - sphere derivative-root indices; cylinder m=0 sine azimuth undefined; cuboid all-zero constant mode unsupported.
 
@@ -98,7 +104,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - modal plotting, exact references by geometry, saved run records.
 

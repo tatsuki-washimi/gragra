@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Frozen-advection channel water noise
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
@@ -17,11 +19,11 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - Guide gives channel sketch by prose; no reusable channel geometry plotting adapter identified.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
@@ -29,19 +31,21 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Taxη/G=2iρw(2πf/v)K₀(2πfD/v); Tazη/G=−2ρw(2πf/v)K₁(2πfD/v).
 - Trace Γ=0 in vacuum for full tensor.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - frequency_hz Hz &gt;0; velocity_mps m/s nonzero; distance_m D&gt;0; width_m&gt;0; density_kg_m3 default 1000 kg/m³; eta_m m complex/real; surface_asd_m_per_rt_hz m/√Hz; component x/z/all.
 
-## APIs and calculation paths
+### Calculation paths
 
-### G-free complex transfer and SI phasor observables
+#### G-free complex transfer and SI phasor observables
 
 - `gragra.observables.water_channel_advection_observables`
 
 **Path-level source-declared outputs:** Φ a Γ — Phasor
 
-### acceleration ASD
+#### acceleration ASD
 
 - `gragra.observables.water_channel_advection_asd`
 
@@ -49,15 +53,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 water oracle contains integral/Bessel reference functions and validation code; not an admitted derivation here.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- (internal evidence record) documents line integral and K0/K1 forms. Test/reference code is not a proof nor reproduced now.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -69,7 +73,9 @@ Existing public documentation and original formulation context:
 - Atsushi Nishizawa (2021-03-31), 'Water Newtonian noise for KAGRA' (JGW-T1706440-v2).
 - Atsushi Nishizawa (2021-09-03), 'Edge contribution of a water channel to a Newtonian noise' (JGW-T2214308-v1).
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -83,7 +89,7 @@ Analytic-reference and finite surface reference code exists; not run in this inv
 
 - (internal evidence record) includes spatial quadrature vs Bessel checks, tensor trace and limits; (internal evidence record) includes identities and stress limits. (internal evidence record) reports 1e-10 then 1e-12 adaptive quadrature tolerances; code/result distinction: no committed executed science result found in this pass.
 
-### Registered representative output probes
+#### Registered representative output probes
 
 | API | Observable | Representation | Probe |
 |---|---|---|---|
@@ -92,7 +98,7 @@ Analytic-reference and finite surface reference code exists; not run in this inv
 | `gragra.observables.water_channel_advection_observables` | Γ | Phasor | `water_transfer_si` |
 | `gragra.observables.water_channel_advection_asd` | a | Spectral density (ASD) | `water_asd_si` |
 
-## Applicability and limitations
+### Applicability and limitations
 
 - transfer SI layer returns phasor values; ASD uses magnitude and is not a deterministic phasor. channel model's DC limit is separate API; high/low numerical limits are guarded.
 
@@ -103,7 +109,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - verified primary source and saved result artifact; channel illustration.
 

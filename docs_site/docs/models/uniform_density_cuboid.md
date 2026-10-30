@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Uniform-density cuboid
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
@@ -16,23 +18,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - high-level Cuboid holds frame/lengths. Vertex antiderivative domain interior/exterior away from material boundary. No arbitrary mesh reuse implied.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - F1 = uv ln(w+r)+vw ln(u+r)+wu ln(v+r) - 1/2 u² atan(vw/(ur)) -1/2 v² atan(wu/(vr)) -1/2 w² atan(uv/(wr)); source report gives explicit adopted sign convention. Potential G-free kg/m; acceleration kg/m²; gradient kg/m³; SI conversion once.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - center_m (3,) m; lengths_m=(Lx,Ly,Lz) m all positive; density_kg_m3 kg/m³; targets_m (M,3) m; cuboid material-boundary targets rejected. High-level Cuboid + density Quantity.
 
-## APIs and calculation paths
+### Calculation paths
 
-### axis-aligned cuboid closed form
+#### axis-aligned cuboid closed form
 
 - `gragra.analytic.objects.uniform_cuboid`
 - `gragra.observables.cuboid_observables`
@@ -41,15 +45,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** located.
+### Derivation
 
 Committed independent derivation document exists; its text is inventoried as a derivation record, not re-proven here.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- (internal evidence record) includes source formula discussion and implementation conclusions.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -60,7 +64,9 @@ Existing public documentation and original formulation context:
 
 - Nagy, D. (1966), ‘The gravitational attraction of a right rectangular prism.’ Nagy, D., Papp, G., & Benedek, J. (2000), ‘The gravitational potential and its ...’; 2002 erratum. Petrović (1996) is named in analytic benchmark/report, but complete record not transcribed here.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -74,7 +80,7 @@ Test implementation and documentary claims found; no checks were run for this in
 
 - (internal evidence record) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(half_lengths), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. cuboid_si contract is representative probe only.
 
-### Registered representative output probes
+#### Registered representative output probes
 
 | API | Observable | Representation | Probe |
 |---|---|---|---|
@@ -82,7 +88,7 @@ Test implementation and documentary claims found; no checks were run for this in
 | `gragra.observables.cuboid_observables` | a | Static | `cuboid_si` |
 | `gragra.observables.cuboid_observables` | Γ | Static | `cuboid_si` |
 
-## Applicability and limitations
+### Applicability and limitations
 
 - interior tr Γ=-4πGρ; exterior tr Γ=0. Numerical tolerance does not define boundary values.
 
@@ -93,7 +99,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - Catalog probe not executed; no numeric output recorded here.
 - Petrović full bibliographic record not transcribed.

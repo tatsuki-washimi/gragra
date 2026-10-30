@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Fixed-axis rotation
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
@@ -16,24 +18,26 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - plot_shape supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - x(t)=R(axis, angle0+ω(t−angle_epoch))(x_body−origin)+origin。
 - For each point mass: Φ=−Gm/r; a=−GmΔ/r³; Γ=Gm(3ΔΔᵀ/r⁵−I/r³). These formulas are transcribed from the oracle implementation and are not a derivation proof.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - angular_velocity: rad/s; origin: m vector; angle0: rad; angle_epoch: GPS time; sampling: TimeSampling; cloud masses kg, positions m; frame: Frame.
 
-## APIs and calculation paths
+### Calculation paths
 
-### Discrete point-mass cloud rotating about a fixed axis at constant angular velocity
+#### Discrete point-mass cloud rotating about a fixed axis at constant angular velocity
 
 - `gragra.analytic.objects.fixed_axis_rotation`
 
@@ -41,15 +45,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 The oracle includes formulas, but they are not a derivation proof.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- The oracle converts binary64 inputs to exact rational values and computes the rotation and field with 80-digit mpmath precision.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -59,7 +63,9 @@ Existing public documentation and original formulation context:
 
 - source=(internal evidence record); detail=Gen1 exact constant-speed or fixed-axis rotating point-mass field. This is local provenance, not an external bibliography entry.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -73,7 +79,7 @@ An independent oracle-comparison test exists. It was not run for this update.
 
 - A selected case in the internal evidence record uses rtol=3e-14. This is test-code evidence only; no result artifact was identified in this review.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - Requires PointMassCloud and TimeSampling. angle_epoch is independent of the sampling epoch.
 
@@ -84,7 +90,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - A dedicated arbitrary point-cloud trajectory illustration and equation renderer.
 

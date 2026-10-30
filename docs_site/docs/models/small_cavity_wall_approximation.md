@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Small-cavity wall approximation
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
@@ -17,36 +19,38 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - The model accepts Sphere, Cuboid, Cylinder, but plot_shape helper supports only Cuboid, Cylinder, SphericalShell and explicitly rejects Cavity types; high-level small_cavity_wall model is cavity-named and is not automatically plot-able. A standalone Sphere geometry is not among the supported classes.
 - Harms scalar table supports five discrete shape/location rows; tensor paths have separate geometric coverage.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - Harms 2022 scalar wall coupling factor is dimensionless; source records five valid combinations. Tensor contraction G-free: delta_a/G=-rho*C_g@u; SI: delta_a=-G_SI*rho*C_g@u. SCA approximation applies only cavity much smaller than source-to-target distance; high-level model displacement must be first-order small.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - small_cavity_wall: Sphere|Cuboid|Cylinder; displacement Quantity 3-vector; density Quantity; optional frequency Quantity and reference_time. Scalar function cavern_shape in {sphere,cube,half_sphere,elongated_cuboid_2to1to1}; location {arbitrary,center_3d,floor_center_2d}; acceleration adds density_kg_m3 and displacement_m.
 
-## APIs and calculation paths
+### Calculation paths
 
-### geometry-aware small_cavity_wall model
+#### geometry-aware small_cavity_wall model
 
 - `gragra.analytic.seismic.small_cavity_wall`
 
 **Path-level source-declared outputs:** a — Static; a — Phasor
 
-### Harms 2022 scalar table lookup and acceleration
+#### Harms 2022 scalar table lookup and acceleration
 
 - `gragra.analytic.sca_wall_coupling_factor`
 
 **Path-level source-declared outputs:** a — Static
 
-### shape-specific tensor SCA numeric paths (related, not the assigned scalar factory)
+#### shape-specific tensor SCA numeric paths (related, not the assigned scalar factory)
 
 - `gragra.analytic.sca_wall_coupling_factor`
 - `gragra.analytic.seismic.small_cavity_wall`
@@ -55,15 +59,15 @@ This path provides a related coefficient, coupling quantity, or helper rather th
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Scalar Harms coefficients are literal table entries; general tensors are local derivation/numerical surface paths with recorded convention mapping.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- Do not generalize table scalar into all-geometry analytic tensor. Tensor source-map explicitly restricts interpretation and physical-boundary handling.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -75,7 +79,9 @@ Existing public documentation and original formulation context:
 - Harms et al., ‘A lower limit for Newtonian-noise models of the Einstein Telescope’ (2022), EPJ Plus 137:687, DOI 10.1140/epjp/s13360-022-02851-z; Eqs 1–4,7, Table 1. Tempel et al. 2025 pp. 9–12,42–46 recorded for tensor convention. This inventory records repository citations, not independent paper inspection.
 - [DOI 10.1140/epjp/s13360-022-02851-z](https://doi.org/10.1140/epjp/s13360-022-02851-z)
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -89,7 +95,7 @@ Test code, prose verification, and saved run metadata separated; no new run exec
 
 - (internal evidence record) implements independent surface quadrature, target convergence, boundary/rotation/complex displacement checks. Reported tolerance: norm(current-previous)&lt;=1e-12+1e-9*max(norm(current),1), order doubles up to 128. (internal evidence record) records historical 10 passed and 42 passed, which are prose results, not rerun. ledger records integration-int63/sca-final-focused.meta for scalar-focused command exit 0. No formal execution performed.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - Harms floor-center table row does not specify boundary condition/tensor direction/one-sided limit. Scalar lookup does not carry k. high-level model excludes physical wall. No arbitrary model-wide formula/plot capability.
 
@@ -100,7 +106,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - No output_contracts in catalog group; no runnable representative catalogue probe defined.
 - Exact all five scalar coefficient values omitted from this record.

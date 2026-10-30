@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Isobaric temperature perturbation
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric temperature  
@@ -17,11 +19,11 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - The API supports these profile objects; geometry dimensions are profile inputs. No dedicated temperature anomaly map asset was located.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
@@ -29,37 +31,39 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Gaussian center: Φ(0)=−4πGρcσ², a(0)=0, Γ(0)=−4πGρc I/3; far field M=(2π)^(3/2)ρcσ³.
 - Fourier acceleration and gradient use wavevector and phasor potential.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - rho0 kg/m³; T0 K; delta_temperature K; wavevector rad/m; phase_origin/center m; Gaussian sigma; Sphere radius; Cuboid lengths; Cylinder radius/height; frequency Hz and reference_time GPS for phasor.
 
-## APIs and calculation paths
+### Calculation paths
 
-### Fourier temperature mode (static and single-frequency phasor)
-
-- `gragra.analytic.atmospheric.isobaric_temperature`
-
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
-
-### Gaussian temperature anomaly (all-space)
+#### Fourier temperature mode (static and single-frequency phasor)
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
 **Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
 
-### Finite Sphere temperature body
+#### Gaussian temperature anomaly (all-space)
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
 **Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
 
-### Finite Cuboid temperature body
+#### Finite Sphere temperature body
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
 **Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
 
-### Finite Cylinder temperature body
+#### Finite Cuboid temperature body
+
+- `gragra.analytic.atmospheric.isobaric_temperature`
+
+**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
+
+#### Finite Cylinder temperature body
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
@@ -67,15 +71,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 equation prose plus test oracle/derivation scripts; local text is not proof of correctness.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
+- test suites exercise center, far-field, trace and scale invariance; no saved executed artifact identified.
 
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -87,7 +91,9 @@ Existing public documentation and original formulation context:
 - (internal evidence record)#temperature: approved isobaric, plane-wave, Gaussian and finite-body formulas.
 - gragra.fields.thermodynamic.isobaric_temperature_density_perturbation: signed δρ=−ρ0δT/T0 linearization.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -101,7 +107,7 @@ High-level test code covers plane wave phasor/static and Gaussian limits; not ru
 
 - Gaussian center and far field equations checked; tests use assertions including exact center limits and Poisson trace. Other cases use rtol=2e-13 scale invariance. Test-code-only.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - Gaussian all-space support; finite geometry material boundary rejected for potential/acceleration/gradient; phasors are peak coefficients with no 1/2.
 
@@ -112,7 +118,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - dedicated profile visualization and exact bibliography/result records.
 

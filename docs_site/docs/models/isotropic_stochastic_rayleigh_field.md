@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Isotropic stochastic Rayleigh field
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic seismic  
@@ -16,21 +18,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
+Free-surface half-space geometry, test masses below surface; no arbitrary cavity/modal/mesh visualization. plot_shape only selected basic solids.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
-- A complete public LaTeX formulation has not yet been assembled.
+A=2πrho gamma exp(-k_R z); gamma=(1-zeta)/(q-zeta), zeta=sqrt(q/s); G-free CSD=A² S_xi diag(1/2,1/2,1), off-diagonal zero. SI output multiplies G_SI².
 
-## Parameters and units
+## Parameters and calculation paths
 
+### Parameters and units
 
-## APIs and calculation paths
+targets_m: M×3 m; density_kg_m3 rho; v_p_m_s, v_s_m_s; positive frequency_hz Hz; surface_vertical_displacement_psd_m2_hz one-sided m²/Hz.
 
-### Isotropic Rayleigh acceleration CSD
+### Calculation paths
+
+#### Isotropic Rayleigh acceleration CSD
 
 - `gragra.observables.stochastic_rayleigh.rayleigh_isotropic_acceleration_csd`
 
@@ -38,15 +44,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 Analytic azimuth integration is stated; local implementation gives transfer, gamma, q/s and tensor factors. No external derivation independently checked.
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
-
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -56,7 +60,9 @@ Existing public documentation and original formulation context:
 
 - The record is listed in the internal evidence inventory. The literature content was not independently re-verified for this update.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -69,13 +75,13 @@ Existing public documentation and original formulation context:
 Tests include Harms Eq.112 and shape/PSD/SI checks; report conditions only as coded. Test code, no rerun. No assigned committed result artifact found.
 
 
-### Registered representative output probes
+#### Registered representative output probes
 
 | API | Observable | Representation | Probe |
 |---|---|---|---|
 | `gragra.observables.stochastic_rayleigh.rayleigh_isotropic_acceleration_csd` | a | Spectral density (CSD) | `rayleigh_csd_si` |
 
-## Applicability and limitations
+### Applicability and limitations
 
 
 **Scope note:** f&gt;0; targets strictly z&gt;0; rho&gt;=0; stable isotropic halfspace requires vp²&gt;(4/3)vs²; speeds positive. Homogeneous isotropic field and one-sided input PSD assumptions.
@@ -85,7 +91,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - High-level EvaluationResult/setup integration deferred; no PSD/CSD integration in result workflows.
 

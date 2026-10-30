@@ -1,6 +1,8 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Waterfall and spatially uncorrelated water surface
 
+## Model overview
+
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
@@ -16,29 +18,31 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry
+## Geometry and equations
 
 - plot_shape targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
 
-## Equations
+### Equations
 
 **Existing source formula notes:**
 
 - For incoherent cells: ASD_a=G rho sqrt(A_cell w) sqrt(pi/(8H^3)) ASD_eta.
 
-## Parameters and units
+## Parameters and calculation paths
+
+### Parameters and units
 
 - water_channel_uncorrelated_asd: H m&gt;0, width_m w m&gt;0, correlation_area_m2 m²&gt;0, surface_asd_m_per_rt_hz m/√Hz &gt;=0, rho kg/m³ default 1000.
 
-## APIs and calculation paths
+### Calculation paths
 
-### Vertical waterfall with cross-sectional area fluctuations (ASD)
+#### Vertical waterfall with cross-sectional area fluctuations (ASD)
 
 - `gragra.observables.water_waterfall_asd`
 
 **Path-level source-declared outputs:** a — Spectral density (ASD)
 
-### Incoherent surface cells across the channel width
+#### Incoherent surface cells across the channel width
 
 - `gragra.observables.water_channel_uncorrelated_asd`
 
@@ -46,15 +50,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
-## Derivation and provenance
+## Derivation and sources
 
-**Inventory status:** partial.
+### Derivation
 
 water module documents independent Model 1 integral: int x²/(H²+x²)³ dx=pi/(8H³).
 
-The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
-
-## References
+### References
 
 Existing public documentation and original formulation context:
 
@@ -66,7 +68,9 @@ Existing public documentation and original formulation context:
 - The formula/source attribution text is repository evidence of attribution, not confirmation that the referenced external source was inspected or that source text proves this implementation.
 - No full bibliographic citation/DOI for the Nishizawa 2021 water source was located in the scoped water docs/source search.
 
-## Verification evidence
+## Verification and applicability
+
+### Verification
 
 **Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
 
@@ -80,7 +84,7 @@ test_analytic_water.py contains assertions against closed forms, quadrature, sha
 
 - No committed executed-result artifact located for these assigned models.
 
-## Applicability and limitations
+### Applicability and limitations
 
 - uncorrelated formula uses narrow-channel approximation and independent cells; source attribution remains unverified.
 
@@ -91,7 +95,8 @@ See the public verification and limitations guidance for test-specific condition
 - [Verification matrix](../verification/matrix.md)
 - [Verification limitations](../verification/limitations.md)
 
-## Information still to locate or publish
+
+## Information not yet confirmed
 
 - No specific water-surface or waterfall geometry data, or model-specific geometry renderer for a shared model view, was identified.
 
