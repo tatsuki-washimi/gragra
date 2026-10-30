@@ -34,7 +34,7 @@ public standard runners and do not imply a publication or deployment step.
 ## Install
 
 `gragra` is not published on PyPI. Install a GitHub Release asset or the source
-tag; see [Getting started](docs_site/docs/getting-started.md). Download
+tag; see [Getting started](docs_site/docs/getting-started/installation.md). Download
 `SHA256SUMS` with the selected asset and verify that asset in their directory:
 
 ```console

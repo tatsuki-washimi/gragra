@@ -42,9 +42,13 @@ and displacement observables alongside the source and target containers.
 | `gragra.analytic.atmospheric` | 7 | [Sources, targets and geometry](core.md) |
 | `gragra.analytic.objects` | 6 | [Sources, targets and geometry](core.md) and [Fields, waves and coherent](physics.md) |
 | `gragra.analytic.seismic` | 7 | [Sources, targets and geometry](core.md) and [Fields, waves and coherent](physics.md) |
-| `gragra.plotting` | 9 | [Fields, waves and coherent](physics.md) |
 | `gragra.adapters` | 54 | [Additional APIs and internal modules](experimental.md) |
 | `gragra.adapters.specfem` | 4 | [Additional APIs and internal modules](experimental.md) |
+
+The package also contains helpers under `gragra.plotting`. They are outside
+the documented public API scope for this release and are not listed in this
+reference. For new visualization examples, use Matplotlib with values returned
+by the documented calculation API.
 
 Each symbol is rendered on exactly one page. Where a name is re-exported —
 `point_acceleration` is both `gragra.point_acceleration` and

@@ -158,6 +158,10 @@ addition concerns the underlying displacement-transfer potential and gradient.
 
 ## Visualizing fields with `plot_field` { #visualizing-fields }
 
+> `gragra.plotting.plot_field` is present in the package but outside the
+> documented public API scope for this release. New examples should visualize
+> values from the documented calculation API with Matplotlib directly.
+
 `gragra.plotting.plot_field` plots a `DensityPerturbationGrid` or
 `DisplacementGrid` faithful to native grid coordinates without mutating the
 field object.

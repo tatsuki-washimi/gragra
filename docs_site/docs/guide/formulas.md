@@ -1,5 +1,8 @@
 # Formula LaTeX conversion
 
+> This helper is present in the package but outside the documented public API
+> scope for this release. Its interface carries no compatibility promise.
+
 This guide demonstrates how to convert verified analytical formula strings into LaTeX markup using `gragra.plotting.formula_to_latex`.
 
 ## Overview

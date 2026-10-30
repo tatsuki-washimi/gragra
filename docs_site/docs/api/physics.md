@@ -50,52 +50,6 @@ A bulk density-perturbation field already expressed as δρ on a
 regular/rectilinear grid, for callers who have δρ directly rather than a
 displacement to differentiate.
 
-::: gragra.plotting.plot_field
-
-Plot a density perturbation or displacement field faithful to native grid
-coordinates without modifying the input field object.
-
-::: gragra.plotting.hist
-
-Histogram one per-element diagnostic (density, height, distance, or inverse
-square) of a discrete point-sum setup as a GWexpy `Histogram`, with counts or
-volumes per bin. See [Source diagnostics](../guide/source-diagnostics.md) for
-a short example and the units and frame rules.
-
-::: gragra.plotting.plot_hist
-
-Draw the histogram that `hist` returns as a step plot on a new or supplied
-empty Matplotlib axes and return the figure. It draws the same values and
-edges as `hist` with the same arguments, and it does not re-bin them.
-
-::: gragra.plotting.plot_map
-
-Plot Newtonian kernel or gravitational acceleration contributions of discrete
-source elements across space in 3D or 2D projections. Total physical sum is
-preserved and agrees with PointSumModel evaluation within floating-point
-tolerance (rtol=1e-12, atol=1e-20); it is not bitwise identical. See
-[Source diagnostics](../guide/source-diagnostics.md) for details.
-
-::: gragra.plotting.plot_shape
-
-Render 3D geometric shapes of analytical sources as surfaces or wireframes on Matplotlib 3D axes.
-
-::: gragra.plotting.formula_to_latex
-
-Format verified analytical source equations and potential formulas into LaTeX math expressions.
-
-::: gragra.plotting.plot_contribution_hist
-
-Display histogram distributions of directional or magnitude gravitational acceleration contributions from discrete elements.
-
-::: gragra.plotting.plot_cumulative_contribution
-
-Graph the radial cumulative profile of gravitational acceleration as a function of source-to-target distance.
-
-::: gragra.plotting.plot_result
-
-Visualize physical fields, time series, or spectra directly from an EvaluationResult container.
-
 ### Gen1 temperature fields
 
 These immutable inputs describe one prescribed temperature perturbation. The
