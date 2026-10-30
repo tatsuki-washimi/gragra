@@ -40,9 +40,7 @@ targets_m: M×3 m; density_kg_m3 rho; v_p_m_s, v_s_m_s; positive frequency_hz Hz
 
 - `gragra.observables.stochastic_rayleigh.rayleigh_isotropic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 ## Derivation and sources
 
@@ -58,7 +56,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- The record is listed in the internal evidence inventory. The literature content was not independently re-verified for this update.
+- The record is listed in the internal reference inventory. The literature content was not independently re-verified for this update.
 
 ## Verification and applicability
 
@@ -68,7 +66,8 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 1.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 

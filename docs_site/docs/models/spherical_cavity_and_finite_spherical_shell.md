@@ -40,21 +40,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.seismic.spherical_cavity`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### high-level finite spherical shell P/S phasor model
 
 - `gragra.analytic.seismic.spherical_shell`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### center-only finite-shell P-wave four-component acceleration
 
 - `gragra.observables.spherical_shell_p_acceleration_components`
 
-**Path-level source-declared outputs:** a — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** a — Phasor
 
 ## Derivation and sources
 
@@ -83,13 +81,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
-Existing (internal evidence record) are evidence records only; none rerun. Shell validation records a fixed 24-case matrix and tolerances, but those runs were before candidate and raw artifacts external to repo.
+Existing tests/docs/results are evidence records only; none rerun. Shell validation records a fixed 24-case matrix and tolerances, but those runs were before candidate and raw artifacts external to repo.
 
-- U10 cases: b=10m, a/b=.2,.8,.99,.9999; kb=.01,.8,5; P/S; rho=2300 kg/m³; ξ=1e-9(1+.4i)m; center/offaxis/inner/material/external targets. Acceptance=1e-12 Q_scale+r_Q norm(reference), r_Q=(1e-10,1e-10,1e-9); ratios recorded, reference &lt;=0.1. No elastic scattering comparison. P center formula test implementation (internal evidence record) Separate legacy P helper documented ANNA formula. Saved artifact root in U10 doc is external `(internal evidence record)`, with BASE_SHA/oracle-matrix-2. This artifact is not reproduced/inspected now.
+- U10 cases: b=10m, a/b=.2,.8,.99,.9999; kb=.01,.8,5; P/S; rho=2300 kg/m³; ξ=1e-9(1+.4i)m; center/offaxis/inner/material/external targets. Acceptance=1e-12 Q_scale+r_Q norm(reference), r_Q=(1e-10,1e-10,1e-9); ratios recorded, reference &lt;=0.1. No elastic scattering comparison. P center formula test implementation [`tests/test_u10_spherical_shell_general.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_u10_spherical_shell_general.py). Separate legacy P helper documented ANNA formula. Historical numerical artifacts are stored outside the public repository and were not reproduced or inspected for this catalogue update.
 
 ### Applicability and limitations
 

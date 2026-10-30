@@ -40,9 +40,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.objects.translational_oscillation`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Observables after model evaluation:** Φ a Γ — Phasor
 
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
 ## Derivation and sources
 
@@ -70,7 +70,8 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 

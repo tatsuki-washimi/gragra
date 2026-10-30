@@ -40,15 +40,13 @@ B1: density_kg_m3; frequency_hz; p_displacement_psd_m2_hz; B2 additionally radiu
 
 - `gragra.observables.stochastic_bodywave.fullspace_p_isotropic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 #### Centered spherical cavity isotropic P/S
 
 - `gragra.observables.stochastic_bodywave.spherical_cavity_ps_isotropic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 ## Derivation and sources
 
@@ -74,13 +72,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Test implementation records concrete checks; no tests were run in this inventory. No committed executed-result artifact was identified for the assigned stochastic bodywave tests.
 
-- (internal evidence record): fullspace formula uses rho=2500 kg/m³, f=2 Hz, S=3e-18 m²/Hz and exact allclose rtol=0, atol=0.
+- [`tests/test_stochastic_bodywave.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_bodywave.py): fullspace formula uses rho=2500 kg/m³, f=2 Hz, S=3e-18 m²/Hz and exact allclose rtol=0, atol=0.
 - Cavity direct angular/vector-sum comparison checks real P and S CSD separately at rtol=2e-11, atol=0; imaginary residual atol=1e-13*max(expected). Code is a test oracle route, not saved run output.
 
 ### Applicability and limitations

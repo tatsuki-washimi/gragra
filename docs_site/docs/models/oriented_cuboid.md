@@ -41,9 +41,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.observables.oriented_cuboid_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Static
 
 ## Derivation and sources
 
@@ -72,13 +70,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Tests and acceptance claims are recorded separately; no rerun in this task.
 
-- (internal evidence record) covers identity, translation, rotation, SI conversion. Ledger states world-coordinate Gauss reference tolerances potential/acceleration 1e-10, gradient 1e-9, atol 1e-10; integration-int63/ot-focused.meta is recorded result path in external evidence tree but not checked/reproduced here.
+- [`tests/test_analytic_oriented.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_oriented.py) covers identity, translation, rotation, SI conversion. Ledger states world-coordinate Gauss reference tolerances potential/acceleration 1e-10, gradient 1e-9, atol 1e-10; integration-int63/ot-focused.meta is recorded result path in external evidence tree but not checked/reproduced here.
 
 ### Applicability and limitations
 

@@ -42,13 +42,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.seismic.small_cavity_wall`
 
-**Path-level source-declared outputs:** a — Static; a — Phasor
+**Path-level source-declared output union:** a — Static; a — Phasor
 
 #### Harms 2022 scalar table lookup and acceleration
 
 - `gragra.analytic.sca_wall_coupling_factor`
 
-**Path-level source-declared outputs:** a — Static
+**Path-level source-declared output union:** a — Static
 
 #### shape-specific tensor SCA numeric paths (related, not the assigned scalar factory)
 
@@ -56,8 +56,6 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.analytic.seismic.small_cavity_wall`
 
 This path provides a related coefficient, coupling quantity, or helper rather than a direct Φ/a/Γ output.
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
 
 ## Derivation and sources
 
@@ -87,13 +85,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Test code, prose verification, and saved run metadata separated; no new run executed.
 
-- (internal evidence record) implements independent surface quadrature, target convergence, boundary/rotation/complex displacement checks. Reported tolerance: norm(current-previous)&lt;=1e-12+1e-9*max(norm(current),1), order doubles up to 128. (internal evidence record) records historical 10 passed and 42 passed, which are prose results, not rerun. ledger records integration-int63/sca-final-focused.meta for scalar-focused command exit 0. No formal execution performed.
+- [`tests/test_analytic_sca_tensor.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_sca_tensor.py) implements independent surface quadrature, target convergence, boundary/rotation/complex displacement checks. Reported tolerance: norm(current-previous)&lt;=1e-12+1e-9*max(norm(current),1), order doubles up to 128. Historical focused runs are not rerun here. The validation inventory records the scalar-focused command as successful. No formal execution performed.
 
 ### Applicability and limitations
 

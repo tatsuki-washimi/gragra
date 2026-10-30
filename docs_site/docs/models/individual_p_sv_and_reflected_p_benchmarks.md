@@ -40,15 +40,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.observables.halfspace_single_bodywave_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### Incident P + reflected P + converted SV
 
 - `gragra.observables.halfspace_reflected_p_above_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 ## Derivation and sources
 
@@ -56,7 +54,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 Local design and validation records contain a boundary-value re-derivation for the reflected-P coefficient and independent Green reconstruction; this inventory did not execute or re-prove them.
 
-- (internal evidence record) and (internal evidence record) document Cartesian displacement/stress derivation and direct Poisson boundary-value checks.
+- Non-public design and validation notes describe a Cartesian displacement/stress derivation and direct Poisson boundary-value checks; their contents are not reproduced here.
 
 ### References
 
@@ -77,13 +75,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Verification method, tolerances, and artifact status recorded; tests were not run in this task.
 
-- (internal evidence record) independently checks formulas and boundary-value solve; representative rtol 1e-10 Phi/a, 1e-9 Gamma. Test code only, no saved results found.
+- [`tests/test_bodywave_literature_oracle.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_bodywave_literature_oracle.py) independently checks formulas and boundary-value solve; representative rtol 1e-10 Phi/a, 1e-9 Gamma. Test code only, no saved results found.
 
 ### Applicability and limitations
 

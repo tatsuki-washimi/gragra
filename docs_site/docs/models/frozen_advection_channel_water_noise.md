@@ -43,15 +43,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.observables.water_channel_advection_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### acceleration ASD
 
 - `gragra.observables.water_channel_advection_asd`
 
-**Path-level source-declared outputs:** a — Spectral density (ASD)
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** a — Spectral density (ASD)
 
 ## Derivation and sources
 
@@ -59,7 +57,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 water oracle contains integral/Bessel reference functions and validation code; not an admitted derivation here.
 
-- (internal evidence record) documents line integral and K0/K1 forms. Test/reference code is not a proof nor reproduced now.
+- [`tests/oracles/water_analytic_reference.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/water_analytic_reference.py) documents line integral and K0/K1 forms. Test/reference code is not a proof nor reproduced now.
 
 ### References
 
@@ -81,13 +79,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 4.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Analytic-reference and finite surface reference code exists; not run in this inventory.
 
-- (internal evidence record) includes spatial quadrature vs Bessel checks, tensor trace and limits; (internal evidence record) includes identities and stress limits. (internal evidence record) reports 1e-10 then 1e-12 adaptive quadrature tolerances; code/result distinction: no committed executed science result found in this pass.
+- [`tests/oracles/water_analytic_reference.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/water_analytic_reference.py) includes spatial quadrature vs Bessel checks, tensor trace and limits; [`tests/test_analytic_water.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_water.py) includes identities and stress limits. [`tests/oracles/water_surface_reference.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/water_surface_reference.py) reports 1e-10 then 1e-12 adaptive quadrature tolerances; code/result distinction: no committed executed science result found in this pass.
 
 #### Registered representative output probes
 

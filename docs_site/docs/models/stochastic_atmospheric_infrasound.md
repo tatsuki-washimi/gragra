@@ -40,21 +40,19 @@ A1 sound_speed_m_s, frequency_hz, surface_pressure_psd_pa2_hz. A2 adds depth_m. 
 
 - `gragra.observables.stochastic_acoustic.surface_isotropic_acoustic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 #### A2 isotropic underground acoustic
 
 - `gragra.observables.stochastic_acoustic.underground_isotropic_acoustic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 #### A3 centered cavern acoustic
 
 - `gragra.observables.stochastic_acoustic.centered_cavern_isotropic_acoustic_acceleration_csd`
 
-**Path-level source-declared outputs:** a — Spectral density (CSD)
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** a — Spectral density (CSD)
 
 ## Derivation and sources
 
@@ -82,13 +80,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Test implementation records explicit A1/A2/A3 checks; no tests were run in this inventory. No committed executed-result artifact for these exact test functions was identified.
 
-- (internal evidence record) A1: c_s=343 m/s, pressure PSD=4e-4 Pa²/Hz, f=2 Hz; closed tensor equality rtol=0, atol=0; doubled-frequency 1/f² scaling rtol=2e-15.
+- [`tests/test_stochastic_acoustic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_acoustic.py) A1: c_s=343 m/s, pressure PSD=4e-4 Pa²/Hz, f=2 Hz; closed tensor equality rtol=0, atol=0; doubled-frequency 1/f² scaling rtol=2e-15.
 - A2 depth factor independent angular quadrature uses x={0,0.1,0.7,1,5,10,20,50}, scipy quad epsabs=epsrel=2e-14, limit=200; comparison rtol=2e-4, atol=2e-14. Test comment says implementation-conditioning, not final science acceptance.
 
 ### Applicability and limitations

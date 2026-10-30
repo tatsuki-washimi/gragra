@@ -8,7 +8,7 @@
 **Physical domain:** static gravity  
 **Geometry:** cylinder
 
-Finite cylinder; check the selected function's axial/off-axis domain
+Finite uniform-density cylinder with an on-axis closed form and separate general-position numerical and analytic paths
 
 **Source-declared observable / representation pairs:**
 
@@ -66,7 +66,15 @@ separate numerical-quadrature or elliptic/series paths.
 
 ### Parameters and units
 
-- center_m (3,) m; radius_m m positive; height_m m positive; density_kg_m3 kg/m³; targets_m (M,3) m; quadrature_order integer default 32 for numerical path; rotation_matrix for analytic route.
+| Parameter | Meaning | SI unit |
+|---|---|---|
+| center_m / \(\mathbf c\) | Cylinder center | m |
+| radius_m / \(R\) | Positive radius | m |
+| height_m / \(H\) | Positive height | m |
+| density_kg_m3 / \(\rho\) | Uniform density | kg/m³ |
+| targets_m / \(\mathbf x\) | Evaluation targets, shape (M, 3) | m |
+| quadrature_order | Numerical route only; default 32 | dimensionless |
+| rotation_matrix | Optional local-to-world rotation for analytic route | dimensionless |
 
 ### Calculation paths
 
@@ -74,19 +82,19 @@ separate numerical-quadrature or elliptic/series paths.
 
 - `gragra.analytic.objects.uniform_cylinder`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Observables after model evaluation:** Φ a Γ — Static
 
 #### on-axis closed-form observable API
 
 - `gragra.observables.cylinder_axis_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Path-level source-declared output union:** Φ a Γ — Static
 
 #### general-point numerical semi-analytic potential diagnostic
 
 - `gragra.observables.cylinder_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Path-level source-declared output union:** Φ a Γ — Static
 
 #### general-point analytic elliptic/series path (separate API)
 
@@ -95,17 +103,24 @@ separate numerical-quadrature or elliptic/series paths.
 - `gragra.observables.cylinder_acceleration_gradient`
 - `gragra.observables.cylinder_analytic_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Path-level source-declared output union:** Φ a Γ — Static
 
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Outputs by API:**
+
+- `gragra.analytic.cylinder_acceleration_gradient_g_free`: a Γ — Static
+- `gragra.analytic.cylinder_analytic_observables_g_free`: Φ a Γ — Static
+- `gragra.observables.cylinder_acceleration_gradient`: a Γ — Static
+- `gragra.observables.cylinder_analytic_observables`: Φ a Γ — Static
+
+High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
 ## Derivation and sources
 
 ### Derivation
 
-Independent axis closed-form derivation is saved; this inventory does not endorse algebra beyond source record.
+An independent derivation exists for the on-axis closed forms, but its detailed contents are not published. References for the general-position elliptic/series derivation were not located.
 
-- (internal evidence record) records cylinder axis derivation. General-point elliptic/series derivation references were not assembled here.
+- The unpublished derivation covers only the on-axis closed forms; references for the general-position elliptic/series derivation were not assembled.
 
 ### References
 
@@ -126,13 +141,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 3.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
-Test code and stored historical records are distinct; no test or numerical probe run now.
+Existing scientific test code and historical saved results are catalogued separately. Registered representative output-contract probes are run during catalogue validation; they confirm selected API outputs, not scientific accuracy.
 
-- (internal evidence record) and (internal evidence record) implement independent reference comparisons and boundaries. formula ledger names oracle metadata and acceptance for newer cylinder/SCA lines; do not treat these as current revision reruns. On-axis validation report gives boundary tolerances 1e-12 R and 1e-12 H. catalogue cylinder_axis_si is output contract only.
+- [`tests/test_analytic_cylinder_potential.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_potential.py) and [`tests/test_analytic_cylinder_offaxis.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_offaxis.py) implement independent reference comparisons and boundaries. formula ledger names oracle metadata and acceptance for newer cylinder/SCA lines; do not treat these as current revision reruns. On-axis validation report gives boundary tolerances 1e-12 R and 1e-12 H. catalogue cylinder_axis_si is output contract only.
 
 #### Registered representative output probes
 
@@ -157,7 +173,7 @@ See the public verification and limitations guidance for test-specific condition
 ## Information not yet confirmed
 
 - Catalogue contract only probes axis API; no general off-axis catalogue contracts.
-- No result probe executed; no acceptance inferred from representative output contracts.
+- No revision-matched saved numerical accuracy result was located; representative output contracts do not establish scientific accuracy.
 - Full bibliography and general-point derivation record need further lookup.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

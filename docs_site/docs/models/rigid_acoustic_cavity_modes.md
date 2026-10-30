@@ -42,21 +42,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.atmospheric.acoustic_cavity_mode`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### Cuboid Neumann mode
 
 - `gragra.analytic.atmospheric.acoustic_cavity_mode`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### Cylinder Neumann mode
 
 - `gragra.analytic.atmospheric.acoustic_cavity_mode`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 ## Derivation and sources
 
@@ -74,8 +72,8 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- Sphere: (internal evidence record)#sphere-acoustic-cavity (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
-- Cuboid: (internal evidence record)#cuboid-six-faces (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); (internal evidence record) (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
+- Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
+- Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
 
 ## Verification and applicability
 
@@ -85,7 +83,8 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 

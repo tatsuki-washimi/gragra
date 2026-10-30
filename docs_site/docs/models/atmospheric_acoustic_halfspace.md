@@ -41,9 +41,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.atmospheric.acoustic_halfspace`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 ## Derivation and sources
 
@@ -61,7 +59,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- source=(internal evidence record)#acoustic-halfspace; detail=approved G-free air and ground solutions and interface conditions.
+- The G-free air and ground solutions and interface conditions are specified in a non-public design note, which is not reproduced here.
 - source=gragra.constants.G_SI; detail=applied exactly once by the shared analytic bridge.
 
 ## Verification and applicability
@@ -72,13 +70,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
-Committed oracle fixture and (internal evidence record) exist; not run now.
+Committed oracle fixture and tests/generator exist; not run now.
 
-- (internal evidence record) is stored reference data; test code is not a newly reproduced result. Exact per-test tolerances and lineage need follow-up.
+- [`tests/oracles/data/halfspace_v1.json`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/data/halfspace_v1.json) is stored reference data; test code is not a newly reproduced result. Exact per-test tolerances and lineage need follow-up.
 
 ### Applicability and limitations
 

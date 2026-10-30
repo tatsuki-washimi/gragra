@@ -82,15 +82,15 @@ The high-level factory instead accepts a Sphere geometry and an Astropy Quantity
 
 - `gragra.observables.uniform_sphere_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Path-level source-declared output union:** Φ a Γ — Static
 
 #### Quantity model EvaluationSetup
 
 - `gragra.analytic.objects.uniform_sphere`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Observables after model evaluation:** Φ a Γ — Static
 
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
 ## Derivation and sources
 
@@ -119,17 +119,18 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 3.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
-Test implementations, documentary verification claims, and saved run records are separate evidence. No tests were run for this update.
+Test implementations, documentary verification claims, and saved run records are separate evidence. No scientific accuracy tests were run for this update.
 
-- tests/test_geometry_vs_analytic.py implements interior and exterior sphere comparisons for potential and acceleration, including complex density. tests/test_convergence_suite.py implements selected potential, acceleration, and gradient checks at exterior targets. The documentation specifies one bounded sphere-convergence case and requires a finest-resolution relative-error bound plus overall potential improvement from coarse to fine; it does not claim a fitted slope or monotonic improvement at every level. The saved results are general verification records for an older SHA cited by the formula ledger, not a reproduction of sphere-specific results for this revision. The catalogue probe named sphere_si is a representative output-contract probe.
+- [`tests/test_geometry_vs_analytic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_geometry_vs_analytic.py) implements interior and exterior sphere comparisons for potential and acceleration, including complex density. [`tests/test_convergence_suite.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_convergence_suite.py) implements selected potential, acceleration, and gradient checks at exterior targets. The documentation specifies one bounded sphere-convergence case and requires a finest-resolution relative-error bound plus overall potential improvement from coarse to fine; it does not claim a fitted slope or monotonic improvement at every level. The saved results are general verification records for an older SHA cited by the formula ledger, not a reproduction of sphere-specific results for this revision. The catalogue probe named sphere_si is a representative output-contract probe.
 
 #### Existing discretization acceptance conditions
 
-The documented sphere refinement case uses R = 1 m, density 1000 kg/m³ and one exterior target. Its finest-spacing relative error must be at most 0.05 for each of Φ, a and Γ, with overall coarsest-to-finest improvement required for potential. These are acceptance criteria for a discretized-source path, not measured errors or a 5% accuracy claim for the analytic formula. This documentation update does not rerun that convergence case. See [documented discretization conditions](../guide/geometry.md#discretization-error).
+The documented sphere refinement case uses R = 1 m, density 1000 kg/m³, one exterior target at (2.7, 0.3, -0.4) m, and spacings R/[10, 20, 40, 80]. Its finest-spacing relative error must be at most 0.05 for each of Φ, a and Γ, with overall coarsest-to-finest improvement required for potential. These are acceptance criteria for a discretized-source path, not measured errors or a 5% accuracy claim for the analytic formula. This documentation update does not rerun that convergence case. See [documented discretization conditions](../guide/geometry.md#discretization-error).
 
 #### Registered representative output probes
 
@@ -155,6 +156,6 @@ See the public verification and limitations guidance for test-specific condition
 
 - Catalogue representative probes document output contracts; they are not numerical accuracy tests.
 - A sphere-specific bibliographic record and an archived independent derivation have not been located.
-- Existing evidence-record claims are distinct from results executed for this revision.
+- Existing tests and documentary claims are distinct from results executed for this revision.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

@@ -41,9 +41,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.objects.fixed_axis_rotation`
 
-**Path-level source-declared outputs:** Φ a Γ — Time series
+**Observables after model evaluation:** Φ a Γ — Time series
 
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
 ## Derivation and sources
 
@@ -61,7 +61,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- source=(internal evidence record); detail=Gen1 exact constant-speed or fixed-axis rotating point-mass field. This is local provenance, not an external bibliography entry.
+- A non-public design note specifies the exact constant-speed or fixed-axis rotating point-mass field. This is local provenance, not an external bibliography entry.
 
 ## Verification and applicability
 
@@ -71,13 +71,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 An independent oracle-comparison test exists. It was not run for this update.
 
-- A selected case in the internal evidence record uses rtol=3e-14. This is test-code evidence only; no result artifact was identified in this review.
+- A selected case in [`tests/test_rigid_motion_science.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_rigid_motion_science.py) uses rtol=3e-14. This is test-code evidence only; no result artifact was identified in this review.
 
 ### Applicability and limitations
 

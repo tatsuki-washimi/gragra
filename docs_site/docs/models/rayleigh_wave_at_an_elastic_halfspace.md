@@ -40,21 +40,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.seismic.rayleigh_halfspace`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### Amplitude-free Rayleigh response coefficients
 
 - `gragra.analytic.seismic.rayleigh_response`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 #### Literature all-space Rayleigh observables
 
 - `gragra.observables.rayleigh_halfspace_allspace_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Phasor
 
 ## Derivation and sources
 
@@ -62,8 +60,8 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 Committed design and validation records describe the local independent derivation/verification approach; they remain documentary evidence and were not rerun here.
 
-- (internal evidence record) maps H19 Eq.96/97 and labels acceleration/gradient derivative class B; records Eq.92 hand-algebra cross-check.
-- (internal evidence record) describes independent Poisson/Green-function numerical re-derivation and surface checks.
+- an unpublished design note maps H19 Eq.96/97 and labels acceleration/gradient derivative class B; records Eq.92 hand-algebra cross-check.
+- An unpublished validation note describes an independent Poisson/Green-function numerical re-derivation and surface checks; the note is not reproduced here.
 
 ### References
 
@@ -86,13 +84,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Verification method, tolerances, and artifact status recorded; tests were not run in this task.
 
-- (internal evidence record) uses independent finite integral/extrapolation, 12 point vP/vS,kH grid; saved result (internal evidence record); source reports worst extrapolation error ~9.3e-5 absolute/~0.72% relative. Test code and artifact, not run now.
+- [`tests/test_rayleigh_gravity_oracle.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_rayleigh_gravity_oracle.py) uses independent finite integral/extrapolation, 12 point vP/vS,kH grid; saved result [`tests/oracles/data/rayleigh_v1.json`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/data/rayleigh_v1.json); source reports worst extrapolation error ~9.3e-5 absolute/~0.72% relative. Test code and artifact, not run now.
 
 ### Applicability and limitations
 

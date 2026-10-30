@@ -43,33 +43,31 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 #### Gaussian temperature anomaly (all-space)
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 #### Finite Sphere temperature body
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 #### Finite Cuboid temperature body
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 #### Finite Cylinder temperature body
 
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
-**Path-level source-declared outputs:** Φ a Γ — Static; Φ a Γ — Phasor
-
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 ## Derivation and sources
 
@@ -88,7 +86,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- (internal evidence record)#temperature: approved isobaric, plane-wave, Gaussian and finite-body formulas.
+- an unpublished design note: approved isobaric, plane-wave, Gaussian and finite-body formulas.
 - gragra.fields.thermodynamic.isobaric_temperature_density_perturbation: signed δρ=−ρ0δT/T0 linearization.
 
 ## Verification and applicability
@@ -99,7 +97,8 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 

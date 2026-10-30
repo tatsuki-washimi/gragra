@@ -41,9 +41,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.analytic.objects.uniform_cuboid`
 - `gragra.observables.cuboid_observables`
 
-**Path-level source-declared outputs:** Φ a Γ — Static
+**Observables after model evaluation:** Φ a Γ — Static
 
-Factory APIs construct model/evaluation objects; observables may be obtained after the documented .at(...).run() sequence rather than directly from the factory call. Follow the linked API examples.
+High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
 ## Derivation and sources
 
@@ -51,7 +51,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 Committed independent derivation document exists; its text is inventoried as a derivation record, not re-proven here.
 
-- (internal evidence record) includes source formula discussion and implementation conclusions.
+- A non-public validation note includes the source-formula discussion and implementation conclusions; its contents are not reproduced in this catalogue.
 
 ### References
 
@@ -72,13 +72,14 @@ Existing public documentation and original formulation context:
 
 - Representative catalogue output-contract entries: 3.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
-- This documentation generation does not perform scientific re-execution or assign an accuracy Level.
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
 
 **Existing verification inventory:**
 
 Test implementation and documentary claims found; no checks were run for this inventory.
 
-- (internal evidence record) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(half_lengths), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. cuboid_si contract is representative probe only.
+- [`tests/test_analytic_cuboid.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cuboid.py) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(half_lengths), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. cuboid_si contract is representative probe only.
 
 #### Registered representative output probes
 
