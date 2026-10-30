@@ -1,0 +1,16 @@
+/* Model catalogue: progressive enhancement. Always leave static rows readable. */
+.gragra-catalogue-table { width:100%; border-collapse:collapse; }
+.gragra-catalogue-table th { text-align:left; white-space:nowrap; }
+.gragra-catalogue-table td { vertical-align:top; padding:0.7rem 0.55rem; }
+.gragra-catalogue-table tbody tr:nth-child(even) { background:var(--md-default-fg-color--lightest); }
+.gragra-catalogue-table a { font-weight:600; }
+.gragra-observables { white-space:nowrap; font-weight:600; }
+.gragra-level { text-align:center; }
+#gragra-catalogue-controls { margin:1.25rem 0; }
+.gragra-filters { display:flex; flex-wrap:wrap; gap:.65rem; align-items:end; padding:.9rem; border:1px solid var(--md-default-fg-color--lightest); border-radius:.4rem; }
+.gragra-filters label { display:flex; flex-direction:column; gap:.2rem; font-size:.8rem; }
+.gragra-filters input,.gragra-filters select { padding:.36rem; min-width:10rem; border:1px solid var(--md-default-fg-color--light); color:var(--md-default-fg-color); background:var(--md-default-bg-color); border-radius:.2rem; }
+.gragra-filters button { padding:.45rem .7rem; background:var(--md-primary-fg-color); color:var(--md-primary-bg-color); cursor:pointer; border-radius:.2rem; }
+.gragra-count { font-weight:600; font-size:.85rem; }
+.gragra-empty { display:none; margin:1rem 0; }
+@media(max-width:46rem) { .gragra-catalogue-table { font-size:.75rem; } .gragra-catalogue-table td,.gragra-catalogue-table th { padding:.35rem .3rem; } .gragra-filters label {flex:1 1 9rem;} }
