@@ -64,6 +64,8 @@ exclude_docs: |
 theme:
   name: material
   language: en
+  logo: assets/brand/gragra-apple-white.svg
+  favicon: assets/brand/gragra-apple-red.svg
   # GDPR: Material's default font configuration fetches Roboto from Google
   # Fonts at page load, sending every visitor's IP address to a third party.
   # `false` keeps typography on system fonts and makes the built site
@@ -80,11 +82,15 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: red
+      accent: red
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: red
+      accent: red
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
