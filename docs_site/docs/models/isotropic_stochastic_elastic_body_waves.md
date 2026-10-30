@@ -60,7 +60,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- local formula specification は implementation mapping であり、それ自体は文献レコードではない。
+- The local formula specification maps formulas to the implementation; it is not itself a bibliographic record.
 
 ## Verification evidence
 

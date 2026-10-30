@@ -30,7 +30,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## APIs and calculation paths
 
-### 等方 Rayleigh acceleration CSD
+### Isotropic Rayleigh acceleration CSD
 
 - `gragra.observables.stochastic_rayleigh.rayleigh_isotropic_acceleration_csd`
 
@@ -54,7 +54,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- レコードは (internal evidence record) に収録。文献内容をここで再検証したという意味ではない。
+- The record is listed in the internal evidence inventory. The literature content was not independently re-verified for this update.
 
 ## Verification evidence
 

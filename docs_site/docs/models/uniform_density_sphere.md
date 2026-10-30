@@ -26,7 +26,7 @@ The finite uniform-density sphere has center \(\mathbf c\), radius \(R>0\), dens
 
 *The figures are schematic, not sampled or measured scientific data.*
 
-- Sphere shapeは幾何データを供給し、解析モデルが密度を結合。任意のmesh/shapeへの一般化はこのAPIからは示されない。
+- The Sphere shape supplies geometry data, while the analytic model supplies density. This API does not establish a generalization to arbitrary meshes or shapes.
 
 ## Equations
 
@@ -103,7 +103,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** partial.
 
-- この inventory範囲の該当箇所で球場固有のbibliographic recordは見つけていない。
+- No sphere-specific bibliographic record was found in the relevant portions of this inventory.
 
 ## Verification evidence
 
@@ -115,9 +115,9 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-test実装、文書上の検証主張、保存済みrun記録が別々に存在。今回実行なし。
+Test implementations, documentary verification claims, and saved run records are separate evidence. No tests were run for this update.
 
-- (internal evidence record)は球の内外potential/acceleration比較とcomplex densityを実装。(internal evidence record)は外部点でpotential/acceleration/gradientの一部を実装。docsは既存sphere convergenceを一bounded caseとし、最細分割の相対誤差と粗→細potential改善のみを要求、fitted slopeや各段階単調性は主張しない。保存結果はformula-ledgerが記す旧SHA向け検証一般記録で、当該球の個別結果を本revisionで再現した記録として扱わない。catalogue sphere_siは代表output probeである。
+- tests/test_geometry_vs_analytic.py implements interior and exterior sphere comparisons for potential and acceleration, including complex density. tests/test_convergence_suite.py implements selected potential, acceleration, and gradient checks at exterior targets. The documentation specifies one bounded sphere-convergence case and requires a finest-resolution relative-error bound plus overall potential improvement from coarse to fine; it does not claim a fitted slope or monotonic improvement at every level. The saved results are general verification records for an older SHA cited by the formula ledger, not a reproduction of sphere-specific results for this revision. The catalogue probe named sphere_si is a representative output-contract probe.
 
 ### Existing discretization acceptance conditions
 
@@ -133,9 +133,9 @@ The documented sphere refinement case uses R = 1 m, density 1000 kg/m³ and one 
 
 ## Applicability and limitations
 
-- 球の対象領域は内外。discretization convergence evidenceは限定された単一条件。
+- Targets may be inside or outside the sphere. Discretization-convergence evidence covers one limited condition.
 
-**Scope note:** 均一密度・有限球の理想化であり、解析式の前提外に精度保証なし。
+**Scope note:** This is an idealized finite sphere with uniform density; no accuracy guarantee applies beyond the assumptions of the analytic formula.
 
 See the public verification and limitations guidance for test-specific conditions and interpretation:
 
@@ -144,8 +144,8 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information still to locate or publish
 
-- カタログの代表probe値は出力契約であり、数値を実行していない。
-- sphere固有のbibliographic recordおよび独立導出保存先は未特定。
-- 既存(internal evidence record) claimと本revisionでの実行済み結果は異なる証拠区分。
+- Catalogue representative probes document output contracts; they are not numerical accuracy tests.
+- A sphere-specific bibliographic record and an archived independent derivation have not been located.
+- Existing evidence-record claims are distinct from results executed for this revision.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

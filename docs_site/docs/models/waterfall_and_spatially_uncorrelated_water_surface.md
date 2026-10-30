@@ -18,13 +18,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry
 
-- plot_shape は選択済 Cuboid/Cylinder/SphericalShell の静的形状向け。水モデル専用 plot adapter はこの調査範囲で確認できず。
+- plot_shape targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
 
 ## Equations
 
 **Existing source formula notes:**
 
-- 非相関セル ASD_a=G rho sqrt(A_cell w) sqrt(pi/(8H^3)) ASD_eta.
+- For incoherent cells: ASD_a=G rho sqrt(A_cell w) sqrt(pi/(8H^3)) ASD_eta.
 
 ## Parameters and units
 
@@ -32,13 +32,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## APIs and calculation paths
 
-### 垂直落水・断面積揺らぎ ASD
+### Vertical waterfall with cross-sectional area fluctuations (ASD)
 
 - `gragra.observables.water_waterfall_asd`
 
 **Path-level source-declared outputs:** a — Spectral density (ASD)
 
-### 水路幅方向の非相関表面セル
+### Incoherent surface cells across the channel width
 
 - `gragra.observables.water_channel_uncorrelated_asd`
 
@@ -93,6 +93,6 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information still to locate or publish
 
-- 共通モデル表示に使える水面/落水の具体的な形状データやモデル専用 geometry renderer は確認されない。
+- No specific water-surface or waterfall geometry data, or model-specific geometry renderer for a shared model view, was identified.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

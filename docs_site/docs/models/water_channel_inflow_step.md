@@ -30,7 +30,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## APIs and calculation paths
 
-### 単一 edge step acceleration Fourier amplitude
+### Single edge-step acceleration Fourier amplitude
 
 - `gragra.observables.water_edge_step_fourier_amplitude`
 
@@ -42,7 +42,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 **Inventory status:** partial.
 
-式は API docstring に記載。別個の導出ノートを assigned files からは特定せず。
+The formula is documented in the API docstring. No separate derivation note was identified among the assigned files.
 
 The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
 
@@ -81,6 +81,6 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information still to locate or publish
 
-- イベント率や振幅統計など定常過程化に必要なモデルは API にない。
+- The API does not provide the event-rate or amplitude statistics needed to model a stationary process.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

@@ -26,7 +26,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- x=R x_body+c; exp[−2πif(t−tref)]。周期: A0=C0, An=2Cn。有限窓係数は倍化しない。
+- x=R x_body+c; exp[−2πif(t−tref)]. For periodic signals: A0=C0 and An=2Cn. Finite-window coefficients are not doubled.
 
 ## Parameters and units
 

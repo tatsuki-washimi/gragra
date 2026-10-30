@@ -45,7 +45,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 **Inventory status:** located.
 
-基礎aligned-cuboid vertex antiderivative derivationを継承し、oriented wrapperはlocal/world座標変換を適用する。
+Inherits the aligned-cuboid vertex-antiderivative derivation; the oriented wrapper applies a local-to-world coordinate transformation.
 
 The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
 
@@ -58,7 +58,7 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- Nagy (1966), Nagy, Papp & Benedek (2000)と2002 erratum、Blakely (1995)が基礎閉形式の記録。DOIはderivation文書に未記載。
+- The foundational closed form is documented by Nagy (1966), Nagy, Papp & Benedek (2000) and its 2002 erratum, and Blakely (1995). The derivation document does not list DOIs.
 
 ## Verification evidence
 

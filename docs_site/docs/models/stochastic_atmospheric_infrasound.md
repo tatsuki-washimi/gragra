@@ -67,8 +67,8 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- (internal evidence record) は A3 について Eq.13 provenance と別応答の区別を述べる local model specification。これは独立の参考文献レコードではない。
-- A3 centered-cavern API は source で発見した関連 API。ledger group の api_symbols は surface/underground の2件のみであり、A3 を元 catalogue symbol と見なさない。
+- The local model specification distinguishes the provenance of Eq. 13 from the separate A3 response. It is not an independent bibliographic record.
+- The A3 centered-cavern API is a related API identified in the source. The ledger group lists only the surface and underground APIs; A3 is not treated as an original catalogue symbol.
 
 ## Verification evidence
 

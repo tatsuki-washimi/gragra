@@ -18,14 +18,14 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry
 
-- plot_shape は限られた geometry primitive を扱い、任意点群軌跡表示は確認できず。
+- plot_shape supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
 
 ## Equations
 
 **Existing source formula notes:**
 
 - x(t)=R(axis, angle0+ω(t−angle_epoch))(x_body−origin)+origin。
-- 各質点: Φ=−Gm/r; a=−GmΔ/r³; Γ=Gm(3ΔΔᵀ/r⁵−I/r³)。これは oracle 実装式の転記で導出の証明ではない。
+- For each point mass: Φ=−Gm/r; a=−GmΔ/r³; Γ=Gm(3ΔΔᵀ/r⁵−I/r³). These formulas are transcribed from the oracle implementation and are not a derivation proof.
 
 ## Parameters and units
 
@@ -33,7 +33,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## APIs and calculation paths
 
-### 固定軸・一定角速度の離散質量クラウド
+### Discrete point-mass cloud rotating about a fixed axis at constant angular velocity
 
 - `gragra.analytic.objects.fixed_axis_rotation`
 
@@ -45,7 +45,7 @@ Factory APIs construct model/evaluation objects; observables may be obtained aft
 
 **Inventory status:** partial.
 
-oracle に式はあるが導出証明ではない。
+The oracle includes formulas, but they are not a derivation proof.
 
 The page cites public sources below. A fully typeset public derivation is a separate editorial item wherever the existing source material has not been reproduced here.
 
@@ -69,15 +69,15 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-独立 oracle 比較テストがある。今回未実行。
+An independent oracle-comparison test exists. It was not run for this update.
 
-- (internal evidence record) の選択例は rtol=3e-14。test-code-only; この調査では実行結果 artifact を特定できず。
+- A selected case in the internal evidence record uses rtol=3e-14. This is test-code evidence only; no result artifact was identified in this review.
 
 ## Applicability and limitations
 
-- PointMassCloud と TimeSampling が必要。angle_epoch は sampling epoch と独立。
+- Requires PointMassCloud and TimeSampling. angle_epoch is independent of the sampling epoch.
 
-**Scope note:** cloud only、評価時衝突拒否。
+**Scope note:** Point-mass clouds only; collisions are rejected during evaluation.
 
 See the public verification and limitations guidance for test-specific conditions and interpretation:
 
@@ -86,6 +86,6 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information still to locate or publish
 
-- 任意点群軌跡の専用図、式 renderer。
+- A dedicated arbitrary point-cloud trajectory illustration and equation renderer.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*
