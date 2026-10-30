@@ -163,6 +163,8 @@ nav:
       - Chunking, softening and tolerances: concepts/numerics.md
       - Complex outputs: concepts/complex-outputs.md
   - Guide:
+      - Physics reference: guide/physics-reference.md
+      - Numerical methods: guide/numerical-methods.md
       - Models and methods catalogue: guide/model-and-method-catalogue.md
       - Observables: guide/observables.md
       - Point sources: guide/point-sources.md
@@ -171,8 +173,8 @@ nav:
       - Volume and surface sources: guide/continuous-sources.md
       - Rigid motion Fourier analysis: guide/rigid-motion-fourier.md
       - Displacement and density-perturbation fields: guide/fields.md
-      - Source diagnostics: guide/source-diagnostics.md
-      - Formula LaTeX conversion: guide/formulas.md
+      - Experimental source diagnostics: guide/source-diagnostics.md
+      - Experimental formula display: guide/formulas.md
       - Using external meshes: guide/meshes.md
       - Analytic benchmarks: guide/analytic-benchmarks.md
       - Gen1 analytic models: guide/gen1-analytic-models.md

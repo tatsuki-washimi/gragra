@@ -1,5 +1,10 @@
 # Source diagnostics and visualization
 
+> The helpers described here are present in the package but outside the
+> documented public API scope for this release. Their names, dependencies and
+> behavior carry no compatibility promise. For new examples, plot data from
+> the documented calculation API with Matplotlib directly.
+
 `gragra.plotting` provides high-level diagnostic and visualization routines for
 discrete source setups, geometric shapes, and calculation results:
 

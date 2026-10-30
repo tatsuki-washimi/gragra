@@ -20,9 +20,11 @@ Both statements have consequences that are easy to discover too late — which p
 
 ## Research scope
 
-本リポジトリは個人の科学研究用であり、数値実装・検証・研究計算を目的とする。
-公開・配布準備は対象外とする。将来必要になった場合も、その時点のコードから
-独立に検討し、過去の公開手続き・認定記録との整合は要求しない。
+This repository distributes the public `gragra` package and documents its
+interfaces. It does not certify arbitrary research calculations or every
+scientific condition. Run research-required checks locally with the exact code
+revision, environment, inputs and conditions for the work. Public CI results
+describe only the checks selected by the repository workflow.
 
 [Installation](getting-started/installation.md) covers the source install and
 the optional extras.
@@ -59,6 +61,10 @@ You are working in the frequency domain with complex amplitudes, directional ave
 2. [Coherent responses and cross statistics](guide/coherent.md) — coherent observables, the gravitoelastic tensor, and cross-spectral densities, including which of them carry which power of the gravitational constant.
 
 [Complex outputs](concepts/complex-outputs.md) explains what a complex result means here, and what it does not mean.
+
+For a broader map of the physical models, start with the
+[Physics reference](guide/physics-reference.md). For a map of the computational
+paths and their numerical limits, see [Numerical methods](guide/numerical-methods.md).
 
 ## How to read the verification claims on this site
 
