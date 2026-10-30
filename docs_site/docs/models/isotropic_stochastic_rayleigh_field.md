@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Isotropic stochastic Rayleigh field
 
-**Level:** — (definition and assignment pending).
+**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
 
 **Physical domain:** stochastic seismic  
 **Geometry:** halfspace

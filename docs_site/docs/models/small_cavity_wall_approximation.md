@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Small-cavity wall approximation
 
-**Level:** — (definition and assignment pending).
+**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
 
 **Physical domain:** seismic elastic  
 **Geometry:** cavity

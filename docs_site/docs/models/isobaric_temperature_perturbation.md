@@ -1,7 +1,7 @@
 <!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
 # Isobaric temperature perturbation
 
-**Level:** — (definition and assignment pending).
+**Validation level:** Unassigned (the scale and assignment criteria have not yet been defined).
 
 **Physical domain:** atmospheric temperature  
 **Geometry:** sphere, cuboid, cylinder

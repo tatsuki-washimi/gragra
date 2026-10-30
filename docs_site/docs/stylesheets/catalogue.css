@@ -2,8 +2,15 @@
 @media(min-width:76.25em) {
   .md-grid { max-width:88rem; }
 }
-.gragra-catalogue-table { width:100%; border-collapse:collapse; }
+.gragra-catalogue-table { width:100%; table-layout:fixed; border-collapse:collapse; border:1px solid var(--md-default-fg-color--lightest); }
+.gragra-catalogue-table th:nth-child(1),.gragra-catalogue-table td:nth-child(1) { width:36%; }
+.gragra-catalogue-table th:nth-child(2),.gragra-catalogue-table td:nth-child(2) { width:17%; }
+.gragra-catalogue-table th:nth-child(3),.gragra-catalogue-table td:nth-child(3) { width:12%; }
+.gragra-catalogue-table th:nth-child(4),.gragra-catalogue-table td:nth-child(4) { width:22%; }
+.gragra-catalogue-table th:nth-child(5),.gragra-catalogue-table td:nth-child(5) { width:13%; }
 .gragra-catalogue-table th { text-align:left; white-space:nowrap; }
+.gragra-catalogue-table th,.gragra-catalogue-table td { border-right:1px solid var(--md-default-fg-color--lightest); border-bottom:1px solid var(--md-default-fg-color--lightest); }
+.gragra-catalogue-table th:last-child,.gragra-catalogue-table td:last-child { border-right:0; }
 .gragra-catalogue-table td { vertical-align:top; padding:0.7rem 0.55rem; }
 .gragra-catalogue-table tbody tr:nth-child(even) { background:var(--md-default-fg-color--lightest); }
 .gragra-catalogue-table a { font-weight:600; }
@@ -18,7 +25,8 @@
 .gragra-count { font-weight:600; font-size:.85rem; }
 .gragra-empty { display:none; margin:1rem 0; }
 @media(max-width:46rem) {
-  .gragra-catalogue-table,.gragra-catalogue-table tbody { display:block; }
+  .gragra-catalogue-table,.gragra-catalogue-table tbody { display:block; border:0; }
+  .gragra-catalogue-table th,.gragra-catalogue-table td { border:0; }
   .gragra-catalogue-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
   .gragra-catalogue-table tbody tr { display:grid; grid-template-columns:1fr 1fr; gap:.35rem; padding:.75rem; border-bottom:1px solid var(--md-default-fg-color--lightest); }
   .gragra-catalogue-table tbody tr[hidden],.gragra-catalogue-table[hidden] { display:none; }
