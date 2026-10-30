@@ -1,0 +1,97 @@
+<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+# Causal point force
+
+## Model overview
+
+**Level:** — (definition and assignment pending).
+
+**Physical domain:** seismic elastic  
+**Geometry:** point
+
+Time-dependent force in an infinite homogeneous elastic medium
+
+**Source-declared observable / representation pairs:**
+
+- Φ a Γ — Time series
+
+These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
+
+[Back to model catalogue](../guide/model-and-method-catalogue.md)
+
+## Geometry and equations
+
+- Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
+
+### Equations
+
+**Existing source formula notes:**
+
+- Phi = -G mu J / r^2; a = G[(J/r^3)e + (f/(vp^2 r)-3J/r^3)mu n]; Gamma formula C,D coefficients; all three outputs.
+
+## Parameters and calculation paths
+
+### Parameters and units
+
+- position m, unit direction, vp m/s, ForceHistory knots seconds/coefficients; GPS onset, sampling epoch, dt seconds and count.
+
+### Calculation paths
+
+#### implemented model/API path
+
+- `gragra.analytic.seismic.point_force`
+
+**Path-level source-declared output union:** Φ a Γ — Time series
+
+## Derivation and sources
+
+### Derivation
+
+Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+
+- No separate derivation is asserted from the formula declaration alone.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic models](../guide/gen1-analytic-models.md)
+
+**Bibliographic inventory:** partial.
+
+- Reference table records local formula-ledger Green function and causal delay moment.
+
+## Verification and applicability
+
+### Verification
+
+**Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
+
+- Representative catalogue output-contract entries: 0.
+- Catalogue probe state: Not assessed (no catalogue output probe registered).
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
+
+**Existing verification inventory:**
+
+Verification method, tolerances, and artifact status recorded; tests were not run in this task.
+
+- CAS script [`tests/oracles/gen1/derivations/verify_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/gen1/derivations/verify_point_force.py) documents r&gt;0,c&gt;0,C1 history assumptions and J derivatives; test code only. Hand-sample [`tests/high_level/test_gen1_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/high_level/test_gen1_point_force.py) uses rtol 1e-14; no saved output found.
+
+### Applicability and limitations
+
+- Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
+
+**Scope note:** Applicability limits recorded.
+
+See the public verification and limitations guidance for test-specific conditions and interpretation:
+
+- [Verification matrix](../verification/matrix.md)
+- [Verification limitations](../verification/limitations.md)
+
+
+## Information not yet confirmed
+
+- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- No additional committed plot asset identified in these assigned API sources.
+
+*Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*
