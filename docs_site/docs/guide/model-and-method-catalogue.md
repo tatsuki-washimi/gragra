@@ -7,13 +7,25 @@ The 48 variants are inventory subdivisions, not 48 independent numerical methods
 
 This catalogue distinguishes **source-declared observable availability**, **representative output-contract probes**, and **scientific accuracy evidence**. Source declarations alone do not establish accuracy or API stability.
 
-**Observable legend:** Φ = gravitational potential (m²/s²); a = gravitational acceleration (m/s²); Γ = gravity-gradient tensor (s⁻²). These are base SI units; Fourier and spectral outputs use the API-specific frequency and normalization conventions. Displacement inputs are different from acceleration output a.
+- **Observables:**
+  - Φ: gravitational potential (m²/s²)
+  - a: gravitational acceleration (m/s²)
+  - Γ: gravity-gradient tensor (s⁻²)
+  - These use base SI units. Fourier and spectral outputs use API-specific frequency and normalization conventions.
+  - Displacement inputs differ from acceleration output a.
 
-**Representation legend:** Static, Phasor, Time series, Fourier series, Fourier transform, and Spectral density (ASD / PSD / CSD). An entry may have several source-declared paths; each observable set is paired with the representation on the same line.
+- **Representations:**
+  - Static
+  - Phasor
+  - Time series
+  - Fourier series
+  - Fourier transform
+  - Spectral density: ASD, PSD, CSD
+  - A model may have several source-declared paths; each observable set is paired with its representation.
 
-**Level:** Definition and assignment pending.
+- **Level:** Definition and assignment pending.
 
-**Not assessed** refers only to a missing catalogue output probe; it is not a statement about implementation or scientific validation.
+- **Not assessed:** No representative catalogue output probe is registered. This does not indicate implementation or scientific validation status.
 
 <div id="gragra-catalogue-controls"></div>
 
