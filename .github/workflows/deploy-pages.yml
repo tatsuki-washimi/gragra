@@ -1,0 +1,76 @@
+name: Deploy Pages
+
+'on':
+  # G1 プレビュー配信用: 人間の明示的な手動起動 (workflow_dispatch) のみを受け付ける。
+  # G1 期間中は自動デプロイ (push: branches: [main]) を意図的に含めず、未完成サイトの外部公開を人間が完全に制御する。
+  # G3 正式公開承認時に push: branches: [main] を追加予定。
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 'Commit SHA or ref from PR #6 to build and deploy'
+        required: true
+        default: '2870c8a2abdac3637a29b774df3362fb57138125'
+
+concurrency:
+  group: pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site (strict)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+
+      - name: Record and verify target revision
+        run: |
+          RESOLVED_SHA="$(git rev-parse HEAD)"
+          echo "Requested source_sha: ${{ inputs.source_sha }}"
+          echo "Resolved commit SHA:  ${RESOLVED_SHA}"
+          echo "Commit Author:        $(git log -1 --format='%an <%ae>')"
+          echo "Commit Date:          $(git log -1 --format='%cd')"
+          echo "Commit Subject:       $(git log -1 --format='%s')"
+          echo "RESOLVED_SHA=${RESOLVED_SHA}" >> "$GITHUB_ENV"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install '.[dev,field-io,docs]'
+
+      - name: Build documentation (strict)
+        run: |
+          python -m mkdocs build --strict
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: site/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
