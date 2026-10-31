@@ -23,6 +23,15 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Validate source revision input
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo '::error::source_sha must be a complete 40-character commit SHA'
+            exit 1
+          fi
       - name: Checkout source repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -30,14 +39,27 @@ jobs:
           fetch-depth: 0
 
       - name: Record and verify target revision
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
+          set -euo pipefail
           RESOLVED_SHA="$(git rev-parse HEAD)"
-          echo "Requested source_sha: ${{ inputs.source_sha }}"
-          echo "Resolved commit SHA:  ${RESOLVED_SHA}"
+          if [[ "${SOURCE_SHA,,}" != "$RESOLVED_SHA" ]]; then
+            echo '::error::Checked-out revision does not match requested source_sha'
+            exit 1
+          fi
+          # Limit G1 preview deployment to commits reachable from Draft PR #6.
+          git fetch --no-tags origin 'refs/pull/6/head:refs/remotes/origin/pr-6-preview'
+          if ! git merge-base --is-ancestor "$RESOLVED_SHA" refs/remotes/origin/pr-6-preview; then
+            echo '::error::source_sha is not on the current PR #6 history'
+            exit 1
+          fi
+          echo "Requested source_sha: $SOURCE_SHA"
+          echo "Resolved commit SHA:  $RESOLVED_SHA"
           echo "Commit Author:        $(git log -1 --format='%an <%ae>')"
           echo "Commit Date:          $(git log -1 --format='%cd')"
           echo "Commit Subject:       $(git log -1 --format='%s')"
-          echo "RESOLVED_SHA=${RESOLVED_SHA}" >> "$GITHUB_ENV"
+          echo "RESOLVED_SHA=$RESOLVED_SHA" >> "$GITHUB_ENV"
 
       - name: Set up Python 3.11
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.3.0
