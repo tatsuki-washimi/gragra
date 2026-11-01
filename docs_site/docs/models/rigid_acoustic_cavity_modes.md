@@ -32,11 +32,24 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - Modes satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition \(\partial_n \Psi = 0\) on the cavity boundary; frequency is derived as \(f = c_s k / (2\pi)\). The static zero mode (\(k=0\)) is excluded.
 - Cuboid modes: \(\Psi = N \prod_{j\in\{x,y,z\}} \cos\left(\frac{n_j \pi (x_j + L_j/2)}{L_j}\right)\) with \(k^2 = \sum_j (n_j \pi / L_j)^2\) and \(N = 2^{r/2}\) where \(r\) is the number of non-zero indices, giving unit spatial RMS.
-- Cylinder modes: \(\Psi \propto J_m(\alpha_{mn} r/R) A_m(\phi) \cos(q\pi (z+H/2)/H)\) with \(J\'_m(\alpha_{mn}) = 0\) and \(k^2 = (\alpha_{mn}/R)^2 + (q\pi/H)^2\).
+- Cylinder modes: \(\Psi \propto J_m(\alpha_{mn} r/R) A_m(\phi) \cos(q\pi (z+H/2)/H)\) with \(J'_m(\alpha_{mn}) = 0\) and \(k^2 = (\alpha_{mn}/R)^2 + (q\pi/H)^2\).
+- Sphere modes: \(\Psi_{lmn}(r,\theta,\phi) = j_l(k_{ln} r) Y_{lm}(\theta,\phi)\) where \(j'_l(k_{ln} R) = 0\). Evaluation uses exact closed-form radial solutions.
+- Density perturbation is \(\delta\rho = (P / c_s^2) \Psi\). Potential and fields vanish identically outside the cavity for non-radiating modes or use boundary multipole expansions. Targets on physical cavity walls, caps, and rims are rejected.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| — | `cavity_geometry` | Enclosing cavity geometry ('Sphere', 'Cuboid', 'Cylinder') | dimensionless |
+| \((l, m, n)\) | `mode_indices` | Acoustic eigenmode numbers | dimensionless |
+| \(\rho_0\) | `air_density_kg_m3` | Cavity equilibrium air density | kg/m³ |
+| \(c_s\) | `sound_speed_m_s` | Speed of sound inside cavity | m/s |
+| \(\delta p_0\) | `pressure_amplitude_pa` | Modal acoustic pressure amplitude | Pa |
+| \(\mathbf x\) | `targets_m` | Sensor coordinates strictly outside cavity | m |
+
+**Additional notes on parameters and models:**
 
 - geometry: Cavity geometry instance (Sphere with radius R; Cuboid with edge lengths Lx, Ly, Lz; Cylinder with radius R and height H); mode: Mode descriptor (SphereAcousticMode(l, m, n), CuboidAcousticMode(nx, ny, nz), CylinderAcousticMode(m, n, q, azimuth)); pressure_amplitude_pa: complex or float, spatial-RMS peak pressure phasor in Pa; sound_speed_m_s: float, positive speed of sound in m/s; targets_m: array-like (M, 3) in cavity local frame.
 
@@ -78,6 +91,8 @@ Existing public documentation and original formulation context:
 
 - Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
 - Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
+- Cylinder: an unpublished design note (real-mode normalization, exact overlaps, gap-selected transforms); #cylinder-rigorous-tail-coefficients (outward omitted-integral bounds); G_SI applied once.
+- No external bibliographic DOI is recorded by these entries.
 
 ## Verification and applicability
 

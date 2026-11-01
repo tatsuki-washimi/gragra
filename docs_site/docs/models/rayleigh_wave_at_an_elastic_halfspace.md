@@ -22,7 +22,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Rayleigh wave at an elastic halfspace schematic](../assets/models/rayleigh_wave_halfspace.svg)
 
-*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber q, elliptical retrograde orbit, and exponential depth decay.*
+*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber k_R, elliptical retrograde orbit, and exponential depth decay.*
 
 - High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
 
@@ -37,6 +37,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho\) | `density_kg_m3` | Background mass density | kg/m³ |
+| \(v_P\) | `vp_m_s` | Compressional P-wave speed | m/s |
+| \(v_S\) | `vs_m_s` | Shear S-wave speed (0 < v_S < v_P) | m/s |
+| \(f\) | `frequency_hz` | Rayleigh wave frequency | Hz |
+| \(\xi_z(0)\) | `displacement_m` | Vertical surface displacement amplitude | m |
+| \(\hat{\mathbf k}\) | `propagation_direction` | Propagation unit vector along surface | dimensionless |
+| \(\mathbf x_0\) | `phase_origin_m` | Phase reference point | m |
+| \(t_0\) | `reference_time` | Phasor time origin | s |
+
+**Additional notes on parameters and models:**
 
 - density_kg_m3: float, background mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)).
 - frequency_hz: float, wave frequency in Hz; displacement_m: float or Quantity, vertical surface displacement amplitude \(\xi_z(0)\) in meters.

@@ -66,15 +66,20 @@ separate numerical-quadrature or elliptic/series paths.
 
 ### Parameters and units
 
-| Parameter | Meaning | SI unit |
-|---|---|---|
-| center_m / \(\mathbf c\) | Cylinder center | m |
-| radius_m / \(R\) | Positive radius | m |
-| height_m / \(H\) | Positive height | m |
-| density_kg_m3 / \(\rho\) | Uniform density | kg/m³ |
-| targets_m / \(\mathbf x\) | Evaluation targets, shape (M, 3) | m |
-| quadrature_order | Numerical route only; default 32 | dimensionless |
-| rotation_matrix | Optional local-to-world rotation for analytic route | dimensionless |
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\mathbf c\) | `center_m` | Cylinder center | m |
+| \(R\) | `radius_m` | Positive radius (R > 0) | m |
+| \(H\) | `height_m` | Positive height (H > 0) | m |
+| \(\rho\) | `density_kg_m3` | Uniform mass density | kg/m³ |
+| \(\mathbf x\) | `targets_m` | Evaluation targets, shape (M, 3) | m |
+| — | `quadrature_order` | Numerical route quadrature order (default 32) | dimensionless |
+| \(\mathbf Q\) | `rotation_matrix` | Optional local-to-world rotation for analytic route | dimensionless |
+
+**Additional notes on parameters and models:**
+
+- center_m: array-like (3,), cylinder center in meters; radius_m: float &gt; 0, cylinder radius R in meters; height_m: float &gt; 0, cylinder height H in meters; density_kg_m3: float, mass density rho in kg/m^3; targets_m: array-like (M, 3), evaluation targets in meters.
+- Path-specific arguments: quadrature_order (default 32) for numerical route; rotation_matrix for oriented analytic route.
 
 ### Calculation paths
 

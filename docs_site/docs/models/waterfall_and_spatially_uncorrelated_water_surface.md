@@ -38,6 +38,20 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(f\) | `frequency_hz` | Fluctuation frequency | Hz |
+| \(v\) | `velocity_mps` | Waterfall plunge or flow velocity | m/s |
+| \(D\) | `distance_m` | Distance from waterfall stream to detector | m |
+| \(S_A^{1/2}(f)\) | `area_asd_m2_per_rt_hz` | Stream cross-sectional area ASD | m²/√Hz |
+| \(H\) | `channel_distance_m` | Perpendicular distance to uncorrelated channel | m |
+| \(w\) | `width_m` | Channel width | m |
+| \(A_{\mathrm{cell}}\) | `correlation_area_m2` | Surface correlation cell area | m² |
+| \(S_\eta^{1/2}(f)\) | `surface_asd_m_per_rt_hz` | Uncorrelated surface displacement ASD | m/√Hz |
+| \(\rho_w\) | `density_kg_m3` | Fluid mass density (default 1000.0) | kg/m³ |
+
+**Additional notes on parameters and models:**
+
 - Waterfall API (water_waterfall_asd): frequency_hz: float &gt; 0 in Hz; velocity_mps: float nonzero in m/s; distance_m: float D &gt; 0 in meters; area_asd_m2_per_rt_hz: float &gt;= 0, stream cross-sectional area ASD in m^2/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
 - Uncorrelated channel API (water_channel_uncorrelated_asd): distance_m: float H &gt; 0 in meters; width_m: float w &gt; 0 in meters; correlation_area_m2: float A_cell &gt; 0 in m^2; surface_asd_m_per_rt_hz: float &gt;= 0 in m/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
 

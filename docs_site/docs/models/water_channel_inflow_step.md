@@ -33,10 +33,22 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 - Models the transient gravitational perturbation produced by a single deterministic Heaviside volume step event \(\Delta V\) at channel inflow coordinate \(x_0\) at perpendicular distance \(D &gt; 0\).
 - Single-event acceleration Fourier amplitude: \(|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}\) with physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\).
 - Single-event strain Fourier spectral amplitude: \(|h(f)| = \frac{|\Delta a_x(f)|}{(2\pi f)^2 L_{\mathrm{arm}}}\), where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text{ m}\)).
+- Distinction: This is a single deterministic transient event spectrum, NOT a stationary noise ASD (units \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\)).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(x_0\) | `x0_m` | Coordinate of inflow edge along channel axis | m |
+| \(D\) | `distance_m` | Perpendicular distance from channel to test mass | m |
+| \(\Delta V\) | `volume_m3` | Displaced water volume step | m³ |
+| \(f\) | `frequency_hz` | Fourier transform evaluation frequency | Hz |
+| \(L\) | `arm_length_m` | Interferometer baseline arm length (default 3000.0) | m |
+| \(\rho_w\) | `density_kg_m3` | Fluid mass density (default 1000.0) | kg/m³ |
+
+**Additional notes on parameters and models:**
 
 - x0_m: float finite, coordinate of inflow edge along channel axis in meters; distance_m: float D &gt; 0, perpendicular distance to test mass in meters; volume_m3: float Delta V &gt; 0, displaced volume step in m^3; frequency_hz: float or array-like &gt; 0, Fourier frequency in Hz; arm_length_m: float L &gt; 0, interferometer arm length in meters (default 3000.0 m); density_kg_m3: float rho &gt; 0, fluid density in kg/m^3 (default 1000.0).
 

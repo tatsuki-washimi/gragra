@@ -40,6 +40,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| — | `cavern_shape` | Cavity shape ('sphere', 'cube', 'half_sphere', etc.) | dimensionless |
+| — | `test_mass_location` | Sensor location ('arbitrary', 'center_3d', 'floor_center_2d') | dimensionless |
+| \(\mathbf u\) | `displacement_m` | Wall displacement vector | m |
+| \(\rho\) | `density_kg_m3` | Surrounding rock mass density | kg/m³ |
+| \(f\) | `frequency` | Optional wave frequency for peak phasor | Hz |
+| \(t_0\) | `reference_time` | Reference time origin for phasor | s |
+
+**Additional notes on parameters and models:**
+
 - High-level small_cavity_wall: geometry (Sphere, Cuboid, or Cylinder), displacement (Quantity 3-vector in geometry frame), density (Quantity kg/m^3), optional frequency (Quantity Hz) and reference_time for peak phasor representation.
 - Scalar coupling factor sca_wall_coupling_factor: cavern_shape in {'sphere', 'cube', 'half_sphere', 'elongated_cuboid_2to1to1'}, test_mass_location in {'arbitrary', 'center_3d', 'floor_center_2d'}.
 - Scalar acceleration sca_wall_acceleration: adds density_kg_m3 (float) and displacement_m (array-like (3,)) to cavern_shape and test_mass_location.

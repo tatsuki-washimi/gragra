@@ -34,10 +34,20 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Under isobaric thermodynamic conditions, small temperature variations \(\delta T\) couple linearly to density as \(\delta\rho = -\rho_0 \frac{\delta T}{T_0}\), where \(\rho_0 &gt; 0\) is ambient background density and \(T_0 &gt; 0\) is background temperature in Kelvin.
 - Fourier mode: \(\delta T = \Delta T \cos(\mathbf k \cdot (\mathbf x - \mathbf x_0))\) (static) or \(\widetilde{\delta T} = \widetilde{\Delta T} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) (phasor). The G-free potential is \(\Phi^{(G\text{-free})} = -\frac{4\pi \rho_c}{k^2} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) with zero-mean gauge (\(k \ne 0\)), and \(\mathbf a^{(G\text{-free})} = -i \mathbf k \Phi^{(G\text{-free})}\).
 - Gaussian profile: \(\delta T(\mathbf x) = \Delta T e^{-\|\mathbf x - \mathbf c\|^2 / (2\sigma^2)}\). At center \(\mathbf x = \mathbf c\), \(\Phi^{(G\text{-free})}(0) = -4\pi \rho_c \sigma^2\), \(\mathbf a(0) = \mathbf 0\), and \(\mathbf\Gamma^{(G\text{-free})}(0) = -\frac{4\pi \rho_c}{3} \mathbf I_3\) where \(\rho_c = -\rho_0 \Delta T / T_0\). Far from center, fields approach a point monopole of mass \(M = (2\pi)^{3/2} \rho_c \sigma^3\).
+- Targets on material boundaries of finite geometric bodies (Sphere, Cuboid, Cylinder) are rejected for potential, acceleration, and gradient.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho_0\) | `ambient_density_kg_m3` | Ambient unperturbed air density | kg/m³ |
+| \(T_0\) | `ambient_temperature_k` | Ambient absolute temperature | K |
+| \(\delta T(\mathbf x, t)\) | `temperature_perturbation_k` | Temperature fluctuation field (delta rho = -rho0 delta T / T0) | K |
+| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+
+**Additional notes on parameters and models:**
 
 - rho0_kg_m3: float &gt; 0, ambient atmospheric density; T0_k: float &gt; 0, ambient temperature in Kelvin; delta_temperature: float, complex, or profile-specific amplitude in Kelvin; targets_m: array-like (M, 3), evaluation points in meters.
 - Profile parameters: TemperatureFourierMode(wavevector_rad_m, phase_origin_m, frequency_hz); TemperatureGaussian(center_m, sigma_m); TemperaturePerturbationGrid(edges_m, temperatures_k).
@@ -93,6 +103,7 @@ Existing public documentation and original formulation context:
 
 - an unpublished design note: approved isobaric, plane-wave, Gaussian and finite-body formulas.
 - gragra.fields.thermodynamic.isobaric_temperature_density_perturbation: signed δρ=−ρ0δT/T0 linearization.
+- gragra.constants.G_SI: applied exactly once by shared analytic bridge.
 
 ## Verification and applicability
 

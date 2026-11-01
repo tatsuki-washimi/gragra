@@ -38,6 +38,18 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho\) | `density_kg_m3` | Elastic medium mass density | kg/m³ |
+| \(v_P\) | `v_p_m_s` | Compressional P-wave speed | m/s |
+| \(v_S\) | `v_s_m_s` | Shear S-wave speed (0 < v_S < v_P) | m/s |
+| \(R\) | `radius_m` | Cavity radius (spherical cavity B2 model) | m |
+| \(f\) | `frequency_hz` | Wave frequency | Hz |
+| \(S_{\xi,P}(f)\) | `p_displacement_psd_m2_hz` | Per-component one-sided P-wave displacement PSD | m²/Hz |
+| \(S_{\xi,S}(f)\) | `s_displacement_psd_m2_hz` | Per-component one-sided S-wave displacement PSD | m²/Hz |
+
+**Additional notes on parameters and models:**
+
 - Full-space B1 (fullspace_p_isotropic_acceleration_csd_g_free): density_kg_m3: float rho &gt;= 0 in kg/m^3; frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0, one-sided per-component P-displacement PSD in m^2/Hz.
 - Spherical cavity B2 (spherical_cavity_ps_isotropic_acceleration_csd_g_free): radius_m: float R &gt; 0 in meters; density_kg_m3: float rho &gt;= 0 in kg/m^3; v_p_m_s: float v_P &gt; 0 in m/s; v_s_m_s: float v_S &gt; 0 in m/s (satisfying 0 &lt; v_S &lt; v_P); frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz; s_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz.
 
@@ -70,6 +82,7 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - The local formula specification maps formulas to the implementation; it is not itself a bibliographic record.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 
 ## Verification and applicability
 

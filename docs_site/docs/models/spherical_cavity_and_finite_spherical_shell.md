@@ -38,6 +38,18 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(a\) | `inner_radius_m` | Inner cavity radius | m |
+| \(R\) | `outer_radius_m` | Outer shell radius (R > a) | m |
+| \(k\) | `wavenumber_rad_m` | Acoustic or elastic wavenumber | rad/m |
+| \(\rho\) | `density_kg_m3` | Medium mass density | kg/m³ |
+| \(\xi\) | `displacement_m` | Wave displacement amplitude | m |
+| \(\hat{\mathbf n}\) | `direction` | Wave propagation unit vector | dimensionless |
+| \(v_p\) | `phase_speed` | Phase speed (high-level model) | m/s |
+
+**Additional notes on parameters and models:**
+
 - High-level models: geometry (Sphere or SphericalShell), density (Quantity kg/m^3), phase_speed (Quantity m/s or FrequencySeries), displacement (FrequencySeries m), wave_type ('P' or 'S'), propagation_direction (3,), polarization (3,), reference_time, phase_origin.
 - Center helper: inner_radius_m a, outer_radius_m R, wavenumber_rad_m k, density_kg_m3 rho, displacement_m xi, direction (3,). Returns acceleration in m/s^2.
 
@@ -79,6 +91,7 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - ANNA v4 Section 4.1 Eqs.47–53 for finite-shell center P formulas. U10 validation says Harms 2019 continuity/bulk/surface definitions and Reumers v4 P/S center formulas were checked against actual PDFs in that recorded work.
+- [arXiv:2603.15157v4](https://arxiv.org/abs/2603.15157v4)
 
 ## Verification and applicability
 

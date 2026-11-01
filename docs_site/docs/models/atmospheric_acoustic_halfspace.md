@@ -33,10 +33,24 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - The acoustic plane wave has frequency \(f\), sound speed \(c_s\), horizontal wavenumber \(q = k \sin\theta\), and vertical wavenumber \(k_z = k \cos\theta\), where \(k = 2\pi f / c_s\) and \(\theta \in (0, \pi/2]\) is the angle of incidence from zenith (normal incidence \(\theta=0\) is excluded; grazing incidence \(\theta=\pi/2\) is valid).
 - With horizontal wavevector \(\mathbf q = (q\cos\phi_0, q\sin\phi_0)\) and phase factor \(e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\), the surface pressure amplitude is \(P_0\). The G-free potential coefficient is \(C = \frac{4\pi P_0}{c_s^2 k^2}\).
 - In the atmospheric layer (\(z &gt; 0\)), \(\Phi^{(G\text{-free})} = C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} \left[\frac{1}{2} e^{-q z} - \cos(k_z z)\right]\), satisfying \(\nabla^2 \Phi^{(G\text{-free})} = 4\pi \delta\rho = -4\pi (P_0/c_s^2) e^{i \mathbf q \cdot \mathbf x_\perp} \cos(k_z z)\).
+- In the underground halfspace (\(z &lt; 0\)), density perturbation is zero and \(\Phi^{(G\text{-free})} = -\frac{1}{2} C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} e^{q z}\), satisfying Laplace\'s equation \(\nabla^2 \Phi = 0\).
+- Acceleration and gradient are \(\mathbf a^{(G\text{-free})} = -\nabla \Phi^{(G\text{-free})}\) and \(\mathbf\Gamma^{(G\text{-free})} = -\nabla\nabla \Phi^{(G\text{-free})}\). SI observables multiply by \(G\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho_{\mathrm{air}}\) | `air_density_kg_m3` | Atmospheric air mass density | kg/m³ |
+| \(\rho_{\mathrm{ground}}\) | `ground_density_kg_m3` | Subsurface ground mass density | kg/m³ |
+| \(c_s\) | `sound_speed_m_s` | Speed of sound in air | m/s |
+| \(f\) | `frequency_hz` | Acoustic wave frequency | Hz |
+| \(P_0\) | `pressure_amplitude_pa` | Acoustic pressure wave amplitude | Pa |
+| \(\mathbf k_H\) | `horizontal_wavenumber_rad_m` | Horizontal wavevector (k_x, k_y) | rad/m |
+| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+
+**Additional notes on parameters and models:**
 
 - surface_pressure_pa: float, acoustic pressure amplitude P0 at z=0 in Pa; sound_speed_m_s: float, positive speed of sound in m/s; frequency_hz: float, positive wave frequency in Hz; incidence_angle_rad: float in (0, pi/2], zenith angle theta (theta=0 normal incidence excluded, theta=pi/2 grazing allowed); azimuth_rad: float, horizontal propagation azimuth phi0 in radians; phase_origin_m: array-like (3,), reference point for phase zero in meters; targets_m: array-like (M, 3), target coordinates in meters.
 - Observables return complex phasors (peak amplitude, time reconstruction Re[X exp(-2 pi i f (t - t_ref))]). SI outputs multiply G_free by G.

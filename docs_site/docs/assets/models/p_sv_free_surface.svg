@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
   <title id="title">P/SV Waves at a Traction-Free Surface</title>
-  <desc id="desc">Incident P or SV wave from subsurface z < 0 reflecting and mode-converting at planar traction-free surface z = 0.</desc>
+  <desc id="desc">Incident P or SV wave from subsurface z &lt; 0 reflecting and mode-converting at planar traction-free surface z = 0.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
       <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>

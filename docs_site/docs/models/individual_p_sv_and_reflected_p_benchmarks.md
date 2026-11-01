@@ -33,14 +33,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Single upward plane P-wave (Harms 2019 Eqs. 86/87): with prefactor \(C_1 = -\frac{\rho \xi_0^P}{i k_P}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) above ground (\(z &gt; 0\)), and \(\Phi^{(G\text{-free})} = 2\pi C_1 [2 e^{i k_z z} - e^{k_\rho z}] e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) underground (\(z &lt; 0\)).
 - Single upward plane SV-wave (Harms 2019 Eq. 88): with prefactor \(C_2 = \frac{\rho \xi_0^{SV}}{k_S}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_2 e^{-k_\rho |z|} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\), valid on both sides of the surface.
 - Reflected-P composite above ground (\(z &gt; 0\)): incident P + reflected P + converted SV satisfying traction-free surface boundary condition. Potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 \delta(\theta, k_\rho) e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) with dimensionless wavenumber ratios \(r_\rho = k_\rho/k_S\), \(r_{zP} = k_{zP}/k_S\), \(r_{zS} = k_{zS}/k_S\) and transfer coefficient \(\delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}\).
+- Implementation detail (A-U08): Production API uses physical \(+i\) converted-SV coefficient from the solved surface displacement field. The literal Harms (2019) Eq. (90) expression with \(-i\) is retained in private test helper _harms2019_reflected_p_delta for verification.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho\) | `density_kg_m3` | Medium mass density | kg/m³ |
+| \(v_P\) | `vp_m_s` | Elastic P-wave speed | m/s |
+| \(v_S\) | `vs_m_s` | Elastic S-wave speed | m/s |
+| \(f\) | `frequency_hz` | Wave frequency | Hz |
+| \(\xi\) | `displacement_m` | Wave displacement amplitude | m |
+| \(\theta\) | `incidence_angle_rad` | Incidence angle from surface normal | rad |
+| \(\phi\) | `azimuth_rad` | Azimuth angle | rad |
+| \(\mathbf x\) | `targets_m` | Evaluation targets in halfspace (z > 0) | m |
+
+**Additional notes on parameters and models:**
+
 - targets_m: array-like (M, 3), evaluation points in meters (z-up coordinate system; \(z \le 0\) rejected for the above-ground reflected composite).
 - density_kg_m3: float, background mass density in \(\mathrm{kg/m^3}\); v_p_m_s, v_s_m_s: float, P- and S-wave speeds in m/s (\(v_P &gt; \sqrt{4/3}v_S &gt; 0\)).
 - frequency_hz: float or array-like, positive frequency in Hz; displacement_m: float, incident displacement amplitude in meters.
+- incidence_angle_rad: float, angle \(0 \le \theta &lt; \pi/2\) from normal; azimuth_rad: float, azimuth angle; phase_origin_m: array-like (3,), phase origin in meters.
 
 ### Calculation paths
 

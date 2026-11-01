@@ -40,6 +40,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(M\) | `mass_kg` | Total rigid body mass | kg |
+| \(\mathbf I\) | `inertia_tensor_kg_m2` | Moment of inertia tensor at center of mass | kg·m² |
+| \(\mathbf x_{\mathrm{cm}}(t)\) | `cm_positions_m` | Center-of-mass trajectory time series | m |
+| \(\boldsymbol{\theta}(t)\) | `orientation_angles_rad` | Rigid body orientation angles time series | rad |
+| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+
+**Additional notes on parameters and models:**
+
 - source: PointMassCloud object defining point masses in kg and body-frame positions in meters; transform: PrescribedRigidTransform or callable pose returning (R(t), c(t)).
 - Sampled route: uses TimeSampling specifying discrete evaluation epochs in seconds.
 - Fourier route: reference_time GPS epoch, frequencies list in Hz (requires \(f_{\mathrm{max}} |t_{\mathrm{epoch}} - t_{\mathrm{ref}}| \le 10^6\) cycles). Returns potential, acceleration, and gradient Fourier objects.

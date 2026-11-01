@@ -33,14 +33,30 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - Plane waves in an elastic halfspace (\(z &lt; 0\)) reflecting at a planar traction-free boundary (\(z = 0\)), with horizontal wavenumber \(q\), vertical P-wavenumber \(p = \sqrt{(\omega/v_P)^2 - q^2}\), and vertical S-wavenumber \(s = \sqrt{(\omega/v_S)^2 - q^2}\).
 - Lossless reflection and mode-conversion potential ratios obey the characteristic traction-free system with denominator \(\Delta = (1 - 2q^2/k_S^2)^2 + 4 (q/k_S)^2 (p/k_S) (s/k_S)\). For incident P wave, reflection ratios are \(R_{PP} = [4 (q/k_S)^2 (p/k_S) (s/k_S) - (1 - 2q^2/k_S^2)^2]/\Delta\) and \(R_{PS} = [4 (q/k_S) (p/k_S) (1 - 2q^2/k_S^2)]/\Delta\).
 - Gravitational potential evaluates in G-free units (kg/m) with surface potential amplitudes \(\phi_{\mathrm{surf}} = A + B\) and \(\psi_{\mathrm{surf}} = C + D\) (where \(A, B\) are incident/reflected P-wave scalar potential amplitudes and \(C, D\) are incident/reflected SV-wave vector potential amplitudes). Above ground (\(z &gt; 0\)): \(\Phi^{(G\text{-free})}(\mathbf x) = -2\pi\rho (\phi_{\mathrm{surf}} + i \psi_{\mathrm{surf}}) e^{-q z} e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\). Underground (\(z &lt; 0\)): combines the surface displacement sheet \(2\pi\rho (\phi_{\mathrm{surf}} - i \psi_{\mathrm{surf}}) e^{q z}\) with the interior dilatational field \(-4\pi\rho [\phi_{\mathrm{inc}}(z) + \phi_{\mathrm{ref}}(z)]\).
+- Acceleration \(\mathbf a = -\nabla \Phi\) and gradient \(\mathbf\Gamma = -\nabla\nabla \Phi\) are analytic throughout. Physical SI observables multiply by \(G\). Non-grazing incident angles (\(0 \le \theta &lt; \pi/2\)) are supported analytically.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\rho\) | `density_kg_m3` | Medium mass density (rho > 0) | kg/m³ |
+| \(v_P\) | `vp_m_s` | Elastic P-wave speed | m/s |
+| \(v_S\) | `vs_m_s` | Elastic S-wave speed | m/s |
+| \(\xi_{\mathrm{inc}}\) | `displacement` | Incident displacement amplitude | m |
+| — | `wave_type` | Incident wave mode ('P' or 'SV') | dimensionless |
+| \(\theta\) | `incidence_angle_rad` | Incidence angle from surface normal, in [0, pi/2) | rad |
+| \(\phi\) | `azimuth_rad` | Horizontal propagation azimuth angle | rad |
+| \(\mathbf x_0\) | `phase_origin` | Phase reference coordinates | m |
+| \(t_0\) | `reference_time` | Phasor time origin | s |
+
+**Additional notes on parameters and models:**
+
 - density_kg_m3: float, medium mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, elastic wave speeds in m/s.
 - displacement: FrequencySeries or Quantity, incident displacement amplitude in meters; wave_type: 'P' or 'SV'.
 - incidence_angle_rad: float, incidence angle \(\theta \in [0, \pi/2)\) from surface normal (exact grazing \(\pi/2\) rejected); azimuth_rad: float, azimuth angle.
+- phase_origin: array-like (3,), phase reference coordinate in meters; reference_time: time origin for phasor evaluation.
 
 ### Calculation paths
 

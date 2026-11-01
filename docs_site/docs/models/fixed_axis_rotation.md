@@ -38,6 +38,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(m\) | `mass_kg` | Rotating point mass (positive) | kg |
+| \(\mathbf x_c\) | `center_m` | Center of rotation on axis | m |
+| \(\hat{\mathbf n}\) | `axis_unit_vector` | Unit vector along axis of rotation | dimensionless |
+| \(r\) | `radius_m` | Orbital radius perpendicular to axis (r > 0) | m |
+| \(\omega\) | `angular_velocity_rad_s` | Constant angular speed | rad/s |
+| \(\phi_0\) | `initial_phase_rad` | Initial azimuthal angle at t = 0 | rad |
+| \(t\) | `times_s` | Evaluation time points | s |
+| \(\mathbf x\) | `targets_m` | Sensor target coordinates | m |
+
+**Additional notes on parameters and models:**
+
 - angular_velocity: float, angular rotation speed \(\omega\) in rad/s; origin: array-like (3,), axis anchor position in meters.
 - axis: array-like (3,), rotation axis unit vector \(\hat{\mathbf n}\); angle0: float, initial angle \(\theta_0\) in radians; angle_epoch: GPS time of initial angle.
 - source: PointMassCloud object containing masses (kg) and body-fixed coordinates (m); time_sampling: TimeSampling object defining timestamps.

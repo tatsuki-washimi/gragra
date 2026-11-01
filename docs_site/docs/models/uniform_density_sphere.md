@@ -67,14 +67,17 @@ one-sided limits because the density is discontinuous.
 
 ### Parameters and units
 
-| Parameter | Meaning | SI unit |
-|---|---|---|
-| center_m / \(\mathbf c\) | Sphere center | m |
-| radius_m / \(R\) | Positive radius | m |
-| density_kg_m3 / \(\rho\) | Uniform density | kg/m³ |
-| targets_m / \(\mathbf x\) | Evaluation targets, shape (N, 3) | m |
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\mathbf c\) | `center_m` | Sphere center | m |
+| \(R\) | `radius_m` | Positive radius (R > 0) | m |
+| \(\rho\) | `density_kg_m3` | Uniform mass density | kg/m³ |
+| \(\mathbf x\) | `targets_m` | Evaluation targets, shape (M, 3) | m |
 
-The high-level factory instead accepts a Sphere geometry and an Astropy Quantity density. G-free helpers and SI wrappers have different return types.
+**Additional notes on parameters and models:**
+
+- center_m: array-like (3,), sphere center c in meters; radius_m: float &gt; 0, sphere radius R in meters; density_kg_m3: float, mass density rho in kg/m^3; targets_m: array-like (M, 3), target coordinates in meters.
+- High-level model gragra.analytic.objects.uniform_sphere accepts a Sphere geometry object and an Astropy Quantity density.
 
 ### Calculation paths
 

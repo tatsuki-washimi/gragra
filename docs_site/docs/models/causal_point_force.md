@@ -38,6 +38,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\mathbf x_0\) | `source_position_m` | Point force location | m |
+| \(\mathbf F(t)\) | `force_vector_n` | Applied causal point force vector | N |
+| \(t\) | `times_s` | Evaluation time points (t >= 0) | s |
+| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+
+**Additional notes on parameters and models:**
+
 - source_position_m: array-like (3,), point force position in meters; direction: array-like (3,), force unit vector \(\mathbf e\).
 - vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)); force_history: ForceHistory knots (seconds) and polynomial coefficients.
 - targets_m: array-like (M, 3), target coordinates in meters (source collision \(r = 0\) rejected); times_s: array-like (K,), evaluation times in seconds.

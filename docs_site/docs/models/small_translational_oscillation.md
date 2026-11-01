@@ -38,6 +38,18 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(m\) | `mass_kg` | Oscillating body mass (positive) | kg |
+| \(\mathbf x_0\) | `equilibrium_position_m` | Center of oscillation equilibrium | m |
+| \(\boldsymbol{\xi}_0\) | `amplitude_m` | Displacement amplitude vector | m |
+| \(\omega\) | `angular_frequency_rad_s` | Oscillation angular frequency (2 pi f) | rad/s |
+| \(\phi\) | `phase_rad` | Initial phase angle | rad |
+| \(t\) | `times_s` | Evaluation time points | s |
+| \(\mathbf x\) | `targets_m` | Sensor target coordinates | m |
+
+**Additional notes on parameters and models:**
+
 - mass: array-like (N,), positive masses in kg; position: array-like (N, 3), equilibrium positions in meters.
 - displacement: array-like (3,) or (N, 3), complex peak displacement vector in meters; frequency: float or Quantity, oscillation frequency in Hz.
 - reference_time: GPS epoch for phasor phase convention; targets: array-like (M, 3), evaluation points in meters.

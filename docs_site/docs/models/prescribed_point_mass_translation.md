@@ -20,9 +20,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
-![Prescribed point-mass translation schematic](../assets/models/prescribed_point_mass_translation.svg)
+![Prescribed point-mass kinematics schematic](../assets/models/prescribed_point_mass_translation.svg)
 
-*Discrete point-mass cloud undergoing prescribed translational trajectory d(t) and its Newtonian field at target x.*
+*Discrete point masses m_i moving with individual velocities v_i from initial positions x_{0,i} and their Newtonian field at target x.*
 
 - Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
 
@@ -37,6 +37,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 ## Parameters and calculation paths
 
 ### Parameters and units
+
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(m_i\) | `masses_kg` | Discrete point masses (all positive) | kg |
+| \(\mathbf x_{0,i}\) | `initial_positions_m` | Initial positions at t = t_0 | m |
+| \(\mathbf v_i\) | `velocities_m_s` | Constant velocity vectors | m/s |
+| \(t_0\) | `t0_s` | Initial reference time | s |
+| \(t\) | `times_s` | Evaluation time points | s |
+| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+
+**Additional notes on parameters and models:**
 
 - mass: array-like (N,), positive point masses in kg; position: array-like (N, 3), initial coordinates in meters; velocity: array-like (N, 3), velocities in m/s.
 - motion_epoch: GPS time of initial position definition; targets: array-like (M, 3), evaluation coordinates in meters; time_sampling: TimeSampling object defining timestamps.

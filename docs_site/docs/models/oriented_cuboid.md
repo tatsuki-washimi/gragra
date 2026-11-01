@@ -39,6 +39,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
+| Symbol | Parameter | Meaning | SI unit |
+|---|---|---|---|
+| \(\mathbf c\) | `center_m` | Cuboid center | m |
+| \(\mathbf L\) | `lengths_m` | Full side lengths in local body frame | m |
+| \(\rho\) | `density_kg_m3` | Uniform mass density | kg/m³ |
+| \(\mathbf x\) | `targets_m` | Evaluation targets in world frame | m |
+| \(\mathbf Q\) | `rotation_matrix` | Proper rotation matrix in SO(3) (det Q = +1, Q^T Q = I) | dimensionless |
+
+**Additional notes on parameters and models:**
+
 - center_m: array-like (3,), cuboid center c in meters; lengths_m: array-like (3,), side lengths in meters; density_kg_m3: float, uniform density in kg/m^3; targets_m: array-like (M, 3), targets in meters.
 - rotation_matrix: array-like (3, 3), proper rotation matrix Q in SO(3) (det Q = +1, Q^T Q = I). Improper rotations or reflections raise ValueError.
 
