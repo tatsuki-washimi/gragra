@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - The acoustic plane wave has frequency \(f\), sound speed \(c_s\), horizontal wavenumber \(q = k \sin\theta\), and vertical wavenumber \(k_z = k \cos\theta\), where \(k = 2\pi f / c_s\) and \(\theta \in (0, \pi/2]\) is the angle of incidence from zenith (normal incidence \(\theta=0\) is excluded; grazing incidence \(\theta=\pi/2\) is valid).
 - With horizontal wavevector \(\mathbf q = (q\cos\phi_0, q\sin\phi_0)\) and phase factor \(e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\), the surface pressure amplitude is \(P_0\). The G-free potential coefficient is \(C = \frac{4\pi P_0}{c_s^2 k^2}\).

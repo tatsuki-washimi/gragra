@@ -24,7 +24,7 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Turbulent temperature structure function obeys \(D_T(r) = \langle [T(\mathbf x + \mathbf r) - T(\mathbf x)]^2 \rangle = c_T^2 r^p\) with structure exponent \(0 &lt; p &lt; 2\) (standard Kolmogorov turbulence has \(p = 2/3\)) and coefficient \(c_T\) in \(\mathrm{K\cdot m^{-p/2}}\).
 - Under Taylor\'s frozen-flow hypothesis with horizontal wind speed \(v &gt; 0\), turbulence advects across the sensor with minimum approach distance \(r_{\min} &gt; 0\) and wind angle \(\theta\). Let \(\Omega = 2\pi f\) and dimensionless parameter \(x = \Omega r_{\min} / v\).

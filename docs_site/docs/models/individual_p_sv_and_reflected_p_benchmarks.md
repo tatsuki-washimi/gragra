@@ -24,11 +24,11 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
-- Single-mode body wave: evaluates bulk and full transfer functions for individual plane P/SV waves (Harms 2019 Eqs. 86–88).
-- Reflected-P composite: above-ground (\(z &gt; 0\)) potential, acceleration, and gradient for incident P + reflected P + converted SV satisfying the traction-free surface boundary condition (Harms 2019 Eqs. 89/90).
-- Implementation detail (A-U08): The production API adopts the physical \(+i\) phase coefficient derived from the independently solved traction-free surface displacement field. The literal Harms 2019 Eq. (90) expression with \(-i\) is retained in a separate internal verification helper (_harms2019_reflected_p_delta); both paths and their boundary properties are documented in an unpublished design note
+- Single upward plane P-wave (Harms 2019 Eqs. 86/87): with prefactor \(C_1 = -\frac{\rho \xi_0^P}{i k_P}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) above ground (\(z &gt; 0\)), and \(\Phi^{(G\text{-free})} = 2\pi C_1 [2 e^{i k_z z} - e^{k_\rho z}] e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) underground (\(z &lt; 0\)).
+- Single upward plane SV-wave (Harms 2019 Eq. 88): with prefactor \(C_2 = \frac{\rho \xi_0^{SV}}{k_S}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_2 e^{-k_\rho |z|} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\), valid on both sides of the surface.
+- Reflected-P composite above ground (\(z &gt; 0\)): incident P + reflected P + converted SV satisfying traction-free surface boundary condition. Potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 \delta(\theta, k_\rho) e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) with dimensionless coefficient \(\delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}\).
 
 ## Parameters and calculation paths
 

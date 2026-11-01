@@ -25,7 +25,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Applies an explicit proper rotation matrix \(\mathbf Q \in \mathrm{SO}(3)\) mapping local cuboid frame coordinates to world coordinates.
 - Potential is invariant: \(\Phi(\mathbf x) = \Phi_{\mathrm{loc}}(\mathbf Q^T(\mathbf x - \mathbf c))\). Acceleration and gravity-gradient tensor transform covariantly: \(\mathbf a = \mathbf Q \mathbf a_{\mathrm{loc}}\), \(\mathbf\Gamma = \mathbf Q \mathbf\Gamma_{\mathrm{loc}} \mathbf Q^T\).

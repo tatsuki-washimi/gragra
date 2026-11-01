@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - For a Rayleigh wave with horizontal wavenumber \(k_R = \omega / c_R\), vertical decay parameters \(q_P = \sqrt{k_R^2 - \omega^2/v_P^2}\) and \(q_S = \sqrt{k_R^2 - \omega^2/v_S^2}\), and surface vertical displacement amplitude \(\xi_z(0)\).
 - Above ground (\(z &gt; 0\)), the potential is \(\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}\) (Harms 2019 Eq. 96), where \(\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}\).

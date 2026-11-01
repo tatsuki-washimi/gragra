@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - For point masses \(m_i\) at equilibrium positions \(\mathbf x_{0,i}\) with offset \(\mathbf r_i = \mathbf x - \mathbf x_{0,i}\) (\(r_i = \|\mathbf r_i\|\)), subject to harmonic displacement \(\mathbf u_i(t) = \operatorname{Re}[\mathbf u_i e^{-2\pi i f (t - t_{\mathrm{ref}})}]\) (\(\|\mathbf u_i\| \ll r_i\)).
 - Potential phasor: \(\delta\Phi = -G \sum_i \frac{m_i (\mathbf r_i \cdot \mathbf u_i)}{r_i^3}\); acceleration phasor: \(\delta\mathbf a = G \sum_i m_i \left[ \frac{\mathbf u_i}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i}{r_i^5} \right]\).

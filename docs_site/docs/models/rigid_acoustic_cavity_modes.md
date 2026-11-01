@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Modes satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition \(\partial_n \Psi = 0\) on the cavity boundary; frequency is derived as \(f = c_s k / (2\pi)\). The static zero mode (\(k=0\)) is excluded.
 - Cuboid modes: \(\Psi = N \prod_{j\in\{x,y,z\}} \cos\left(\frac{n_j \pi (x_j + L_j/2)}{L_j}\right)\) with \(k^2 = \sum_j (n_j \pi / L_j)^2\) and \(N = 2^{r/2}\) where \(r\) is the number of non-zero indices, giving unit spatial RMS.

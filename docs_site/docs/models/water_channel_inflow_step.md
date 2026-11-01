@@ -24,7 +24,7 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Models the transient gravitational perturbation produced by a single deterministic Heaviside volume step event \(\Delta V\) at channel inflow coordinate \(x_0\) at perpendicular distance \(D &gt; 0\).
 - Single-event acceleration Fourier amplitude: \(|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}\) with physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\).

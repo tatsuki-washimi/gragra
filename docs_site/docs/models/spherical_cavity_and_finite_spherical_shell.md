@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - For a finite spherical shell (inner radius \(a\), outer radius \(R\), density \(\rho\)) under a plane harmonic P-wave displacement \(\mathbf\xi e^{i(\mathbf k\cdot\mathbf x - \omega t)}\), center acceleration decomposes as: \(\mathbf a_{\mathrm{bulk}} = 4\pi G \rho [j_0(ka) - j_0(kR)] \mathbf\xi\); \(\mathbf a_{\mathrm{inner\_wall}} = 4\pi G \rho \left[\frac{2 j_1(ka)}{ka} - j_0(ka)\right] \mathbf\xi\); \(\mathbf a_{\mathrm{outer\_boundary}} = 4\pi G \rho \left[j_0(kR) - \frac{2 j_1(kR)}{kR}\right] \mathbf\xi\); total \(\mathbf a_{\mathrm{total}} = 8\pi G \rho \left[\frac{j_1(ka)}{ka} - \frac{j_1(kR)}{kR}\right] \mathbf\xi\) (ANNA v4, arXiv:2603.15157v4, Section 4.1).
 - Difference with infinite medium: \(\Delta\mathbf a = 8\pi G \rho \left[\frac{j_1(kR)}{kR}\right] \mathbf\xi\) for \(k &gt; 0\).

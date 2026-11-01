@@ -24,9 +24,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
-- For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\|\) and direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \mu \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})\) (Love 1927, Harms 2019 Section 4.1).
+- For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\|\) and unit radial direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})\) (Love 1927, Harms 2019 Section 4.1).
 - Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) (\mathbf e \cdot \hat{\mathbf n}) \hat{\mathbf n} \right]\), where \(J(t, r) = \int_{r/v_P}^{r/v_S} \tau f(t - \tau) d\tau\).
 - Gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t)\) is evaluated by closed-form spatial derivatives with analytic \(C, D\) coefficients. Field strictly vanishes prior to P-wave arrival \(t &lt; r/v_P\) (causality).
 

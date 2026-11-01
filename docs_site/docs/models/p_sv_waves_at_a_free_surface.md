@@ -24,11 +24,11 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
-- Evaluates the exact gravity response of an incident plane P or SV wave reflecting at a planar traction-free boundary (\(z = 0\)), including converted SV-from-P or P-from-SV modes.
-- The total gravitational field combines the interior halfspace dilatational perturbation and the surface vertical displacement mass sheet \(u_z(x, y, 0, t)\).
-- Returns potential \(\Phi\), acceleration \(\mathbf a\), and gradient tensor \(\mathbf\Gamma\) phasors in physical SI units (\(\mathrm{m^2/s^2}\), \(\mathrm{m/s^2}\), \(\mathrm{s^{-2}}\)). Non-grazing incident angles (\(0 \le \theta &lt; \pi/2\)) are supported.
+- Plane waves in an elastic halfspace (\(z &lt; 0\)) reflecting at a planar traction-free boundary (\(z = 0\)), with horizontal wavenumber \(q\), vertical P-wavenumber \(p = \sqrt{(\omega/v_P)^2 - q^2}\), and vertical S-wavenumber \(s = \sqrt{(\omega/v_S)^2 - q^2}\).
+- Lossless reflection and mode-conversion potential ratios obey the characteristic traction-free system with denominator \(\Delta = (1 - 2q^2/k_S^2)^2 + 4 (q/k_S)^2 (p/k_S) (s/k_S)\). For incident P wave, reflection ratios are \(R_{PP} = [4 (q/k_S)^2 (p/k_S) (s/k_S) - (1 - 2q^2/k_S^2)^2]/\Delta\) and \(R_{PS} = [4 (q/k_S) (p/k_S) (1 - 2q^2/k_S^2)]/\Delta\).
+- Gravitational potential evaluates in G-free units (kg/m). Above ground (\(z &gt; 0\)): \(\Phi^{(G\text{-free})}(\mathbf x) = -2\pi\rho (\phi_{\mathrm{surf}} + i \psi_{\mathrm{surf}}) e^{-q z} e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\). Underground (\(z &lt; 0\)): combines the surface displacement sheet \(2\pi\rho (\phi_{\mathrm{surf}} - i \psi_{\mathrm{surf}}) e^{q z}\) with the interior dilatational field \(-4\pi\rho [\phi_{\mathrm{inc}}(z) + \phi_{\mathrm{ref}}(z)]\).
 
 ## Parameters and calculation paths
 

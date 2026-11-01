@@ -26,7 +26,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Body kinematics follow general pose transformation \(\mathbf x(t) = \mathbf R(t) \mathbf x_{\mathrm{body}} + \mathbf c(t)\) with proper rotation \(\mathbf R(t) \in \mathrm{SO}(3)\) and translation \(\mathbf c(t)\).
 - Sampled time-series path evaluates instantaneous Newtonian field (\(\Phi, \mathbf a, \mathbf\Gamma\)) at discrete time sampling steps via rigid_motion_observable.

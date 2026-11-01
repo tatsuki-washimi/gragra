@@ -25,7 +25,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - The channel flows along the \(x\)-axis with velocity \(v\) and width \(w\) at perpendicular horizontal distance \(D &gt; 0\) from the mirror. Surface elevation wave is \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
 - Dimensionless wavenumber parameter is \(q = |\Omega| D / |v|\) (evaluated for \(0 &lt; q \le 700\); exact DC \(f=0\) gives \(q=0\)).

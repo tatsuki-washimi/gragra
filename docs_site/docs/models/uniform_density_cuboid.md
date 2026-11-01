@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), relative corner coordinates are \((u_i, v_j, w_k) = (x_t - c_x \mp L_x/2, y_t - c_y \mp L_y/2, z_t - c_z \mp L_z/2)\) with distance \(r = \sqrt{u^2 + v^2 + w^2}\).
 - The G-free potential is \(\Phi^{(G\text{-free})} = \rho \sum_{i,j,k=1}^2 (-1)^{i+j+k} F_1(u_i, v_j, w_k)\), where \(F_1(u, v, w) = u v \ln(w+r) + v w \ln(u+r) + w u \ln(v+r) - \frac{u^2}{2}\operatorname{atan}\left(\frac{vw}{ur}\right) - \frac{v^2}{2}\operatorname{atan}\left(\frac{wu}{vr}\right) - \frac{w^2}{2}\operatorname{atan}\left(\frac{uv}{wr}\right)\) (Nagy et al. 2000, Petrovic 1996).

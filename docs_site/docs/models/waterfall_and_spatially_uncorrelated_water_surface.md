@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Waterfall model: Vertical water stream with velocity \(v\) at horizontal distance \(D &gt; 0\) with cross-sectional area perturbation \(A(z,t) = A_0 e^{-i \Omega (t - z/v)}\). G-free transfer functions are \(T_{a_x, A}^{(G\text{-free})} = -2 \rho_w \frac{|\Omega|}{|v|} K_1(|\Omega| D / |v|)\) and \(T_{a_z, A}^{(G\text{-free})} = 2i \rho_w \frac{\Omega}{v} K_0(|\Omega| D / |v|)\).
 - Uncorrelated channel surface model: Narrow water channel with independent surface displacement fluctuations of correlation cell area \(A_{\mathrm{cell}}\). The integrated geometric coupling evaluates as \(\int_{-\infty}^\infty \frac{x^2}{(H^2 + x^2)^3} dx = \frac{\pi}{8 H^3}\).

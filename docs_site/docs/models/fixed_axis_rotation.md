@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Source mass positions rotate rigidly around a fixed axis defined by origin \(\mathbf x_{\mathrm{orig}}\) and unit axis \(\hat{\mathbf n}\): \(\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R(\hat{\mathbf n}, \theta(t)) (\mathbf x_{\mathrm{body},i} - \mathbf x_{\mathrm{orig}})\), where \(\theta(t) = \theta_0 + \omega (t - t_{\mathrm{epoch}})\).
 - At target \(\mathbf x\) with offset \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\), each point mass contributes instantaneous Newtonian field: \(\Phi = -G \sum_i \frac{m_i}{r_i}\), \(\mathbf a = -G \sum_i \frac{m_i \mathbf r_i}{r_i^3}\), \(\mathbf\Gamma = G \sum_i m_i \left[ \frac{3 \mathbf r_i \otimes \mathbf r_i}{r_i^5} - \frac{\mathbf I}{r_i^3} \right]\).

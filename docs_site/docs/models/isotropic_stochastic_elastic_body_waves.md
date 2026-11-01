@@ -24,7 +24,7 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Full-space isotropic P-waves (B1): \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 S_{\xi,P}(f) \mathbf I_3\), where \(S_{\xi,P}(f)\) is the one-sided per-component P-displacement PSD (Harms 2019 Eqs. 55, 60).
 - Spherical cavity P/S-waves (B2): Evaluated at center of spherical cavity of radius \(R &gt; 0\) with wavenumbers \(k_P = 2\pi f / v_P\) and \(k_S = 2\pi f / v_S\). With spherical Bessel factors \(f_P = \frac{j_1(k_P R)}{k_P R}\) and \(f_S = \frac{j_1(k_S R)}{k_S R}\), the isotropic CSD is \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 [4 f_P^2 S_{\xi,P}(f) + f_S^2 S_{\xi,S}(f)] \mathbf I_3\) (Harms 2019 Eq. 65).

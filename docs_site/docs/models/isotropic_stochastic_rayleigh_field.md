@@ -24,7 +24,7 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Evaluated in the elastic ground half-space at depth \(z &gt; 0\) beneath a free surface at \(z = 0\). Rayleigh wavenumber is \(k_R = 2\pi f / v_R\) with \(q = k_R / k_P\), \(s = k_R / k_S\), and \(\zeta = \sqrt{q/s}\).
 - Depth coupling factor: \(\gamma = \frac{1 - \zeta}{q - \zeta}\), and amplitude factor \(A(z) = 2\pi \rho \gamma e^{-k_R z}\).

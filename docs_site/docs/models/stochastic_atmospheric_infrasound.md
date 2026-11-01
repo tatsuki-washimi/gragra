@@ -24,7 +24,7 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - A1 (Surface isotropic infrasound): Acceleration CSD tensor in G-free units is \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)\), where \(S_p(f)\) is surface pressure PSD in \(\mathrm{Pa^2/Hz}\), \(c_s\) is sound speed, and \(f\) is frequency.
 - A2 (Underground depth \(h \ge 0\)): \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)\), where \(x = 4\pi f h / c_s\) and \(I_{\mathrm{iso}}(x) = \frac{1}{2}\int_0^{\\pi/2} \sin^3\theta e^{-x \sin\theta} d\theta\).

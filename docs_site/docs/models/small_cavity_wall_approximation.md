@@ -26,7 +26,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - High-level small_cavity_wall evaluates selected wall contributions to potential \(\Phi\), acceleration \(\mathbf a\), and gradient \(\mathbf\Gamma\) (static or single-frequency phasor) for cavity wall displacement \(\mathbf u\): \(\Phi_{\mathrm{wall}} = -\mathbf u \cdot \mathbf a_{\mathrm{body}}\), \(\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u\).
 - Harms 2022 scalar wall coupling factor is dimensionless geometric factor \(C\). sca_wall_acceleration computes the acceleration vector from the lookup factor: \(\mathbf a = C G \rho \mathbf u\).

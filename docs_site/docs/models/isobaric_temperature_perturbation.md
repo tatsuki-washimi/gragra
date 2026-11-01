@@ -25,7 +25,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Existing source formula notes:**
+**Analytical formulation and field equations:**
 
 - Under isobaric thermodynamic conditions, small temperature variations \(\delta T\) couple linearly to density as \(\delta\rho = -\rho_0 \frac{\delta T}{T_0}\), where \(\rho_0 &gt; 0\) is ambient background density and \(T_0 &gt; 0\) is background temperature in Kelvin.
 - Fourier mode: \(\delta T = \Delta T \cos(\mathbf k \cdot (\mathbf x - \mathbf x_0))\) (static) or \(\widetilde{\delta T} = \widetilde{\Delta T} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) (phasor). The G-free potential is \(\Phi^{(G\text{-free})} = -\frac{4\pi \rho_c}{k^2} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) with zero-mean gauge (\(k \ne 0\)), and \(\mathbf a^{(G\text{-free})} = -i \mathbf k \Phi^{(G\text{-free})}\).
