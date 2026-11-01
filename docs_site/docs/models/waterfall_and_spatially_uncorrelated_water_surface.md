@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Waterfall and uncorrelated water surface schematic](../assets/models/waterfall_uncorrelated_surface.svg)
+
+*Vertical waterfall column with fluctuating cross-sectional area and uncorrelated surface cells of area A_cell.*
+
 - plot_shape targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
 
 ### Equations

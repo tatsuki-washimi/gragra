@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Rigid acoustic cavity modes schematic](../assets/models/rigid_acoustic_cavity_modes.svg)
+
+*Standing acoustic modes in a rectangular cavity of dimensions Lx × Ly × Lz with rigid boundary conditions.*
+
 - No arbitrary modal amplitude plot; selected static Cuboid/Cylinder/SphericalShell plot capability only.
 
 ### Equations

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Stochastic Atmospheric Infrasound Field</title>
+  <desc id="desc">Diffuse atmospheric infrasound spectrum in upper halfspace with acoustic reflection at rigid surface z=0.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Stochastic Atmospheric Infrasound Field</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Atmosphere z > 0 (top) with random acoustic wave packets -->
+  <rect x="40" y="65" width="480" height="135" fill="url(#grad-sky)"/>
+  <text x="60" y="95" font-family="sans-serif" font-size="14" font-weight="700" fill="#0369a1">Atmosphere z &gt; 0 (Diffuse Infrasound PSD)</text>
+
+  <!-- Multiple acoustic wave fronts -->
+  <g stroke="#0284c7" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.8">
+    <path d="M80,120 Q130,80 180,120 T280,120"/>
+    <path d="M220,150 Q270,110 320,150 T420,150"/>
+    <path d="M300,90 Q350,70 400,90 T500,90"/>
+  </g>
+  <text x="240" y="135" font-family="sans-serif" font-size="13" fill="#0369a1">Acoustic pressure PSD S_p(f)</text>
+
+  <!-- Rigid ground surface z = 0 -->
+  <rect x="40" y="200" width="480" height="100" fill="url(#grad-earth)"/>
+  <line x1="40" y1="200" x2="520" y2="200" stroke="#334155" stroke-width="3"/>
+  <text x="60" y="225" font-family="sans-serif" font-size="14" font-weight="700" fill="#334155">Rigid Ground Boundary z = 0</text>
+
+  <!-- Underground detector at depth h -->
+  <circle cx="380" cy="255" r="6" fill="#e11d48"/>
+  <text x="395" y="260" font-family="sans-serif" font-size="14" font-weight="700" fill="#be123c">Underground sensor (depth h)</text>
+  <line x1="380" y1="200" x2="380" y2="255" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="370" y="235" font-family="sans-serif" font-size="13" fill="#be123c" text-anchor="end">depth h</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Rigid boundary z = 0 · Evanescent and propagating acoustic modes · Subsurface Newtonian penetration</text>
+</svg>

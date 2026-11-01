@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Spherical Cavity and Finite Shell Geometry</title>
+  <desc id="desc">Concentric geometry defining hollow cavity of radius a and finite spherical shell of outer radius b.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Spherical Cavity and Finite Shell Geometry</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Concentric circles centered at (260, 180) -->
+  <!-- Outer shell radius b = 110 -->
+  <circle cx="260" cy="180" r="110" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+  <!-- Inner cavity radius a = 55 -->
+  <circle cx="260" cy="180" r="55" fill="#fffaf8" stroke="#0369a1" stroke-width="2" stroke-dasharray="5,4"/>
+
+  <!-- Center c -->
+  <circle cx="260" cy="180" r="4" fill="#0369a1"/>
+  <text x="245" y="196" font-family="sans-serif" font-size="14" font-weight="600" fill="#0369a1">c</text>
+
+  <!-- Radius arrows -->
+  <!-- Radius a -->
+  <line x1="260" y1="180" x2="220" y2="142" stroke="#0369a1" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+  <text x="228" y="155" font-family="sans-serif" font-size="14" font-weight="700" fill="#0369a1">a</text>
+
+  <!-- Radius b -->
+  <line x1="260" y1="180" x2="355" y2="125" stroke="#0284c7" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+  <text x="312" y="145" font-family="sans-serif" font-size="14" font-weight="700" fill="#0284c7">b</text>
+
+  <!-- Region annotations -->
+  <rect x="235" y="210" width="50" height="24" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="260" y="226" font-family="sans-serif" font-size="12" fill="#475569" text-anchor="middle">r &lt; a</text>
+
+  <rect x="315" y="235" width="80" height="24" rx="4" fill="#f0f9ff" stroke="#bae6fd"/>
+  <text x="355" y="251" font-family="sans-serif" font-size="12" font-weight="600" fill="#0369a1" text-anchor="middle">a ≤ r ≤ b (ρ)</text>
+
+  <!-- Target points in different zones -->
+  <circle cx="250" cy="165" r="4" fill="#e11d48"/>
+  <text x="262" y="166" font-family="sans-serif" font-size="12" fill="#e11d48">x_cavity</text>
+
+  <circle cx="440" cy="110" r="5" fill="#0284c7"/>
+  <text x="450" y="114" font-family="sans-serif" font-size="14" font-weight="700" fill="#0369a1">x_exterior (r &gt; b)</text>
+  <line x1="260" y1="180" x2="440" y2="110" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Medium density ρ between a and b · Potential evaluated at r < a, a ≤ r ≤ b, or r > b</text>
+</svg>

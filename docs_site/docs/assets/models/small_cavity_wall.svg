@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Small-Cavity Wall Approximation</title>
+  <desc id="desc">Planar approximation of an underground cavern boundary wall with surface displacement sheet.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Small-Cavity Wall Approximation</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Cavity interior vs host rock medium -->
+  <!-- Host medium (left) -->
+  <rect x="40" y="65" width="200" height="230" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="130" y="105" font-family="sans-serif" font-size="15" font-weight="700" fill="#475569" text-anchor="middle">Elastic Rock Medium</text>
+  <text x="130" y="128" font-family="sans-serif" font-size="13" fill="#64748b" text-anchor="middle">density ρ</text>
+
+  <!-- Cavity interior (right) -->
+  <rect x="240" y="65" width="280" height="230" fill="#fffaf8" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="380" y="105" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1" text-anchor="middle">Cavern Interior (air / vacuum)</text>
+
+  <!-- Cavity Wall boundary x = 0 -->
+  <line x1="240" y1="65" x2="240" y2="295" stroke="#334155" stroke-width="3"/>
+  <text x="232" y="285" font-family="sans-serif" font-size="13" font-weight="700" fill="#334155" text-anchor="end">Wall boundary</text>
+
+  <!-- Wall normal displacement ξ_n -->
+  <g stroke="#e11d48" stroke-width="2">
+    <line x1="240" y1="150" x2="275" y2="150" marker-end="url(#arrow-red)"/>
+    <line x1="240" y1="180" x2="275" y2="180" marker-end="url(#arrow-red)"/>
+    <line x1="240" y1="210" x2="275" y2="210" marker-end="url(#arrow-red)"/>
+  </g>
+  <text x="282" y="185" font-family="sans-serif" font-size="14" font-weight="700" fill="#e11d48">displacement ξ_n</text>
+  <text x="282" y="202" font-family="sans-serif" font-size="12" fill="#be123c">Sheet σ = ρ ξ_n</text>
+
+  <!-- Test mass / Mirror sensor at distance d -->
+  <circle cx="430" cy="180" r="7" fill="#0284c7"/>
+  <text x="445" y="185" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1">Sensor (Mirror)</text>
+
+  <!-- Distance d -->
+  <line x1="240" y1="230" x2="430" y2="230" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="330" y="222" font-family="sans-serif" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">distance d</text>
+  <line x1="430" y1="187" x2="430" y2="235" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Wall displacement ξ_n creates effective surface mass σ = ρ ξ_n acting on sensor at distance d</text>
+</svg>

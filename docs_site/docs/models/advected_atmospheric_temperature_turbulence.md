@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Advected atmospheric temperature turbulence schematic](../assets/models/advected_temperature_turbulence.svg)
+
+*Turbulent temperature eddies advected by horizontal wind U past interferometer line-of-sight with impact parameter b.*
+
 Line-of-sight/minimum-approach geometry and wind angle are scalar model parameters; no scene/mesh/cavern geometry. Plot shape reuse not material.
 
 ### Equations

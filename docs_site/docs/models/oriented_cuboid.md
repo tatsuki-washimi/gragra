@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Oriented cuboid, coordinate transformation schematic](../assets/models/oriented_cuboid.svg)
+
+*World frame (X, Y, Z) and rotated cuboid frame (x', y', z') related by rotation matrix R.*
+
 - API receives center_m, lengths_m, targets_m and rotation_matrix directly; it is not a Cuboid geometry object factory. The separate plotting helper takes a direct geometry/model/setup and resolves only Cuboid, Cylinder, SphericalShell; it can transform geometry coordinates through its Frame to display_frame.
 - Oriented API proper Q and inherited base cuboid boundary rejection.
 

@@ -21,6 +21,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Frozen-advection channel water noise schematic (top-down view)](../assets/models/frozen_advection_channel_water.svg)
+
+*Top-down view of open channel of width w with surface fluctuations advected at velocity v and mirror at perpendicular horizontal distance D.*
+
 - Guide gives channel sketch by prose; no reusable channel geometry plotting adapter identified.
 
 ### Equations

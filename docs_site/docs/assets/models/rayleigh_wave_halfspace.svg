@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Rayleigh Wave at an Elastic Halfspace</title>
+  <desc id="desc">Rayleigh wave propagating along traction-free boundary z=0 with elliptical particle motion and exponential depth decay.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Rayleigh Wave at an Elastic Halfspace</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Atmosphere z > 0 (top) -->
+  <rect x="40" y="65" width="480" height="75" fill="url(#grad-sky)"/>
+  <text x="60" y="95" font-family="sans-serif" font-size="14" fill="#0369a1">Atmosphere / Vacuum (z &gt; 0)</text>
+
+  <!-- Elastic halfspace z < 0 (bottom) -->
+  <rect x="40" y="140" width="480" height="155" fill="url(#grad-earth)"/>
+  <text x="60" y="275" font-family="sans-serif" font-size="14" font-weight="600" fill="#475569">Elastic halfspace (z &lt; 0, density ρ, v_P, v_S)</text>
+
+  <!-- Free surface boundary z = 0 with wave profile -->
+  <path d="M40,140 Q100,128 160,140 T280,140 T400,140 T520,140" fill="none" stroke="#0284c7" stroke-width="2.5"/>
+  <text x="450" y="132" font-family="sans-serif" font-size="13" font-weight="700" fill="#0284c7">Free surface z = 0</text>
+
+  <!-- Propagation direction k_R -->
+  <line x1="160" y1="100" x2="260" y2="100" stroke="#0f172a" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="210" y="92" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a" text-anchor="middle">Propagation k_R (speed v_R)</text>
+
+  <!-- Wavelength lambda_R -->
+  <line x1="160" y1="116" x2="280" y2="116" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="220" y="130" font-family="sans-serif" font-size="12" fill="#334155" text-anchor="middle">Wavelength λ_R = 2π / q</text>
+
+  <!-- Elliptical particle motion at surface (retrograde) -->
+  <ellipse cx="220" cy="140" rx="14" ry="22" fill="none" stroke="#e11d48" stroke-width="2"/>
+  <path d="M206,140 L206,134" stroke="#e11d48" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <text x="180" y="175" font-family="sans-serif" font-size="12" font-weight="600" fill="#e11d48">Retrograde orbit</text>
+
+  <!-- Depth decay arrow -->
+  <line x1="380" y1="150" x2="380" y2="245" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="390" y="180" font-family="sans-serif" font-size="13" fill="#334155">Depth decay</text>
+  <text x="390" y="198" font-family="sans-serif" font-size="12" fill="#64748b">exp(b_P z), exp(b_S z)</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Free surface z=0 · Depth z < 0 · Surface displacement sheet & interior dilatational gravity perturbations</text>
+</svg>

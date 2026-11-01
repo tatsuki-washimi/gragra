@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Advected Atmospheric Temperature Turbulence</title>
+  <desc id="desc">Kolmogorov / von Kármán temperature turbulence eddies advected by horizontal wind vector U past observation line of sight.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Advected Atmospheric Temperature Turbulence</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Turbulent field background with eddies -->
+  <rect x="40" y="65" width="480" height="235" fill="url(#grad-sky)" opacity="0.4"/>
+
+  <!-- Turbulent temperature eddies -->
+  <g stroke="#d97706" stroke-width="1.5" fill="none">
+    <ellipse cx="140" cy="130" rx="35" ry="25"/>
+    <ellipse cx="230" cy="110" rx="45" ry="30"/>
+    <ellipse cx="330" cy="140" rx="30" ry="20"/>
+    <ellipse cx="180" cy="190" rx="50" ry="35"/>
+    <ellipse cx="290" cy="210" rx="40" ry="28"/>
+  </g>
+  <text x="210" y="95" font-family="sans-serif" font-size="13" font-weight="600" fill="#b45309">Turbulent temperature eddies (C_T² spectrum)</text>
+
+  <!-- Mean wind vector U -->
+  <line x1="80" y1="160" x2="190" y2="160" stroke="#0f172a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="135" y="150" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a" text-anchor="middle">Wind velocity U</text>
+
+  <!-- Laser interferometer line-of-sight / observation target -->
+  <line x1="430" y1="75" x2="430" y2="285" stroke="#e11d48" stroke-width="2.5" stroke-dasharray="6,4"/>
+  <text x="440" y="100" font-family="sans-serif" font-size="13" font-weight="700" fill="#be123c">Beam line-of-sight</text>
+
+  <!-- Closest approach distance b -->
+  <circle cx="290" cy="210" r="4" fill="#d97706"/>
+  <line x1="290" y1="210" x2="430" y2="210" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+  <text x="360" y="202" font-family="sans-serif" font-size="13" font-weight="700" fill="#b45309" text-anchor="middle">impact b</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Mean wind speed U and angle θ_wind · Closest approach distance b · Temperature structure constant C_T²</text>
+</svg>

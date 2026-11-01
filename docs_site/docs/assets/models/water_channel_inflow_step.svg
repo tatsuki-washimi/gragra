@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Water-Channel Edge Step Volume Perturbation</title>
+  <desc id="desc">Single Heaviside step displacement of water volume Delta V at coordinate x_0 inducing transient acceleration at perpendicular distance D.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Water-Channel Edge Step Volume Perturbation</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Channel line along x axis -->
+  <line x1="50" y1="210" x2="510" y2="210" stroke="#0284c7" stroke-width="4"/>
+  <text x="510" y="200" font-family="sans-serif" font-size="13" font-weight="700" fill="#0369a1" text-anchor="end">Water channel (x axis)</text>
+
+  <!-- Origin x = 0 (channel point perpendicular to mirror) -->
+  <line x1="160" y1="200" x2="160" y2="220" stroke="#64748b" stroke-width="2"/>
+  <text x="160" y="235" font-family="sans-serif" font-size="13" font-weight="600" fill="#64748b" text-anchor="middle">x = 0</text>
+
+  <!-- Step volume element ΔV at x_0 -->
+  <rect x="360" y="190" width="40" height="40" rx="4" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+  <text x="380" y="215" font-family="sans-serif" font-size="13" font-weight="700" fill="#0c4a6e" text-anchor="middle">ΔV</text>
+  <text x="380" y="250" font-family="sans-serif" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle">x = x_0</text>
+
+  <!-- Distance x_0 along channel -->
+  <line x1="160" y1="265" x2="380" y2="265" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="270" y="285" font-family="sans-serif" font-size="14" font-weight="600" fill="#334155" text-anchor="middle">distance x_0</text>
+  <line x1="160" y1="225" x2="160" y2="270" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="380" y1="235" x2="380" y2="270" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Mirror / Observation target at (0, D) -->
+  <circle cx="160" cy="95" r="7" fill="#e11d48"/>
+  <text x="145" y="90" font-family="sans-serif" font-size="14" font-weight="700" fill="#be123c" text-anchor="end">Mirror (Detector)</text>
+
+  <!-- Perpendicular distance D from channel to mirror -->
+  <line x1="160" y1="210" x2="160" y2="102" stroke="#e11d48" stroke-width="1.8" stroke-dasharray="4,4" marker-start="url(#arrow-red)" marker-end="url(#arrow-red)"/>
+  <text x="175" y="155" font-family="sans-serif" font-size="14" font-weight="700" fill="#be123c">distance D</text>
+
+  <!-- Distance r between ΔV and mirror -->
+  <line x1="380" y1="210" x2="160" y2="95" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="290" y="140" font-family="sans-serif" font-size="13" fill="#475569">r = √(D² + x_0²)</text>
+
+  <!-- Induced acceleration vector Δa_x at mirror -->
+  <line x1="160" y1="95" x2="230" y2="95" stroke="#e11d48" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+  <text x="235" y="90" font-family="sans-serif" font-size="13" font-weight="700" fill="#e11d48">Δa_x(t) ∝ Θ(t)</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Fixed coordinate x_0 · Displaced volume ΔV · Perpendicular distance D to mirror</text>
+</svg>

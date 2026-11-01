@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Prescribed point-mass translation schematic](../assets/models/prescribed_point_mass_translation.svg)
+
+*Discrete point-mass cloud undergoing prescribed translational trajectory d(t) and its Newtonian field at target x.*
+
 - Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
 
 ### Equations

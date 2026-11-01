@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">P/SV Waves at a Traction-Free Surface</title>
+  <desc id="desc">Incident P or SV wave from subsurface z < 0 reflecting and mode-converting at planar traction-free surface z = 0.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">P/SV Waves at a Traction-Free Surface</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Boundary surface z = 0 -->
+  <line x1="50" y1="150" x2="510" y2="150" stroke="#0f172a" stroke-width="2.5"/>
+  <text x="440" y="140" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a">Free surface z = 0</text>
+
+  <!-- Atmosphere z > 0 (top) -->
+  <rect x="50" y="65" width="460" height="85" fill="url(#grad-sky)" opacity="0.7"/>
+  <text x="70" y="95" font-family="sans-serif" font-size="14" fill="#0369a1">Above ground z &gt; 0: Φ ∝ exp(-qz)</text>
+
+  <!-- Elastic halfspace z < 0 (bottom) -->
+  <rect x="50" y="150" width="460" height="145" fill="url(#grad-earth)" opacity="0.6"/>
+  <text x="70" y="275" font-family="sans-serif" font-size="14" fill="#475569">Elastic halfspace z &lt; 0 (v_P, v_S)</text>
+
+  <!-- Ray paths meeting at surface point (280, 150) -->
+  <!-- Incident P wave (from bottom-left) -->
+  <line x1="140" y1="260" x2="280" y2="150" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="160" y="215" font-family="sans-serif" font-size="14" font-weight="700" fill="#0284c7">Incident P</text>
+
+  <!-- Reflected P wave (to bottom-right) -->
+  <line x1="280" y1="150" x2="420" y2="260" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="375" y="215" font-family="sans-serif" font-size="14" font-weight="700" fill="#0284c7">Reflected P (R_PP)</text>
+
+  <!-- Reflected SV wave (steeper angle) -->
+  <line x1="280" y1="150" x2="360" y2="265" stroke="#e11d48" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-red)"/>
+  <text x="300" y="250" font-family="sans-serif" font-size="13" font-weight="700" fill="#e11d48">Reflected SV (R_PS)</text>
+
+  <!-- Normal dashed line at reflection point -->
+  <line x1="280" y1="110" x2="280" y2="230" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- Angle theta_P arc -->
+  <path d="M255,200 A60,60 0 0,0 280,210" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="245" y="218" font-family="sans-serif" font-size="13" fill="#0369a1">θ_P</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Horizontal wavenumber q · Vertical wavenumbers p, s · Mode conversion P ↔ SV</text>
+</svg>

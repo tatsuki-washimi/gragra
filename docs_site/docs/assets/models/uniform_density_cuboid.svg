@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Uniform-Density Cuboid Geometry</title>
+  <desc id="desc">Axis-aligned uniform cuboid with 8 vertices, center c, dimensions Lx, Ly, Lz, and target point x.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Uniform-Density Cuboid Geometry</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Coordinate axes -->
+  <g stroke="#94a3b8" stroke-width="1.5">
+    <line x1="60" y1="280" x2="130" y2="280" marker-end="url(#arrow)"/>
+    <line x1="60" y1="280" x2="60" y2="210" marker-end="url(#arrow)"/>
+    <line x1="60" y1="280" x2="25" y2="305" marker-end="url(#arrow)"/>
+  </g>
+  <text x="135" y="284" font-family="sans-serif" font-size="13" fill="#334155">x</text>
+  <text x="56" y="202" font-family="sans-serif" font-size="13" fill="#334155">z</text>
+  <text x="18" y="318" font-family="sans-serif" font-size="13" fill="#334155">y</text>
+
+  <!-- Cuboid 3D projection: Center c=(250, 180) -->
+  <!-- Front face: (180, 130) to (320, 230) -->
+  <!-- Extrusion: dx=60, dy=-40 -> Back top right (380, 90) -->
+  <!-- Faces -->
+  <!-- Back/Top face -->
+  <polygon points="180,130 240,90 380,90 320,130" fill="#fecdd3" stroke="#e11d48" stroke-width="1.5"/>
+  <!-- Right side face -->
+  <polygon points="320,130 380,90 380,190 320,230" fill="#fda4af" stroke="#e11d48" stroke-width="1.5"/>
+  <!-- Front face -->
+  <polygon points="180,130 320,130 320,230 180,230" fill="url(#grad-cuboid)" stroke="#e11d48" stroke-width="1.5"/>
+
+  <!-- Center point c -->
+  <circle cx="280" cy="160" r="4" fill="#be123c"/>
+  <text x="288" y="165" font-family="sans-serif" font-size="14" font-weight="600" fill="#9f1239">center c</text>
+
+  <!-- Dimensions labels -->
+  <!-- Lx (width) -->
+  <line x1="180" y1="246" x2="320" y2="246" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="245" y="262" font-family="sans-serif" font-size="14" fill="#334155">Lx</text>
+
+  <!-- Lz (height) -->
+  <line x1="164" y1="130" x2="164" y2="230" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="142" y="185" font-family="sans-serif" font-size="14" fill="#334155">Lz</text>
+
+  <!-- Ly (depth) -->
+  <line x1="334" y1="237" x2="394" y2="197" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="372" y="225" font-family="sans-serif" font-size="14" fill="#334155">Ly</text>
+
+  <!-- Target evaluation point x -->
+  <line x1="280" y1="160" x2="470" y2="110" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-blue)"/>
+  <circle cx="470" cy="110" r="5" fill="#0284c7"/>
+  <text x="480" y="112" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1">target x</text>
+  <text x="365" y="125" font-family="sans-serif" font-size="13" fill="#0284c7">r = x - c</text>
+  <text x="210" y="195" font-family="sans-serif" font-size="14" font-weight="600" fill="#be123c">ρ = const</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Uniform mass density ρ · Closed-form vertex anti-derivatives at targets x</text>
+</svg>

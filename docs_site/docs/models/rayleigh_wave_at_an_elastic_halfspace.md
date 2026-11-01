@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Rayleigh wave at an elastic halfspace schematic](../assets/models/rayleigh_wave_halfspace.svg)
+
+*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber q, elliptical retrograde orbit, and exponential depth decay.*
+
 - High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
 
 ### Equations

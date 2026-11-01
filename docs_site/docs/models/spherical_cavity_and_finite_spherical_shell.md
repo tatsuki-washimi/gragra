@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Spherical cavity and spherical shell schematic](../assets/models/spherical_cavity_shell.svg)
+
+*Concentric spherical cavity of radius a and outer shell boundary b with host medium density ρ.*
+
 - center-only helper targets cavity center. high-level models accept geometry frame/phase origin and target fields; physical boundaries have exclusions per model.
 
 ### Equations

@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![P/SV waves at a free surface schematic](../assets/models/p_sv_free_surface.svg)
+
+*Incident P or SV wave from subsurface z < 0 reflecting and mode-converting at planar traction-free boundary z = 0.*
+
 - High-level phasor model vs array-based SI wrapper; flat free surface and local frame conventions.
 
 ### Equations
