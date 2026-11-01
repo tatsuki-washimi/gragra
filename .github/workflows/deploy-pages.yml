@@ -7,9 +7,9 @@ name: Deploy Pages
   workflow_dispatch:
     inputs:
       source_sha:
-        description: 'Commit SHA or ref from PR #6 to build and deploy'
+        description: 'Exact commit SHA in main or historical PR #6 for manual preview'
         required: true
-        default: '2870c8a2abdac3637a29b774df3362fb57138125'
+        default: 'b9f54481ec748aa28925dc30b349c7144336acfa'
 
 concurrency:
   group: pages-${{ github.workflow }}-${{ github.ref }}
@@ -48,10 +48,13 @@ jobs:
             echo '::error::Checked-out revision does not match requested source_sha'
             exit 1
           fi
-          # Limit G1 preview deployment to commits reachable from Draft PR #6.
-          git fetch --no-tags origin 'refs/pull/6/head:refs/remotes/origin/pr-6-preview'
-          if ! git merge-base --is-ancestor "$RESOLVED_SHA" refs/remotes/origin/pr-6-preview; then
-            echo '::error::source_sha is not on the current PR #6 history'
+          # Allow manual preview of reviewed historical PR #6 commits or
+          # the current main history (including merged G3 readability fixes).
+          # Keep all Pages deployments explicitly manual until G3 approval.
+          git fetch --no-tags origin main 'refs/pull/6/head:refs/remotes/origin/pr-6-preview'
+          if ! git merge-base --is-ancestor "$RESOLVED_SHA" refs/remotes/origin/main &&
+             ! git merge-base --is-ancestor "$RESOLVED_SHA" refs/remotes/origin/pr-6-preview; then
+            echo '::error::source_sha must be in main or PR #6 history'
             exit 1
           fi
           echo "Requested source_sha: $SOURCE_SHA"
