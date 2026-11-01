@@ -1,0 +1,101 @@
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
+# Causal point force
+
+## Model overview
+
+**Level:** — (definition and assignment pending).
+
+**Physical domain:** seismic elastic  
+**Geometry:** point
+
+Time-dependent force in an infinite homogeneous elastic medium
+
+**Source-declared observable / representation pairs:**
+
+- Φ a Γ — Time series
+
+These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
+
+[Back to model catalogue](../guide/model-and-method-catalogue.md)
+
+## Geometry and equations
+
+- Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
+
+### Equations
+
+**Analytical formulation and field equations:**
+
+- For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\|\) and unit radial direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})\) (Love 1927, Harms 2019 Section 4.1).
+- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) (\mathbf e \cdot \hat{\mathbf n}) \hat{\mathbf n} \right]\), where \(J(t, r) = \int_{r/v_P}^{r/v_S} \tau f(t - \tau) d\tau\).
+- Gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t)\) is evaluated by closed-form spatial derivatives with analytic \(C, D\) coefficients. Field strictly vanishes prior to P-wave arrival \(t &lt; r/v_P\) (causality).
+
+## Parameters and calculation paths
+
+### Parameters and units
+
+- source_position_m: array-like (3,), point force position in meters; direction: array-like (3,), force unit vector \(\mathbf e\).
+- vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)); force_history: ForceHistory knots (seconds) and polynomial coefficients.
+- targets_m: array-like (M, 3), target coordinates in meters (source collision \(r = 0\) rejected); times_s: array-like (K,), evaluation times in seconds.
+
+### Calculation paths
+
+#### implemented model/API path
+
+- `gragra.analytic.seismic.point_force`
+
+**Path-level source-declared output union:** Φ a Γ — Time series
+
+## Derivation and sources
+
+### Derivation
+
+Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+
+- No separate derivation is asserted from the formula declaration alone.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic models](../guide/gen1-analytic-models.md)
+
+**Bibliographic inventory:** partial.
+
+- Reference table records local formula-ledger Green function and causal delay moment.
+
+## Verification and applicability
+
+### Verification
+
+**Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
+
+- Representative catalogue output-contract entries: 0.
+- Catalogue probe state: Not assessed (no catalogue output probe registered).
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
+
+**Existing verification inventory:**
+
+Verification method, tolerances, and artifact status recorded; tests were not run in this editorial review.
+
+- CAS script [`tests/oracles/gen1/derivations/verify_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/gen1/derivations/verify_point_force.py) documents r&gt;0,c&gt;0,C1 history assumptions and J derivatives. An unpublished hand-sample test suite evaluates point force cases with rtol 1e-14; no committed output artifact is retained in the public repository.
+
+### Applicability and limitations
+
+- Causal C1 signed history, retarded P delay, source collision rejected; uniform supplied sampling.
+
+**Scope note:** Applicability limits recorded.
+
+See the public verification and limitations guidance for test-specific conditions and interpretation:
+
+- [Verification matrix](../verification/matrix.md)
+- [Verification limitations](../verification/limitations.md)
+
+
+## Information not yet confirmed
+
+- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- No additional committed plot asset identified in these assigned API sources.
+
+*Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

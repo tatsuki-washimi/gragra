@@ -36,14 +36,14 @@ Only leaf sections are counted: parent headings, chapter summaries and sections 
 |---|---:|---:|---:|---:|---|
 | 2 — Gravity measurements | 3 | 2 | 67% | **33%** | The observable side exists; there is no dedicated gravitoelastic coupling benchmark |
 | 3 — Gravity perturbations from seismic fields | 12 | 10 | 83% | **42%** | The strongest area, and the one gragra was built for |
-| 4 — Gravity perturbations from seismic point sources | 4 | 0 | 0% | **0%** | Untouched |
+| 4 — Gravity perturbations from seismic point sources | 4 | 1 | 25% | **8%** | Causal point-force response is implemented (§4.1); moment tensors, fault ruptures, and half-space point sources are absent |
 | 5 — Atmospheric gravity perturbations | 4 | 2 | 50% | **13%** | Generic density-integration machinery only |
 | 6 — Gravity perturbations from objects | 6 | 6 | 100% | **54%** | Generic prescribed trajectories and rigid rotations are available; object-specific formula catalogues are incomplete |
-| **Total, chapters 2–6** | **29** | **20** | **69%** | **34%** | A well-verified core with an incomplete formula catalogue |
+| **Total, chapters 2–6** | **29** | **21** | **72%** | **35%** | A well-verified core with an expanding analytical formula catalogue |
 
 "Reach rate" counts a section as reached if generic infrastructure alone can address it. "Weighted coverage" penalises the absence of a dedicated analytic result, and is the more honest of the two.
 
-**A weighted coverage of about 34% does not mean the engine is 34% correct.** For the cases it does cover, the quality of the implementation and the independence of its verification are high — that is what the rest of the [verification section](index.md) is about. What the 34% measures is *breadth*: about a third of the physical cases catalogued in chapters 2–6 have a dedicated treatment here, and the remainder do not.
+**A weighted coverage of about 35% does not mean the engine is 35% correct.** For the cases it does cover, the quality of the implementation and the independence of its verification are high — that is what the rest of the [verification section](index.md) is about. What the 35% measures is *breadth*: about a third of the physical cases catalogued in chapters 2–6 have a dedicated treatment here, and the remainder do not.
 
 ## What is fully covered
 
@@ -62,11 +62,12 @@ The bulk of chapter 3, plus scattered sections elsewhere. In each case something
 - **§3.1, seismic waves** (eq. 39 for the Rayleigh eigenfunctions). Plane P and S waves, SH/SV polarizations and the fundamental Rayleigh mode are implemented as kinematic field constructors. Layered media, general interface waves and source near fields are not. See [Waves](../guide/waves.md).
 - **§3.2.2, perturbations expressed through seismic potentials.** Individual results appear inside other implementations, but there is no API that takes the scalar and vector potentials as input.
 - **§3.2.3, the transform domain.** Plane-wave complex weights and a half-space transfer function exist; a general Fourier-domain gravity operator does not.
-- **§3.4.1, body waves in a half space** (eqs. 86–90). Only vertical incidence is implemented, for the bulk and full transfer functions. General incidence angles, P↔SV conversion at the free surface and complex phase coefficients are absent. The implemented transfer is a medium-interior limit and does not apply to a detector standing on the surface.
-- **§3.4.2, Rayleigh waves** (eqs. 91–99, with the above-surface closed form at eq. 96). The eigenfunctions, the above-surface acceleration and a kinematic depth-reduction factor are implemented, and both a production path and an independent oracle exist. The sub-surface acceleration formula is not implemented.
+- **§3.4.1, body waves in a half space** (eqs. 86–90). General-angle plane P and SV waves, free-surface reflection, and P↔SV conversion (`halfspace_psv`, `halfspace_single_bodywave_observables`, `halfspace_reflected_p_above_observables`) are implemented as analytic phasors with above-ground benchmarks. Waveguide structures, layered media, and full half-space Green's functions for arbitrary buried sources remain unreached.
+- **§3.4.2, Rayleigh waves** (eqs. 91–99, with the above-surface closed form at eq. 96). Fundamental Rayleigh eigenfunctions, above-surface and sub-surface (ground-side \(z < 0\)) acceleration and gradient observables, and isotropic stochastic Rayleigh fields are implemented, with both production paths and independent oracles (`rayleigh_response`, `rayleigh_halfspace_allspace_observables_g_free`). Higher Rayleigh modes, elliptical surface topography, and layered crustal models remain unreached.
 - **§2.1.1 and §2.1.4, static gravity and gradient coupling.** Both quantities are computable; there is no dedicated coupling API or benchmark for the response of a suspended test mass, and the instrument side is out of scope by design.
 - **§3.5, numerical simulations.** External field ingest and gravity post-processing exist. A standard solver benchmark workflow and an end-to-end mesh/HDF5 comparison do not; see [External field data and HDF5](../external/hdf5-fields.md).
 - **§3.6.1 and §3.6.4, seismic noise estimates.** Known complex responses and directional weighting can be handled, and multi-target gradient calculations exist; there is no spectrum-to-noise-estimate API and no dedicated long-wavelength differential-response benchmark.
+- **§4.1, point forces.** The causal point-force response in an unbounded homogeneous medium is implemented with its dedicated acceleration observable and CAS derivation verification. Moment tensors (§4.2), finite fault ruptures (§4.3), and point sources in a half space (§4.4) are absent.
 - **§5.1 and §5.2, atmospheric sound and quasi-static temperature perturbations.** Adiabatic pressure-to-density and isobaric temperature-to-density constructors are implemented, together with independent finite-air-box and infinite-halfspace references. The finite and infinite domains are different physical problems, and the prescribed-density references do not establish general acoustic-propagation or CFD accuracy.
 - **§6.1, §6.4 and §6.5, rules of thumb, interacting distributions, oscillating extended objects.** The building blocks are present; the systematic APIs the review's formulas suggest are not.
 - **§6.2, objects moving at constant speed along a prescribed trajectory.** `PrescribedPointTrajectory` evaluates supplied positive point-mass samples, with a point-flyby closed-form check. It does not generate motion, interpolate samples, or provide a vehicle-specific geometry or formula catalogue.
@@ -74,7 +75,7 @@ The bulk of chapter 3, plus scattered sections elsewhere. In each case something
 
 ## What is not covered at all
 
-**Chapter 4, gravity perturbations from seismic point sources, scores zero across all four of its leaf sections** — a point force in an elastic medium, the density perturbation of a point shear dislocation, the gravity perturbation from a seismic moment, and sources in a half space. This is the largest gap in the catalogue, and it is the most consequential one for validating an external solver: near-field terms, retarded fields, source-time functions and moment-tensor conventions are precisely the things a plane-wave comparison cannot see. A displacement field produced by an external solver can be converted to gravity today, but without these results there is no independent way to decide whether the solver setup that produced it was right.
+**Remaining unreached sections of Chapter 4 (point sources)**: While §4.1 (causal point force) is implemented, the remaining three leaf sections — §4.2 (density perturbation of a point shear dislocation / seismic moment), §4.3 (finite fault ruptures), and §4.4 (sources in a half space) — remain unreached. Near-field terms, retarded fields from extended faults, and half-space surface interactions are absent.
 
 Also unimplemented:
 

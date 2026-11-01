@@ -1,0 +1,119 @@
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
+# Rayleigh wave at an elastic halfspace
+
+## Model overview
+
+**Level:** — (definition and assignment pending).
+
+**Physical domain:** seismic elastic  
+**Geometry:** halfspace
+
+Surface-wave gravity, depth response and coherent phasors
+
+**Source-declared observable / representation pairs:**
+
+- Φ a Γ — Phasor
+
+These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
+
+[Back to model catalogue](../guide/model-and-method-catalogue.md)
+
+## Geometry and equations
+
+- High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
+
+### Equations
+
+**Analytical formulation and field equations:**
+
+- For a Rayleigh wave with horizontal wavenumber \(k_R = \omega / c_R\), vertical decay parameters \(q_P = \sqrt{k_R^2 - \omega^2/v_P^2}\) and \(q_S = \sqrt{k_R^2 - \omega^2/v_S^2}\), and surface vertical displacement amplitude \(\xi_z(0)\).
+- Above ground (\(z &gt; 0\)), the potential is \(\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}\) (Harms 2019 Eq. 96), where \(\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}\).
+- Below ground (\(z \le 0\)), the field combines the volume dilatation perturbation and the free-surface vertical mass-sheet displacement (Eq. 97). Acceleration and gradient are analytic derivatives \(\mathbf a = -\nabla\Phi\), \(\mathbf\Gamma = \nabla\mathbf a\).
+
+## Parameters and calculation paths
+
+### Parameters and units
+
+- density_kg_m3: float, background mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)).
+- frequency_hz: float, wave frequency in Hz; displacement_m: float or Quantity, vertical surface displacement amplitude \(\xi_z(0)\) in meters.
+- propagation_direction: array-like (3,), wave propagation unit vector; phase_origin_m: array-like (3,), phase reference point; reference_time: time origin for phasor.
+
+### Calculation paths
+
+#### Explicit displacement-bearing Rayleigh field
+
+- `gragra.analytic.seismic.rayleigh_halfspace`
+
+**Path-level source-declared output union:** Φ a Γ — Phasor
+
+#### Amplitude-free Rayleigh response coefficients
+
+- `gragra.analytic.seismic.rayleigh_response`
+
+**Path-level source-declared output union:** Φ a Γ — Phasor
+
+#### Literature all-space Rayleigh observables
+
+- `gragra.observables.rayleigh_halfspace_allspace_observables`
+
+**Path-level source-declared output union:** Φ a Γ — Phasor
+
+## Derivation and sources
+
+### Derivation
+
+Committed design and validation records describe the local independent derivation/verification approach; they remain documentary evidence and were not rerun here.
+
+- an unpublished design note maps H19 Eq.96/97 and labels acceleration/gradient derivative class B; records Eq.92 hand-algebra cross-check.
+- An unpublished validation note describes an independent Poisson/Green-function numerical re-derivation and surface checks; the note is not reproduced here.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Waves](../guide/waves.md)
+- [analytic benchmarks](../guide/analytic-benchmarks.md)
+- [Rayleigh workflow](../examples/rayleigh_phasor_workflow.md)
+
+**Bibliographic inventory:** partial.
+
+- Harms, Living Reviews Relativity 22, 6 (2019), DOI 10.1007/s41114-019-0022-2, Eq.96-98.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
+
+## Verification and applicability
+
+### Verification
+
+**Evidence classes are distinct:** source declarations, catalogue output-contract probes, existing test code, documentary validation claims, and saved numerical results.
+
+- Representative catalogue output-contract entries: 0.
+- Catalogue probe state: Not assessed (no catalogue output probe registered).
+- Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
+- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
+
+**Existing verification inventory:**
+
+Verification method, tolerances, and artifact status recorded; tests were not run in this task.
+
+- [`tests/test_rayleigh_gravity_oracle.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_rayleigh_gravity_oracle.py) uses independent finite integral/extrapolation, 12 point vP/vS,kH grid; saved result [`tests/oracles/data/rayleigh_v1.json`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/data/rayleigh_v1.json); source reports worst extrapolation error ~9.3e-5 absolute/~0.72% relative. Test code and artifact, not run now.
+
+### Applicability and limitations
+
+- Literature API uses z-up and free surface z=0; z==0 targets rejected. Underground formula z&lt;0; ground formula z&gt;0. Potential continuous at interface, normal acceleration jumps, gradient generally discontinuous.
+- Model APIs require HalfSpace geometry and explicit frame/phase origin; response coefficients omit amplitude/reference time.
+- Cavity-wall corrections are outside the cited literature API scope.
+
+**Scope note:** Applicability limits recorded.
+
+See the public verification and limitations guidance for test-specific conditions and interpretation:
+
+- [Verification matrix](../verification/matrix.md)
+- [Verification limitations](../verification/limitations.md)
+
+
+## Information not yet confirmed
+
+- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- No additional committed plot asset identified in these assigned API sources.
+
+*Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*
