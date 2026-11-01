@@ -53,12 +53,23 @@
   .gragra-filters input,.gragra-filters select { min-width:0; width:100%; }
 }
 
-/* MathJax and formula overflow scrolling (B-U01) */
-.arithmatex,
-.md-typeset .arithmatex,
-mjx-container[jax="CHTML"][display="true"] {
+/* MathJax: keep inline equations in the text flow, including on mobile. */
+/* pymdownx.arithmatex renders inline math as <span> and display math as <div>. */
+.md-typeset span.arithmatex {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: middle;
+  padding: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll standalone equations horizontally without breaking paragraph flow. */
+.md-typeset div.arithmatex,
+.md-typeset mjx-container[jax="CHTML"][display="true"] {
   display: block;
-  overflow-x: auto !important;
+  overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
   padding: 0.35rem 0;
