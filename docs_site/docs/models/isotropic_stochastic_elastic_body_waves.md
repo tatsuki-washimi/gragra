@@ -20,9 +20,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
-![Isotropic stochastic elastic body waves schematic](../assets/models/isotropic_stochastic_body_waves.svg)
+![Isotropic stochastic elastic body waves centered cavity schematic](../assets/models/isotropic_stochastic_body_waves.svg)
 
-*3D isotropic diffuse field of P and S body waves surrounding a centered spherical cavity of radius a.*
+*3D isotropic diffuse field of P and S body waves surrounding a centered spherical cavity with sensor at center c.*
 
 B2 centered spherical cavity only, scattering neglected; arbitrary cavity geometry unsupported by API. basic plotting helper supports SphericalShell static shape but no source coupled setup stated.
 

@@ -20,9 +20,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
-![Isotropic stochastic Rayleigh field schematic](../assets/models/isotropic_stochastic_rayleigh.svg)
+![Isotropic stochastic Rayleigh field acceleration CSD schematic](../assets/models/isotropic_stochastic_rayleigh.svg)
 
-*Isotropic random Rayleigh waves incident from all horizontal azimuths with spatial cross-spectral density governed by J_0(k_R r).*
+*Isotropic Rayleigh field at single target depth z yielding 3x3 diagonal acceleration CSD tensor diag(1/2, 1/2, 1).*
 
 Free-surface half-space geometry, test masses below surface; no arbitrary cavity/modal/mesh visualization. plot_shape only selected basic solids.
 
