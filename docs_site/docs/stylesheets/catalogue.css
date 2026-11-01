@@ -106,6 +106,7 @@
   max-width: 100%;
   height: auto;
 }
+.md-typeset img[src*="assets/models/"],
 .md-typeset img[src$="sphere-3d.svg"],
 .md-typeset img[src$="sphere-section.svg"],
 .md-typeset img[src$="cylinder-3d.svg"],
@@ -115,7 +116,10 @@
   max-width: 100%;
   height: auto;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
+[data-md-color-scheme="slate"] .md-typeset img[src*="assets/models/"],
 [data-md-color-scheme="slate"] .md-typeset img[src$="sphere-3d.svg"],
 [data-md-color-scheme="slate"] .md-typeset img[src$="sphere-section.svg"],
 [data-md-color-scheme="slate"] .md-typeset img[src$="cylinder-3d.svg"],

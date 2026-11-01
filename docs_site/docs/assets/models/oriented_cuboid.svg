@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Oriented Cuboid Frame Transformation</title>
+  <desc id="desc">Arbitrary 3D orientation of a uniform cuboid specified by rotation matrix R and center c.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Oriented Cuboid Frame Transformation</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- World frame axes (left) -->
+  <g stroke="#64748b" stroke-width="1.5">
+    <line x1="70" y1="270" x2="140" y2="270" marker-end="url(#arrow)"/>
+    <line x1="70" y1="270" x2="70" y2="200" marker-end="url(#arrow)"/>
+    <line x1="70" y1="270" x2="35" y2="295" marker-end="url(#arrow)"/>
+  </g>
+  <text x="145" y="274" font-family="sans-serif" font-size="13" fill="#334155">X_world</text>
+  <text x="65" y="192" font-family="sans-serif" font-size="13" fill="#334155">Z_world</text>
+  <text x="25" y="308" font-family="sans-serif" font-size="13" fill="#334155">Y_world</text>
+
+  <!-- Rotated Cuboid in center -->
+  <g transform="translate(290, 175) rotate(-22)">
+    <!-- Body faces -->
+    <polygon points="-70,-45 -20,-85 80,-85 30,-45" fill="#fed7aa" stroke="#ea580c" stroke-width="1.5"/>
+    <polygon points="30,-45 80,-85 80,15 30,55" fill="#fdba74" stroke="#ea580c" stroke-width="1.5"/>
+    <polygon points="-70,-45 30,-45 30,55 -70,55" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+
+    <!-- Local body axes -->
+    <line x1="0" y1="0" x2="70" y2="0" stroke="#c2410c" stroke-width="2" marker-end="url(#arrow-amber)"/>
+    <line x1="0" y1="0" x2="0" y2="-65" stroke="#c2410c" stroke-width="2" marker-end="url(#arrow-amber)"/>
+    <circle cx="0" cy="0" r="4" fill="#c2410c"/>
+    <text x="75" y="5" font-family="sans-serif" font-size="13" font-weight="700" fill="#c2410c">x'</text>
+    <text x="-4" y="-72" font-family="sans-serif" font-size="13" font-weight="700" fill="#c2410c">z'</text>
+  </g>
+
+  <!-- Center c label -->
+  <circle cx="290" cy="175" r="4" fill="#c2410c"/>
+  <text x="278" y="200" font-family="sans-serif" font-size="14" font-weight="700" fill="#9a3412">center c</text>
+
+  <!-- Target point x in World Frame -->
+  <circle cx="465" cy="85" r="5" fill="#0284c7"/>
+  <text x="475" y="88" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1">target x</text>
+  <line x1="290" y1="175" x2="465" y2="85" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-blue)"/>
+  <text x="345" y="118" font-family="sans-serif" font-size="13" fill="#0284c7">x - c</text>
+
+  <!-- Rotation badge -->
+  <rect x="235" y="65" width="110" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="84" font-family="sans-serif" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">Rotation R (3×3)</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">World coordinates x are transported into cuboid frame: x' = R^T(x - c)</text>
+</svg>

@@ -22,6 +22,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Rigid-body kinematics and Fourier response schematic](../assets/models/rigid_body_fourier_response.svg)
+
+*Rigid-body time-domain motion (translation c(t) and rotation R(t)) and corresponding Fourier series harmonic response.*
+
 - plot_shape is not a Fourier trajectory renderer.
 
 ### Equations

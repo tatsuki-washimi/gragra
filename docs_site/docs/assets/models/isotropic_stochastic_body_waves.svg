@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Isotropic Stochastic Elastic Body Waves</title>
+  <desc id="desc">3D isotropic diffuse field of compressional (P) and shear (S) body waves surrounding an underground cavity.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Isotropic Stochastic Elastic Body Waves</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Surrounding elastic medium with inward 3D arrows -->
+  <rect x="40" y="65" width="480" height="235" fill="url(#grad-earth)" opacity="0.5"/>
+  <text x="60" y="95" font-family="sans-serif" font-size="14" font-weight="700" fill="#475569">3D Elastic Medium (Isotropic diffuse P and S waves)</text>
+
+  <!-- Underground spherical cavity in center -->
+  <circle cx="280" cy="180" r="70" fill="#fffaf8" stroke="#0284c7" stroke-width="2"/>
+  <text x="280" y="160" font-family="sans-serif" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Spherical Cavity</text>
+  <text x="280" y="180" font-family="sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Radius a</text>
+
+  <!-- Radius a arrow -->
+  <line x1="280" y1="180" x2="350" y2="180" stroke="#0284c7" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+  <circle cx="280" cy="180" r="4" fill="#0284c7"/>
+
+  <!-- Inward P & S body wave vectors from all 4π directions -->
+  <g stroke="#e11d48" stroke-width="2">
+    <line x1="120" y1="130" x2="190" y2="155" marker-end="url(#arrow-red)"/>
+    <line x1="440" y1="130" x2="370" y2="155" marker-end="url(#arrow-red)"/>
+    <line x1="120" y1="230" x2="190" y2="205" marker-end="url(#arrow-red)"/>
+    <line x1="440" y1="230" x2="370" y2="205" marker-end="url(#arrow-red)"/>
+  </g>
+  <text x="145" y="135" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c">P waves (v_P)</text>
+  <text x="415" y="135" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c" text-anchor="end">S waves (v_S)</text>
+
+  <!-- Sensor inside cavity -->
+  <circle cx="270" cy="205" r="5" fill="#0284c7"/>
+  <text x="280" y="215" font-family="sans-serif" font-size="12" font-weight="600" fill="#0369a1">Sensor</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Full 4π solid angle isotropic field · Centered spherical cavity of radius a · Harms Eq. 55, 60, 65</text>
+</svg>

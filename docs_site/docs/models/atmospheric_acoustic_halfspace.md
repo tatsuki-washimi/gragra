@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Atmospheric acoustic halfspace schematic](../assets/models/atmospheric_acoustic_halfspace.svg)
+
+*Acoustic waves in atmospheric halfspace z > 0 with density perturbation δρ = δp / c_s² acting on ground sensor at z = 0.*
+
 - z=0 interface; target points on interface rejected.
 
 ### Equations

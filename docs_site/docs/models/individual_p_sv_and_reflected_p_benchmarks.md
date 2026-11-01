@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Individual P/SV and reflected-P benchmarks schematic](../assets/models/individual_p_sv_reflection.svg)
+
+*Decomposition into incident P, reflected P, and mode-converted SV wave potentials with horizontal wavenumber matching.*
+
 - Bare wave excludes free-surface composite and rejects z=0; reflected composite satisfies traction-free boundary and is ground-only z&gt;0; literal Eq90 helper distinct from production coefficient.
 
 ### Equations

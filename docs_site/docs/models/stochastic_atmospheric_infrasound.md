@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Stochastic atmospheric infrasound schematic](../assets/models/stochastic_atmospheric_infrasound.svg)
+
+*Diffuse atmospheric infrasound power spectral density above rigid ground z = 0 penetrating to underground depth h.*
+
 A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic SphericalShell plotting is static only and does not encode modal acoustic fields.
 
 ### Equations

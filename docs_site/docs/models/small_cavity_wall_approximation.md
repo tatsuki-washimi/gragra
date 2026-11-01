@@ -21,6 +21,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Small-cavity wall approximation schematic](../assets/models/small_cavity_wall.svg)
+
+*Planar wall boundary with normal displacement ξ_n inducing effective surface mass sheet σ = ρ ξ_n at distance d.*
+
 - The model accepts Sphere, Cuboid, Cylinder, but plot_shape helper supports only Cuboid, Cylinder, SphericalShell and explicitly rejects Cavity types; high-level small_cavity_wall model is cavity-named and is not automatically plot-able. A standalone Sphere geometry is not among the supported classes.
 - Harms scalar table supports five discrete shape/location rows; tensor paths have separate geometric coverage.
 

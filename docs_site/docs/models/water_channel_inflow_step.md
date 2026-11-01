@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Water-channel inflow step schematic](../assets/models/water_channel_inflow_step.svg)
+
+*Step change in channel water level Δh propagating at speed U and its transient acceleration Fourier response.*
+
 An endpoint step in a linear channel. No dedicated plotting or reuse mapping was identified; the general shape helper targets basic static shapes.
 
 ### Equations

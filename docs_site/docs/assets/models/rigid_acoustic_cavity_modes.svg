@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Rigid Acoustic Cavity Standing Modes</title>
+  <desc id="desc">Standing acoustic modes in a rectangular cavity with rigid walls imposing zero normal velocity boundary conditions.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Rigid Acoustic Cavity Standing Modes</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Rectangular Cavity Box -->
+  <rect x="100" y="80" width="360" height="190" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+  <text x="280" y="105" font-family="sans-serif" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">Rigid Acoustic Cavity (L_x × L_z)</text>
+
+  <!-- Standing wave pattern: Mode n_x = 2 (two half waves) -->
+  <!-- Density perturbation contour shading -->
+  <path d="M100,175 Q190,115 280,175 T460,175" fill="none" stroke="#0284c7" stroke-width="2.5"/>
+  <path d="M100,175 Q190,235 280,175 T460,175" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,4"/>
+
+  <!-- Antinodes and Nodes labels -->
+  <circle cx="100" cy="175" r="5" fill="#e11d48"/>
+  <text x="110" y="165" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c">Antinode</text>
+
+  <circle cx="280" cy="175" r="5" fill="#0284c7"/>
+  <text x="280" y="165" font-family="sans-serif" font-size="12" font-weight="700" fill="#0369a1" text-anchor="middle">Node (δρ=0)</text>
+
+  <circle cx="460" cy="175" r="5" fill="#e11d48"/>
+  <text x="445" y="165" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c" text-anchor="end">Antinode</text>
+
+  <!-- Dimension L_x -->
+  <line x1="100" y1="285" x2="460" y2="285" stroke="#475569" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="280" y="302" font-family="sans-serif" font-size="14" fill="#334155" text-anchor="middle">Width L_x</text>
+
+  <!-- Rigid boundary condition text -->
+  <text x="280" y="225" font-family="sans-serif" font-size="13" fill="#64748b" text-anchor="middle">Rigid wall condition: ∇_n p = 0 at boundaries</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Cavity dimensions L_x × L_y × L_z · Pressure/density antinodes at walls · Mode indices (n_x, n_y, n_z)</text>
+</svg>

@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Small translational oscillation schematic](../assets/models/small_translational_oscillation.svg)
+
+*Harmonic translational oscillation δx(t) = A cos(ωt) (|A| ≪ r) generating a dipole gravitational perturbation.*
+
 - Small first-order translation approximation, phasor not exact finite motion.
 
 ### Equations

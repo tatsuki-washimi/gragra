@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Fixed-axis rotation schematic](../assets/models/fixed_axis_rotation.svg)
+
+*Point-mass cloud rotating at constant angular velocity Ω about fixed rotation axis n̂.*
+
 - plot_shape supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
 
 ### Equations

@@ -20,6 +20,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Uniform-density cuboid, 3D schematic](../assets/models/uniform_density_cuboid.svg)
+
+*Axis-aligned cuboid with center c, dimensions (Lx, Ly, Lz), uniform density ρ, and evaluation target x.*
+
 - high-level Cuboid holds frame/lengths. Vertex antiderivative domain interior/exterior away from material boundary. No arbitrary mesh reuse implied.
 
 ### Equations

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Fixed-Axis Rotation Gravity Modulation</title>
+  <desc id="desc">Discrete point masses rotating at constant angular velocity Ω around a fixed rotation axis n̂.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Fixed-Axis Rotation Gravity Modulation</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Rotation axis line -->
+  <line x1="180" y1="290" x2="180" y2="70" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="190" y="80" font-family="sans-serif" font-size="14" font-weight="700" fill="#334155">Axis n̂</text>
+  <circle cx="180" cy="180" r="4" fill="#334155"/>
+  <text x="160" y="185" font-family="sans-serif" font-size="13" fill="#334155">c</text>
+
+  <!-- Circular trajectory of rotating mass -->
+  <ellipse cx="180" cy="180" rx="90" ry="28" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,4"/>
+  <!-- Angular velocity arrow Ω -->
+  <path d="M265,185 A90,28 0 0,1 250,200" fill="none" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="270" y="210" font-family="sans-serif" font-size="14" font-weight="700" fill="#0284c7">Angular velocity Ω</text>
+
+  <!-- Rotating mass m_i on orbit -->
+  <circle cx="255" cy="170" r="8" fill="#e11d48"/>
+  <text x="268" y="165" font-family="sans-serif" font-size="13" font-weight="700" fill="#be123c">mass m_i</text>
+  <line x1="180" y1="180" x2="255" y2="170" stroke="#e11d48" stroke-width="1.5"/>
+  <text x="210" y="168" font-family="sans-serif" font-size="12" fill="#be123c">r_⊥</text>
+
+  <!-- Target sensor x -->
+  <circle cx="470" cy="140" r="6" fill="#0284c7"/>
+  <text x="480" y="145" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1">target x</text>
+  <line x1="255" y1="170" x2="470" y2="140" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Axis passing through point c with unit vector n̂ · Periodic gravitational acceleration & gradient harmonics</text>
+</svg>

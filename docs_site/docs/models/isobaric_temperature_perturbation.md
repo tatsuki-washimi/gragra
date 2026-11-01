@@ -21,6 +21,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
+![Isobaric temperature perturbation schematic](../assets/models/isobaric_temperature_perturbation.svg)
+
+*Thermal parcel with temperature fluctuation δT inducing isobaric density fluctuation δρ/ρ_0 = - δT/T_0.*
+
 - The API supports these profile objects; geometry dimensions are profile inputs. No dedicated temperature anomaly map asset was located.
 
 ### Equations

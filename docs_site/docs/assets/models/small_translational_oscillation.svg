@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Small Translational Oscillation (Dipole Gravity)</title>
+  <desc id="desc">Point mass or rigid body oscillating harmonically with small amplitude A around equilibrium position x_0.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Small Translational Oscillation (Dipole Gravity)</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Equilibrium position x_0 -->
+  <circle cx="170" cy="180" r="8" fill="#94a3b8"/>
+  <text x="145" y="215" font-family="sans-serif" font-size="14" font-weight="700" fill="#475569">Equilibrium x_0</text>
+
+  <!-- Harmonic oscillation double arrow -->
+  <line x1="110" y1="180" x2="230" y2="180" stroke="#e11d48" stroke-width="2.5" marker-start="url(#arrow-red)" marker-end="url(#arrow-red)"/>
+  <text x="170" y="155" font-family="sans-serif" font-size="14" font-weight="700" fill="#e11d48" text-anchor="middle">δx(t) = A cos(ωt)</text>
+  <text x="170" y="172" font-family="sans-serif" font-size="12" fill="#be123c" text-anchor="middle">Amplitude |A| ≪ r</text>
+
+  <!-- Target point x -->
+  <circle cx="450" cy="180" r="6" fill="#0284c7"/>
+  <text x="460" y="185" font-family="sans-serif" font-size="15" font-weight="700" fill="#0369a1">target x</text>
+
+  <!-- Distance line -->
+  <line x1="170" y1="180" x2="450" y2="180" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="5,4"/>
+  <text x="310" y="170" font-family="sans-serif" font-size="14" fill="#0284c7" text-anchor="middle">distance r = |x - x_0|</text>
+
+  <!-- Dipole perturbation badge -->
+  <rect x="230" y="235" width="230" height="40" rx="8" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.5"/>
+  <text x="345" y="260" font-family="sans-serif" font-size="13" font-weight="600" fill="#0369a1" text-anchor="middle">Dipole field: δΦ ∝ G m (A·r̂) / r²</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Oscillation δx(t) = A cos(ωt) (|A| ≪ r) · First-order gravitational dipole perturbation at target x</text>
+</svg>

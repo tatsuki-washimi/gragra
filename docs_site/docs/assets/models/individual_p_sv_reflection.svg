@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
+  <title id="title">Individual P/SV and Reflected-P Components</title>
+  <desc id="desc">Dissection of individual plane-wave potential components: incident P, reflected P, and mode-converted SV.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#d97706"/>
+    </marker>
+    <linearGradient id="grad-cuboid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+    <linearGradient id="grad-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="grad-sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="grad-earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background for universal dark/light theme contrast -->
+  <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Individual P/SV and Reflected-P Components</text>
+  <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
+
+  <!-- Graphic Body -->
+  <!-- Surface line -->
+  <line x1="50" y1="130" x2="510" y2="130" stroke="#334155" stroke-width="2"/>
+  <text x="440" y="120" font-family="sans-serif" font-size="13" font-weight="700" fill="#334155">Surface z = 0</text>
+
+  <!-- Incident P wave (Left) -->
+  <g transform="translate(110, 190)">
+    <circle cx="0" cy="0" r="35" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+    <line x1="-25" y1="20" x2="25" y2="-20" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow-blue)"/>
+    <text x="0" y="5" font-family="sans-serif" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle">Incident P</text>
+    <text x="0" y="55" font-family="sans-serif" font-size="12" fill="#475569" text-anchor="middle">Scalar potential A</text>
+  </g>
+
+  <!-- Reflected P wave (Center) -->
+  <g transform="translate(280, 190)">
+    <circle cx="0" cy="0" r="35" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+    <line x1="-25" y1="-20" x2="25" y2="20" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow-blue)"/>
+    <text x="0" y="5" font-family="sans-serif" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle">Reflected P</text>
+    <text x="0" y="55" font-family="sans-serif" font-size="12" fill="#475569" text-anchor="middle">Scalar potential B</text>
+  </g>
+
+  <!-- Reflected SV wave (Right) -->
+  <g transform="translate(450, 190)">
+    <circle cx="0" cy="0" r="35" fill="#ffe4e6" stroke="#e11d48" stroke-width="1.5"/>
+    <line x1="-25" y1="-15" x2="25" y2="15" stroke="#e11d48" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <text x="0" y="5" font-family="sans-serif" font-size="13" font-weight="700" fill="#be123c" text-anchor="middle">Reflected SV</text>
+    <text x="0" y="55" font-family="sans-serif" font-size="12" fill="#475569" text-anchor="middle">Vector potential D</text>
+  </g>
+
+  <!-- Horizontal wavenumber continuity -->
+  <line x1="85" y1="90" x2="475" y2="90" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="280" y="80" font-family="sans-serif" font-size="13" font-weight="600" fill="#334155" text-anchor="middle">Common horizontal wavenumber q = k_P sin θ_P = k_S sin θ_S</text>
+
+
+  <!-- Footer note -->
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Scalar potential φ (compressional) · Vector potential ψ (shear) · Wavenumber matching along surface</text>
+</svg>
