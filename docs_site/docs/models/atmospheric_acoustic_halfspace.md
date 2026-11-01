@@ -48,7 +48,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `acoustic_halfspace` | `surface_pressure` | u.Quantity (pressure) | required | Acoustic surface pressure perturbation amplitude |
 | `acoustic_halfspace` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound in air c_s |
 | `acoustic_halfspace` | `frequency` | u.Quantity (frequency) | required (kw-only) | Acoustic wave frequency f in Hz |
-| `acoustic_halfspace` | `incidence_angle` | u.Quantity (angle) | required (kw-only) | Incidence angle theta from normal in [0, pi/2) |
+| `acoustic_halfspace` | `incidence_angle` | u.Quantity (angle) | required (kw-only) | Incidence angle theta from normal in (0, pi/2] (0 < theta <= pi/2) |
 | `acoustic_halfspace` | `azimuth` | u.Quantity (angle) | required (kw-only) | Horizontal propagation azimuth angle phi |
 | `acoustic_halfspace` | `phase_origin` | u.Quantity (length 3-vector) | required (kw-only) | Coordinate phase reference origin |
 | `acoustic_halfspace` | `reference_time` | object | required (kw-only) | Reference time epoch for phasor evaluation |
@@ -60,7 +60,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | \(P_0\) | Surface pressure amplitude | Pa | Peak acoustic pressure wave amplitude at ground |
 | \(c_s\) | Speed of sound | m/s | Speed of sound in atmospheric air |
 | \(f\) | Acoustic frequency | Hz | Acoustic oscillation frequency |
-| \(\theta\) | Incidence angle | rad | Angle from downward normal (\(\theta \in [0, \pi/2)\)) |
+| \(\theta\) | Incidence angle | rad | Angle from downward normal (\(0 < \theta \le \pi/2\)) |
 | \(\phi\) | Azimuth angle | rad | Horizontal propagation azimuth |
 | \(\mathbf k_H\) | Horizontal wavevector | rad/m | \((k_x, k_y) = \frac{2\pi f}{c_s} \sin\theta (\cos\phi, \sin\phi)\) |
 | \(\rho_{\mathrm{air}}\) | Air density | kg/m³ | Ambient atmospheric air mass density |

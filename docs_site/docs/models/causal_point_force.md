@@ -31,7 +31,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 **Analytical formulation and field equations:**
 
 - For a dynamic point force \(\mathbf F(t) = F(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\| &gt; 0\), radial unit vector \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), and direction cosine \(\mu = \mathbf e \cdot \hat{\mathbf n}\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \frac{\mu}{r^2} J(t, r)\) (Love 1927, Harms 2019 Section 4.1).
-- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{F(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) \mu \hat{\mathbf n} \right]\), where \(J(t, r) = \int_0^{t - r/v_P} (t - r/v_P - s) F(s) ds\) is the causal delay moment and \(v_P\) is the medium compressional wave speed.
+- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{F(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) \mu \hat{\mathbf n} \right]\), where \(J(t, r) = \int_0^{r/v_P} \tau F(t - \tau) d\tau\) is the causal delay moment and \(v_P\) is the medium compressional wave speed.
 - Gravity-gradient tensor: \(\mathbf\Gamma(\mathbf x, t) = G \left[ C(t, r) (\mathbf e \otimes \hat{\mathbf n} + \hat{\mathbf n} \otimes \mathbf e + \mu \mathbf I_3) + \mu D(t, r) (\hat{\mathbf n} \otimes \hat{\mathbf n}) \right]\), with analytic coefficients \(C(t, r) = \frac{F(t - r/v_P)}{v_P^2 r^2} - \frac{3 J(t, r)}{r^4}\) and \(D(t, r) = \frac{15 J(t, r)}{r^4} - \frac{6 F(t - r/v_P)}{v_P^2 r^2} - \frac{\dot{F}(t - r/v_P)}{v_P^3 r}\).
 - Causality: All perturbation fields strictly vanish prior to P-wave arrival (\(t &lt; r/v_P\)). Targets coincident with the source (\(r = 0\)) raise ValueError.
 
@@ -65,7 +65,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | \(v_S\) | Shear S-wave speed | m/s | Medium S-wave propagation speed |
 | \(F(t)\) | Force history | N | Applied time-dependent force amplitude |
 | \(\dot{F}(t)\) | Force time derivative | N/s | First time derivative of force history |
-| \(J(t, r)\) | Causal delay moment | N·s² | \(\int_0^{t - r/v_P} (t - r/v_P - s) F(s) ds\) |
+| \(J(t, r)\) | Causal delay moment | N·s² | \(\int_0^{r/v_P} \tau F(t - \tau) d\tau\) |
 | \(C(t, r), D(t, r)\) | Gradient coefficients | N·s²/m⁴ | Closed-form tensor coefficients defined in equations |
 
 #### Usage notes
