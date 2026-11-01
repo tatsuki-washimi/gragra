@@ -92,7 +92,8 @@ discretization noise.
 
 `chunk_size` bounds the size of the intermediate `(M, N, ...)` array
 materialized during a direct sum, trading memory for more Python-level
-iterations. On the `numpy`, `numba` and `cpp` backends the result is
-bit-identical for any `chunk_size`; on `cupy` it becomes a VRAM tiling
-parameter and the bit-identical guarantee relaxes to a tolerance — see
-[Chunking, softening and tolerances](../concepts/numerics.md).
+iterations. On the `numba` and `cpp` backends the execution is independent
+of `chunk_size`; on `numpy`, chunking accumulates intermediate partial sums
+and matches within float64 roundoff tolerance (typically `rtol ≤ 1e-13`).
+On `cupy` it becomes a VRAM tiling parameter and relaxes to a device/kernel
+tolerance — see [Chunking, softening and tolerances](../concepts/numerics.md).

@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Spherical cavity and finite spherical shell
 
 ## Model overview
@@ -26,13 +26,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Representative terms: a_bulk=4πGρ[j0(ka)-j0(kR)]ξe; a_total=8πGρ[j1(ka)/(ka)-j1(kR)/(kR)]ξe. Legacy component helper only gives acceleration. General cavity series supports bulk/wall/total Φ,a,Γ at general targets; fixed shell model supports P/S prescribed displacement.
+- For a finite spherical shell (inner radius \(a\), outer radius \(R\), density \(\rho\)) under a plane harmonic P-wave displacement \(\mathbf\xi e^{i(\mathbf k\cdot\mathbf x - \omega t)}\), center acceleration decomposes as: \(\mathbf a_{\mathrm{bulk}} = 4\pi G \rho [j_0(ka) - j_0(kR)] \mathbf\xi\); \(\mathbf a_{\mathrm{inner\_wall}} = 4\pi G \rho \left[\frac{2 j_1(ka)}{ka} - j_0(ka)\right] \mathbf\xi\); \(\mathbf a_{\mathrm{outer\_boundary}} = 4\pi G \rho \left[j_0(kR) - \frac{2 j_1(kR)}{kR}\right] \mathbf\xi\); total \(\mathbf a_{\mathrm{total}} = 8\pi G \rho \left[\frac{j_1(ka)}{ka} - \frac{j_1(kR)}{kR}\right] \mathbf\xi\) (ANNA v4, arXiv:2603.15157v4, Section 4.1).
+- Difference with infinite medium: \(\Delta\mathbf a = 8\pi G \rho \left[\frac{j_1(kR)}{kR}\right] \mathbf\xi\) for \(k &gt; 0\).
+- Broader high-level cavity and shell models evaluate potential, acceleration, and gradient (\(\Phi, \mathbf a, \mathbf\Gamma\)) at general observation targets using spherical Bessel and Legendre series.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- cavity: Sphere, density Quantity, phase_speed Quantity or FrequencySeries, displacement FrequencySeries, representation, reference_time, wave_type, propagation_direction, polarization, phase_origin, part. shell analogous SphericalShell and contribution. legacy: inner_radius_m a, outer_radius_m R, wavenumber_rad_m k, density_kg_m3, displacement_m ξ, direction (3). SI units: m, rad/m, kg/m³, m; output m/s².
+- High-level models: geometry (Sphere or SphericalShell), density (Quantity kg/m^3), phase_speed (Quantity m/s or FrequencySeries), displacement (FrequencySeries m), wave_type ('P' or 'S'), propagation_direction (3,), polarization (3,), reference_time, phase_origin.
+- Center helper: inner_radius_m a, outer_radius_m R, wavenumber_rad_m k, density_kg_m3 rho, displacement_m xi, direction (3,). Returns acceleration in m/s^2.
 
 ### Calculation paths
 

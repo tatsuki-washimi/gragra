@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Frozen-advection channel water noise
 
 ## Model overview
@@ -12,8 +12,8 @@ Narrow water channel; transfer functions, acceleration/strain ASD
 
 **Source-declared observable / representation pairs:**
 
-- Φ a Γ — Phasor
-- a — Spectral density (ASD)
+- ① Φ a Γ — Phasor
+- ② a — Spectral density (ASD)
 
 These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
 
@@ -27,15 +27,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Tφη/G=−2ρw K₀(2πfD/v).
-- Taxη/G=2iρw(2πf/v)K₀(2πfD/v); Tazη/G=−2ρw(2πf/v)K₁(2πfD/v).
-- Trace Γ=0 in vacuum for full tensor.
+- The channel flows along the \(x\)-axis with velocity \(v\) and width \(w\) at perpendicular horizontal distance \(D &gt; 0\) from the mirror. Surface elevation wave is \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
+- Dimensionless wavenumber parameter is \(q = |\Omega| D / |v|\) (evaluated for \(0 &lt; q \le 700\); exact DC \(f=0\) gives \(q=0\)).
+- Analytic G-free transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- frequency_hz Hz &gt;0; velocity_mps m/s nonzero; distance_m D&gt;0; width_m&gt;0; density_kg_m3 default 1000 kg/m³; eta_m m complex/real; surface_asd_m_per_rt_hz m/√Hz; component x/z/all.
+- frequency_hz: float or array-like &gt; 0, wave frequency in Hz; velocity_mps: float nonzero, water flow velocity v in m/s; distance_m: float D &gt; 0, perpendicular distance to detector in meters; width_m: float w &gt; 0, channel width in meters; density_kg_m3: float rho &gt; 0, fluid density in kg/m^3 (default 1000.0); eta_m: complex or float, surface displacement phasor amplitude in meters (for observables API); surface_asd_m_per_rt_hz: float or array-like &gt;= 0, surface displacement ASD in m/sqrt(Hz) (for ASD API).
 
 ### Calculation paths
 
@@ -84,7 +84,7 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-Analytic-reference and finite surface reference code exists; not run in this inventory.
+Analytic-reference and finite surface reference code exists; tests were not run in this editorial review.
 
 - [`tests/oracles/water_analytic_reference.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/water_analytic_reference.py) includes spatial quadrature vs Bessel checks, tensor trace and limits; [`tests/test_analytic_water.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_water.py) includes identities and stress limits. [`tests/oracles/water_surface_reference.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/water_surface_reference.py) reports 1e-10 then 1e-12 adaptive quadrature tolerances; code/result distinction: no committed executed science result found in this pass.
 

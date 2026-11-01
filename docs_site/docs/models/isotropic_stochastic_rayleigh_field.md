@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Isotropic stochastic Rayleigh field
 
 ## Model overview
@@ -26,13 +26,15 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 
 **Existing source formula notes:**
 
-A=2πrho gamma exp(-k_R z); gamma=(1-zeta)/(q-zeta), zeta=sqrt(q/s); G-free CSD=A² S_xi diag(1/2,1/2,1), off-diagonal zero. SI output multiplies G_SI².
+- Evaluated in the elastic ground half-space at depth \(z &gt; 0\) beneath a free surface at \(z = 0\). Rayleigh wavenumber is \(k_R = 2\pi f / v_R\) with \(q = k_R / k_P\), \(s = k_R / k_S\), and \(\zeta = \sqrt{q/s}\).
+- Depth coupling factor: \(\gamma = \frac{1 - \zeta}{q - \zeta}\), and amplitude factor \(A(z) = 2\pi \rho \gamma e^{-k_R z}\).
+- G-free acceleration CSD tensor: \(\mathbf S_a^{(G\text{-free})}(f) = A^2(z) S_\xi(f) \operatorname{diag}\left(\frac{1}{2}, \frac{1}{2}, 1\right)\), where \(S_\xi(f)\) is the one-sided surface vertical displacement PSD in \(\mathrm{m^2/Hz}\). Off-diagonal terms vanish under ideal isotropy.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-targets_m: M×3 m; density_kg_m3 rho; v_p_m_s, v_s_m_s; positive frequency_hz Hz; surface_vertical_displacement_psd_m2_hz one-sided m²/Hz.
+- targets_m: array-like (M, 3), target positions strictly in ground halfspace z &gt; 0 in meters; density_kg_m3: float rho &gt;= 0 in kg/m^3; v_p_m_s: float v_p &gt; 0 in m/s; v_s_m_s: float v_s &gt; 0 in m/s, satisfying stability condition v_p^2 &gt; (4/3) v_s^2; frequency_hz: float or array-like &gt; 0 in Hz; surface_vertical_displacement_psd_m2_hz: float or array-like &gt;= 0, one-sided vertical surface displacement PSD in m^2/Hz.
 
 ### Calculation paths
 

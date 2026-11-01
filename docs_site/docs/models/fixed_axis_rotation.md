@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Fixed-axis rotation
 
 ## Model overview
@@ -26,14 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- x(t)=R(axis, angle0+ω(t−angle_epoch))(x_body−origin)+origin。
-- For each point mass: Φ=−Gm/r; a=−GmΔ/r³; Γ=Gm(3ΔΔᵀ/r⁵−I/r³). These formulas are transcribed from the oracle implementation and are not a derivation proof.
+- Source mass positions rotate rigidly around a fixed axis defined by origin \(\mathbf x_{\mathrm{orig}}\) and unit axis \(\hat{\mathbf n}\): \(\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R(\hat{\mathbf n}, \theta(t)) (\mathbf x_{\mathrm{body},i} - \mathbf x_{\mathrm{orig}})\), where \(\theta(t) = \theta_0 + \omega (t - t_{\mathrm{epoch}})\).
+- At target \(\mathbf x\) with offset \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\), each point mass contributes instantaneous Newtonian field: \(\Phi = -G \sum_i \frac{m_i}{r_i}\), \(\mathbf a = -G \sum_i \frac{m_i \mathbf r_i}{r_i^3}\), \(\mathbf\Gamma = G \sum_i m_i \left[ \frac{3 \mathbf r_i \otimes \mathbf r_i}{r_i^5} - \frac{\mathbf I}{r_i^3} \right]\).
+- Evaluated at discrete time series sampling points. Single-source target collisions (\(r_i = 0\)) are strictly rejected.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- angular_velocity: rad/s; origin: m vector; angle0: rad; angle_epoch: GPS time; sampling: TimeSampling; cloud masses kg, positions m; frame: Frame.
+- angular_velocity: float, angular rotation speed \(\omega\) in rad/s; origin: array-like (3,), axis anchor position in meters.
+- axis: array-like (3,), rotation axis unit vector \(\hat{\mathbf n}\); angle0: float, initial angle \(\theta_0\) in radians; angle_epoch: GPS time of initial angle.
+- source: PointMassCloud object containing masses (kg) and body-fixed coordinates (m); time_sampling: TimeSampling object defining timestamps.
 
 ### Calculation paths
 

@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Rigid-body time series and Fourier response
 
 ## Model overview
@@ -12,9 +12,9 @@ Prescribed positions/rotations; periodic or finite-window Fourier evaluation
 
 **Source-declared observable / representation pairs:**
 
-- Φ a Γ — Time series
-- Φ a Γ — Fourier series
-- Φ a Γ — Fourier transform
+- ① Φ a Γ — Time series
+- ② Φ a Γ — Fourier series
+- ③ Φ a Γ — Fourier transform
 
 These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
 
@@ -28,13 +28,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- x=R x_body+c; exp[−2πif(t−tref)]. For periodic signals: A0=C0 and An=2Cn. Finite-window coefficients are not doubled.
+- Body kinematics follow general pose transformation \(\mathbf x(t) = \mathbf R(t) \mathbf x_{\mathrm{body}} + \mathbf c(t)\) with proper rotation \(\mathbf R(t) \in \mathrm{SO}(3)\) and translation \(\mathbf c(t)\).
+- Sampled time-series path evaluates instantaneous Newtonian field (\(\Phi, \mathbf a, \mathbf\Gamma\)) at discrete time sampling steps via rigid_motion_observable.
+- Continuous Fourier path integrates callable pose over time using Fourier convention \(\exp[-2\pi i f (t - t_{\mathrm{ref}})]\). For periodic motion, one-sided Fourier series amplitude coefficients satisfy \(A_0 = C_0, A_n = 2 C_n\) (\(n \ge 1\)). For finite-window Fourier transforms, windowed integral coefficients are retained directly without doubling.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- source PointMassCloud; positions m, times s, acceleration m/s²; observable collector default memory_budget_bytes=2 GiB; f_max*|epoch−tref|&lt;=1e6 cycles。
+- source: PointMassCloud object defining point masses in kg and body-frame positions in meters; transform: PrescribedRigidTransform or callable pose returning (R(t), c(t)).
+- Sampled route: uses TimeSampling specifying discrete evaluation epochs in seconds.
+- Fourier route: reference_time GPS epoch, frequencies list in Hz (requires \(f_{\mathrm{max}} |t_{\mathrm{epoch}} - t_{\mathrm{ref}}| \le 10^6\) cycles). Returns potential, acceleration, and gradient Fourier objects.
 
 ### Calculation paths
 
@@ -48,14 +52,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 #### callable pose periodic Fourier series
 
 - `gragra.gravity_sources.rigid_motion`
-- `gragra.observables.rigid_motion_observable`
 
 **Path-level source-declared output union:** Φ a Γ — Fourier series
 
 #### callable pose finite-window Fourier transform
 
 - `gragra.gravity_sources.rigid_motion`
-- `gragra.observables.rigid_motion_observable`
 
 **Path-level source-declared output union:** Φ a Γ — Fourier transform
 

@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Prescribed point-mass translation
 
 ## Model overview
@@ -26,13 +26,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Phi=-G sum(m/r); a=-G sum(m r/r³); Gamma=G sum(m(3rr/r⁵-I/r³)); time-series outputs.
+- For point masses \(m_i\) with positions \(\mathbf x_i(t) = \mathbf x_{i,0} + \mathbf v_i (t - t_0)\), the instantaneous Newtonian field at target \(\mathbf x\) has offset vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\).
+- Potential: \(\Phi(\mathbf x, t) = -G \sum_i \frac{m_i}{r_i(t)}\); acceleration: \(\mathbf a(\mathbf x, t) = -G \sum_i \frac{m_i \mathbf r_i(t)}{r_i(t)^3}\); gravity-gradient tensor: \(\mathbf\Gamma(\mathbf x, t) = G \sum_i m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I}{r_i(t)^3} \right]\).
+- Outputs are evaluated as discrete sampled time series. Source collision (\(r_i(t) = 0\)) is rejected.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- mass kg, position m, velocity m/s, frame, motion_epoch GPS, TimeSampling.
+- mass: array-like (N,), positive point masses in kg; position: array-like (N, 3), initial coordinates in meters; velocity: array-like (N, 3), velocities in m/s.
+- motion_epoch: GPS time of initial position definition; targets: array-like (M, 3), evaluation coordinates in meters; time_sampling: TimeSampling object defining timestamps.
 
 ### Calculation paths
 

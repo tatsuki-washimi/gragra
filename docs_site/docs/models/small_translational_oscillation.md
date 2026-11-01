@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Small translational oscillation
 
 ## Model overview
@@ -26,13 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- delta_Phi=-G sum(m(r dot u)/r³); delta_a=G sum(m(u/r³-3(r dot u)r/r⁵)); delta_Gamma=G sum(m[-3(u⊗r+r⊗u+(r dot u)I)/r⁵+15(r dot u)rr/r⁷]); peak phasor exp(-2πif(t-reference_time)), no 1/2.
+- For point masses \(m_i\) at equilibrium positions \(\mathbf x_{0,i}\) with offset \(\mathbf r_i = \mathbf x - \mathbf x_{0,i}\) (\(r_i = \|\mathbf r_i\|\)), subject to harmonic displacement \(\mathbf u_i(t) = \operatorname{Re}[\mathbf u_i e^{-2\pi i f (t - t_{\mathrm{ref}})}]\) (\(\|\mathbf u_i\| \ll r_i\)).
+- Potential phasor: \(\delta\Phi = -G \sum_i \frac{m_i (\mathbf r_i \cdot \mathbf u_i)}{r_i^3}\); acceleration phasor: \(\delta\mathbf a = G \sum_i m_i \left[ \frac{\mathbf u_i}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i}{r_i^5} \right]\).
+- Gravity-gradient phasor: \(\delta\mathbf\Gamma = G \sum_i m_i \left[ -\frac{3 (\mathbf u_i \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i + (\mathbf r_i \cdot \mathbf u_i)\mathbf I)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right]\). Uses peak phasor convention (no factor of 1/2).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- masses kg, positions m, complex displacement vector m, frequency Hz, reference_time GPS, frame.
+- mass: array-like (N,), positive masses in kg; position: array-like (N, 3), equilibrium positions in meters.
+- displacement: array-like (3,) or (N, 3), complex peak displacement vector in meters; frequency: float or Quantity, oscillation frequency in Hz.
+- reference_time: GPS epoch for phasor phase convention; targets: array-like (M, 3), evaluation points in meters.
 
 ### Calculation paths
 

@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Atmospheric acoustic halfspace
 
 ## Model overview
@@ -26,14 +26,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- air: potential_factor=exp(−qz)/2−cos(k_z z); ground: −exp(qz)/2. phase=exp(i horizontal·(x−phase_origin)).
-- 0&lt;θ≤π/2; grazing valid, normal incidence excluded.
+- The acoustic plane wave has frequency \(f\), sound speed \(c_s\), horizontal wavenumber \(q = k \sin\theta\), and vertical wavenumber \(k_z = k \cos\theta\), where \(k = 2\pi f / c_s\) and \(\theta \in (0, \pi/2]\) is the angle of incidence from zenith (normal incidence \(\theta=0\) is excluded; grazing incidence \(\theta=\pi/2\) is valid).
+- With horizontal wavevector \(\mathbf q = (q\cos\phi_0, q\sin\phi_0)\) and phase factor \(e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\), the surface pressure amplitude is \(P_0\). The G-free potential coefficient is \(C = \frac{4\pi P_0}{c_s^2 k^2}\).
+- In the atmospheric layer (\(z &gt; 0\)), \(\Phi^{(G\text{-free})} = C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} \left[\frac{1}{2} e^{-q z} - \cos(k_z z)\right]\), satisfying \(\nabla^2 \Phi^{(G\text{-free})} = 4\pi \delta\rho = -4\pi (P_0/c_s^2) e^{i \mathbf q \cdot \mathbf x_\perp} \cos(k_z z)\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- surface_pressure Pa (total surface coefficient); sound_speed m/s; frequency Hz; incidence_angle, azimuth rad; phase_origin m; reference_time GPS; k,q,k_z m⁻¹.
+- surface_pressure_pa: float, acoustic pressure amplitude P0 at z=0 in Pa; sound_speed_m_s: float, positive speed of sound in m/s; frequency_hz: float, positive wave frequency in Hz; incidence_angle_rad: float in (0, pi/2], zenith angle theta (theta=0 normal incidence excluded, theta=pi/2 grazing allowed); azimuth_rad: float, horizontal propagation azimuth phi0 in radians; phase_origin_m: array-like (3,), reference point for phase zero in meters; targets_m: array-like (M, 3), target coordinates in meters.
+- Observables return complex phasors (peak amplitude, time reconstruction Re[X exp(-2 pi i f (t - t_ref))]). SI outputs multiply G_free by G.
 
 ### Calculation paths
 
@@ -75,9 +77,9 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-Committed oracle fixture and tests/generator exist; not run now.
+Noncavity production comparison script and module test suites exist; not run in this editorial review.
 
-- [`tests/oracles/data/halfspace_v1.json`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/data/halfspace_v1.json) is stored reference data; test code is not a newly reproduced result. Exact per-test tolerances and lineage need follow-up.
+- [`tests/oracles/gen1/compare_noncavity_production.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/gen1/compare_noncavity_production.py) checks non-cavity atmospheric and seismic production paths. An unpublished test suite verifies acoustic halfspace transfer functions against analytical limits; no committed golden json artifact is used for this model.
 
 ### Applicability and limitations
 

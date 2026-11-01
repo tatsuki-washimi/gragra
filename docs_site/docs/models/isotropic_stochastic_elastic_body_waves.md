@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Isotropic stochastic elastic body waves
 
 ## Model overview
@@ -26,13 +26,16 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 
 **Existing source formula notes:**
 
-Fullspace: S_a=(4πrho)² S_xi I (G-free), SI ×G². Cavity P/S model identified as Harms 2019 Eq.65; full expression includes spherical Bessel response.
+- Full-space isotropic P-waves (B1): \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 S_{\xi,P}(f) \mathbf I_3\), where \(S_{\xi,P}(f)\) is the one-sided per-component P-displacement PSD (Harms 2019 Eqs. 55, 60).
+- Spherical cavity P/S-waves (B2): Evaluated at center of spherical cavity of radius \(R &gt; 0\) with wavenumbers \(k_P = 2\pi f / v_P\) and \(k_S = 2\pi f / v_S\). With spherical Bessel factors \(f_P = \frac{j_1(k_P R)}{k_P R}\) and \(f_S = \frac{j_1(k_S R)}{k_S R}\), the isotropic CSD is \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 [4 f_P^2 S_{\xi,P}(f) + f_S^2 S_{\xi,S}(f)] \mathbf I_3\) (Harms 2019 Eq. 65).
+- Physical SI CSD: Multiplies G-free CSD by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f)\) in \(\mathrm{(m/s^2)^2/Hz}\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-B1: density_kg_m3; frequency_hz; p_displacement_psd_m2_hz; B2 additionally radius_m, v_p_m_s, v_s_m_s, s_displacement_psd_m2_hz; PSD per Cartesian component m²/Hz; rho≥0, speeds/radius positive and vs&lt;vp.
+- Full-space B1 (fullspace_p_isotropic_acceleration_csd_g_free): density_kg_m3: float rho &gt;= 0 in kg/m^3; frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0, one-sided per-component P-displacement PSD in m^2/Hz.
+- Spherical cavity B2 (spherical_cavity_ps_isotropic_acceleration_csd_g_free): radius_m: float R &gt; 0 in meters; density_kg_m3: float rho &gt;= 0 in kg/m^3; v_p_m_s: float v_P &gt; 0 in m/s; v_s_m_s: float v_S &gt; 0 in m/s (satisfying 0 &lt; v_S &lt; v_P); frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz; s_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz.
 
 ### Calculation paths
 
@@ -77,7 +80,7 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-Test implementation records concrete checks; no tests were run in this inventory. No committed executed-result artifact was identified for the assigned stochastic bodywave tests.
+Test implementation records concrete checks; tests were not run in this editorial review. No committed executed-result artifact was identified for the assigned stochastic bodywave tests.
 
 - [`tests/test_stochastic_bodywave.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_bodywave.py): fullspace formula uses rho=2500 kg/m³, f=2 Hz, S=3e-18 m²/Hz and exact allclose rtol=0, atol=0.
 - Cavity direct angular/vector-sum comparison checks real P and S CSD separately at rtol=2e-11, atol=0; imaginary residual atol=1e-13*max(expected). Code is a test oracle route, not saved run output.

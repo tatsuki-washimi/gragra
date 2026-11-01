@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Causal point force
 
 ## Model overview
@@ -26,13 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Phi = -G mu J / r^2; a = G[(J/r^3)e + (f/(vp^2 r)-3J/r^3)mu n]; Gamma formula C,D coefficients; all three outputs.
+- For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\|\) and direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \mu \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})\) (Love 1927, Harms 2019 Section 4.1).
+- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) (\mathbf e \cdot \hat{\mathbf n}) \hat{\mathbf n} \right]\), where \(J(t, r) = \int_{r/v_P}^{r/v_S} \tau f(t - \tau) d\tau\).
+- Gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t)\) is evaluated by closed-form spatial derivatives with analytic \(C, D\) coefficients. Field strictly vanishes prior to P-wave arrival \(t &lt; r/v_P\) (causality).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- position m, unit direction, vp m/s, ForceHistory knots seconds/coefficients; GPS onset, sampling epoch, dt seconds and count.
+- source_position_m: array-like (3,), point force position in meters; direction: array-like (3,), force unit vector \(\mathbf e\).
+- vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)); force_history: ForceHistory knots (seconds) and polynomial coefficients.
+- targets_m: array-like (M, 3), target coordinates in meters (source collision \(r = 0\) rejected); times_s: array-like (K,), evaluation times in seconds.
 
 ### Calculation paths
 
@@ -73,9 +77,9 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-Verification method, tolerances, and artifact status recorded; tests were not run in this task.
+Verification method, tolerances, and artifact status recorded; tests were not run in this editorial review.
 
-- CAS script [`tests/oracles/gen1/derivations/verify_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/gen1/derivations/verify_point_force.py) documents r&gt;0,c&gt;0,C1 history assumptions and J derivatives; test code only. Hand-sample [`tests/high_level/test_gen1_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/high_level/test_gen1_point_force.py) uses rtol 1e-14; no saved output found.
+- CAS script [`tests/oracles/gen1/derivations/verify_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/oracles/gen1/derivations/verify_point_force.py) documents r&gt;0,c&gt;0,C1 history assumptions and J derivatives. An unpublished hand-sample test suite evaluates point force cases with rtol 1e-14; no committed output artifact is retained in the public repository.
 
 ### Applicability and limitations
 

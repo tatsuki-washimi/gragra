@@ -24,18 +24,101 @@
 .gragra-filters button { padding:.45rem .7rem; background:var(--md-primary-fg-color); color:var(--md-primary-bg-color); cursor:pointer; border-radius:.2rem; }
 .gragra-count { font-weight:600; font-size:.85rem; }
 .gragra-empty { display:none; margin:1rem 0; }
+
+/* Responsive card layout for mobile screens (B-U03) */
 @media(max-width:46rem) {
   .gragra-catalogue-table,.gragra-catalogue-table tbody { display:block; border:0; }
   .gragra-catalogue-table th,.gragra-catalogue-table td { border:0; }
   .gragra-catalogue-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-  .gragra-catalogue-table tbody tr { display:grid; grid-template-columns:1fr 1fr; gap:.35rem; padding:.75rem; border-bottom:1px solid var(--md-default-fg-color--lightest); }
+  .gragra-catalogue-table tbody tr {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.4rem;
+    padding:.75rem;
+    border-bottom:1px solid var(--md-default-fg-color--lightest);
+  }
   .gragra-catalogue-table tbody tr[hidden],.gragra-catalogue-table[hidden] { display:none; }
-  .gragra-catalogue-table td { display:block; padding:.25rem; overflow-wrap:anywhere; }
+  .gragra-catalogue-table td { display:block; padding:.2rem; min-width:0; }
+  /* Col 1: Model (full width) */
   .gragra-catalogue-table td:first-child { grid-column:1 / -1; }
-  .gragra-catalogue-table td:nth-child(2) { grid-column:1 / -1; }
+  /* Col 2: Geometry (left col) and Col 5: Level (right col) share row 2 */
+  .gragra-catalogue-table td:nth-child(2) { grid-column:1; }
+  .gragra-catalogue-table td:nth-child(5) { grid-column:2; text-align:left; }
+  /* Col 3: Observables (left col) and Col 4: Representation (right col) side by side */
+  .gragra-catalogue-table td:nth-child(3) { grid-column:1; }
+  .gragra-catalogue-table td:nth-child(4) { grid-column:2; }
   .gragra-catalogue-table td::before { content:attr(data-label); display:block; font-size:.65rem; font-weight:600; color:var(--md-default-fg-color--light); }
-  .gragra-level { text-align:left; }
+  .gragra-pair { min-height:auto; margin-bottom:.35rem; }
   .gragra-filters label { flex:1 1 9rem; min-width:0; }
   .gragra-filters input,.gragra-filters select { min-width:0; width:100%; }
 }
-.md-typeset img[src$="sphere-3d.svg"],.md-typeset img[src$="sphere-section.svg"] { background:#fff; border-radius:.35rem; }
+
+/* MathJax and formula overflow scrolling (B-U01) */
+.arithmatex,
+.md-typeset .arithmatex,
+mjx-container[jax="CHTML"][display="true"] {
+  display: block;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0.35rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Table overflow scrolling on small viewports (B-U02) */
+.md-typeset table:not([class]) {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+.md-typeset__scrollwrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Subtle scrollbar hint for touch/mobile devices */
+.arithmatex::-webkit-scrollbar,
+.md-typeset table:not([class])::-webkit-scrollbar,
+.md-typeset__table::-webkit-scrollbar {
+  height: 5px;
+}
+.arithmatex::-webkit-scrollbar-thumb,
+.md-typeset table:not([class])::-webkit-scrollbar-thumb,
+.md-typeset__table::-webkit-scrollbar-thumb {
+  background: var(--md-default-fg-color--lighter);
+  border-radius: 3px;
+}
+
+/* Images and SVG figures (B-U05) */
+.md-typeset img {
+  max-width: 100%;
+  height: auto;
+}
+.md-typeset img[src$="sphere-3d.svg"],
+.md-typeset img[src$="sphere-section.svg"],
+.md-typeset img[src$="cylinder-3d.svg"],
+.md-typeset img[src$="cylinder-section.svg"] {
+  background: #fff;
+  border-radius: .35rem;
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+[data-md-color-scheme="slate"] .md-typeset img[src$="sphere-3d.svg"],
+[data-md-color-scheme="slate"] .md-typeset img[src$="sphere-section.svg"],
+[data-md-color-scheme="slate"] .md-typeset img[src$="cylinder-3d.svg"],
+[data-md-color-scheme="slate"] .md-typeset img[src$="cylinder-section.svg"] {
+  background: #f8f9fa;
+  padding: 0.25rem;
+}
+
+/* Word wrapping and code breaking (B-U02: preserve token integrity) */
+.md-typeset code {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.md-typeset table code,
+.gragra-catalogue-table td code {
+  white-space: nowrap;
+}

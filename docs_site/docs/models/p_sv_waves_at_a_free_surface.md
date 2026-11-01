@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # P/SV waves at a free surface
 
 ## Model overview
@@ -26,13 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- D1 P/SV halfspace potential and analytic derivatives; total bulk plus surface; potential, acceleration and gravity-gradient phasors (SI Phi m²/s², a m/s², Gamma s⁻²).
+- Evaluates the exact gravity response of an incident plane P or SV wave reflecting at a planar traction-free boundary (\(z = 0\)), including converted SV-from-P or P-from-SV modes.
+- The total gravitational field combines the interior halfspace dilatational perturbation and the surface vertical displacement mass sheet \(u_z(x, y, 0, t)\).
+- Returns potential \(\Phi\), acceleration \(\mathbf a\), and gradient tensor \(\mathbf\Gamma\) phasors in physical SI units (\(\mathrm{m^2/s^2}\), \(\mathrm{m/s^2}\), \(\mathrm{s^{-2}}\)). Non-grazing incident angles (\(0 \le \theta &lt; \pi/2\)) are supported.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- density kg/m³, vp/vs m/s, incident displacement FrequencySeries (m), phasor representation, reference_time, wave_type P/SV, incidence_angle_rad, azimuth_rad, phase_origin m.
+- density_kg_m3: float, medium mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, elastic wave speeds in m/s.
+- displacement: FrequencySeries or Quantity, incident displacement amplitude in meters; wave_type: 'P' or 'SV'.
+- incidence_angle_rad: float, incidence angle \(\theta \in [0, \pi/2)\) from surface normal (exact grazing \(\pi/2\) rejected); azimuth_rad: float, azimuth angle.
 
 ### Calculation paths
 

@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Small-cavity wall approximation
 
 ## Model overview
@@ -12,8 +12,8 @@ Sphere, cuboid or cylinder; selected linearized wall contribution only
 
 **Source-declared observable / representation pairs:**
 
-- a — Static
-- a — Phasor
+- ① Φ a Γ — Static
+- ② Φ a Γ — Phasor
 
 These pairs are a union over the listed calculation paths. They do not imply every API exposes every combination.
 
@@ -28,13 +28,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Harms 2022 scalar wall coupling factor is dimensionless; source records five valid combinations. Tensor contraction G-free: delta_a/G=-rho*C_g@u; SI: delta_a=-G_SI*rho*C_g@u. SCA approximation applies only cavity much smaller than source-to-target distance; high-level model displacement must be first-order small.
+- High-level small_cavity_wall evaluates selected wall contributions to potential \(\Phi\), acceleration \(\mathbf a\), and gradient \(\mathbf\Gamma\) (static or single-frequency phasor) for cavity wall displacement \(\mathbf u\): \(\Phi_{\mathrm{wall}} = -\mathbf u \cdot \mathbf a_{\mathrm{body}}\), \(\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u\).
+- Harms 2022 scalar wall coupling factor is dimensionless geometric factor \(C\). sca_wall_acceleration computes the acceleration vector from the lookup factor: \(\mathbf a = C G \rho \mathbf u\).
+- Tensor contraction G-free: \(\Delta\mathbf a / G = -\rho \mathbf C_g \mathbf u\); SI: \(\Delta\mathbf a = -G \rho \mathbf C_g \mathbf u\). SCA approximation applies only when the cavity is much smaller than source-to-target distance; high-level model displacement must be first-order small.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- small_cavity_wall: Sphere|Cuboid|Cylinder; displacement Quantity 3-vector; density Quantity; optional frequency Quantity and reference_time. Scalar function cavern_shape in {sphere,cube,half_sphere,elongated_cuboid_2to1to1}; location {arbitrary,center_3d,floor_center_2d}; acceleration adds density_kg_m3 and displacement_m.
+- High-level small_cavity_wall: geometry (Sphere, Cuboid, or Cylinder), displacement (Quantity 3-vector in geometry frame), density (Quantity kg/m^3), optional frequency (Quantity Hz) and reference_time for peak phasor representation.
+- Scalar coupling factor sca_wall_coupling_factor: cavern_shape in {'sphere', 'cube', 'half_sphere', 'elongated_cuboid_2to1to1'}, test_mass_location in {'arbitrary', 'center_3d', 'floor_center_2d'}.
+- Scalar acceleration sca_wall_acceleration: adds density_kg_m3 (float) and displacement_m (array-like (3,)) to cavern_shape and test_mass_location.
 
 ### Calculation paths
 
@@ -42,13 +46,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - `gragra.analytic.seismic.small_cavity_wall`
 
-**Path-level source-declared output union:** a — Static; a — Phasor
+**Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
 
 #### Harms 2022 scalar table lookup and acceleration
 
-- `gragra.analytic.sca_wall_coupling_factor`
+- `gragra.analytic.sca_wall_acceleration`
 
 **Path-level source-declared output union:** a — Static
+
+#### Harms 2022 dimensionless coupling factor lookup
+
+- `gragra.analytic.sca_wall_coupling_factor`
+
+This path provides a related coefficient, coupling quantity, or helper rather than a direct Φ/a/Γ output.
 
 #### shape-specific tensor SCA numeric paths (related, not the assigned scalar factory)
 

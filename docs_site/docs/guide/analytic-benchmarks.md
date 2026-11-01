@@ -45,10 +45,10 @@ uniform-sphere model:
 
 ### Uniform cylinder on-axis
 
-- `cylinder_potential_axis_g_free`, `cylinder_acceleration_axis_g_free`, `cylinder_gradient_axis_g_free`: Closed-form potential, acceleration, and gradient tensor along the symmetry axis ($z$-axis).
-- `cylinder_axis_observables_g_free`: Bundled G-free return.
-- `cylinder_axis_observables`: Public SI observable entry point.
-- **Formulation**: On-axis longitudinal acceleration $a_z = -2\pi \rho [(u_2 - \sqrt{u_2^2 + R^2}) - (u_1 - \sqrt{u_1^2 + R^2})]$, gradient $\Gamma_{zz} = \partial a_z / \partial z$, and transverse gradients constrained by axial symmetry and Poisson's equation: $\Gamma_{xx} = \Gamma_{yy} = (-4\pi \rho_{\mathrm{local}} - \Gamma_{zz}) / 2$. End faces $z = \pm H/2$ and off-axis points ($x^2 + y^2 > 0$) are strictly rejected.
+- `cylinder_potential_axis_g_free`, `cylinder_gradient_axis_g_free`: Closed-form potential and gradient tensor along the symmetry axis ($z$-axis).
+- `cylinder_axis_observables_g_free`: Bundled G-free return (`GFreeGravityValues`) for $\Phi$, $\mathbf a$, and $\mathbf \Gamma$.
+- `cylinder_axis_observables`: Public SI observable entry point (`GravityObservables`).
+- **Formulation**: For a cylinder centered at the origin, with $u_1 = -H/2 - z$, $u_2 = H/2 - z$, and $F(u) = |u| - \sqrt{u^2 + R^2}$, the on-axis longitudinal acceleration is $a_z^{(G\text{-free})} = 2\pi\rho [F(u_2) - F(u_1)]$ (in SI units: $a_z = 2\pi G\rho [F(u_2) - F(u_1)]$). In the far field ($|z| \gg H, R$), the acceleration decays as $a_z^{(G\text{-free})} \sim -M z / |z|^3$ (SI: $a_z^{(\mathrm{SI})} \sim -G M z / |z|^3$) where $M = \pi R^2 H \rho$. The longitudinal gradient is $\Gamma_{zz} = \partial a_z / \partial z$, and transverse gradients are constrained by axial symmetry and Poisson's equation: $\Gamma_{xx} = \Gamma_{yy} = (-4\pi \rho_{\mathrm{local}} - \Gamma_{zz}) / 2$ (with $\rho_{\mathrm{local}} = \rho$ for $|z| < H/2$ and $0$ outside). End faces $z = \pm H/2$ and off-axis points ($x^2 + y^2 > 0$) are strictly rejected.
 
 ### Spherical shell cavity P-wave response
 

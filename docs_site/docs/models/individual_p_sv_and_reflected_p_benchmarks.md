@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Individual P/SV and reflected-P benchmarks
 
 ## Model overview
@@ -26,13 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- H19 Eq.86-88 single-mode; Eq.89/90 reflected composite; potential and analytic derivative acceleration/gradient.
+- Single-mode body wave: evaluates bulk and full transfer functions for individual plane P/SV waves (Harms 2019 Eqs. 86–88).
+- Reflected-P composite: above-ground (\(z &gt; 0\)) potential, acceleration, and gradient for incident P + reflected P + converted SV satisfying the traction-free surface boundary condition (Harms 2019 Eqs. 89/90).
+- Implementation detail (A-U08): The production API adopts the physical \(+i\) phase coefficient derived from the independently solved traction-free surface displacement field. The literal Harms 2019 Eq. (90) expression with \(-i\) is retained in a separate internal verification helper (_harms2019_reflected_p_delta); both paths and their boundary properties are documented in an unpublished design note
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- density kg/m³, vp/vs m/s, frequency Hz, incidence/azimuth rad, displacement m, phase_origin m.
+- targets_m: array-like (M, 3), evaluation points in meters (z-up coordinate system; \(z \le 0\) rejected for the above-ground reflected composite).
+- density_kg_m3: float, background mass density in \(\mathrm{kg/m^3}\); v_p_m_s, v_s_m_s: float, P- and S-wave speeds in m/s (\(v_P &gt; \sqrt{4/3}v_S &gt; 0\)).
+- frequency_hz: float or array-like, positive frequency in Hz; displacement_m: float, incident displacement amplitude in meters.
 
 ### Calculation paths
 

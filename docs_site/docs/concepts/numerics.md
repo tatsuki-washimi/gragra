@@ -13,13 +13,17 @@
 materialized while summing over sources, trading memory for more
 Python-level iterations. It is purely a memory/performance knob on the CPU
 backends — `chunk_size=None` (no chunking) and any positive `chunk_size`
-must produce the same result, and `chunk_size<=0` raises `ValueError`.
+produce numerically equivalent results within float64 roundoff tolerance
+(typically `rtol ≤ 1e-13` across test suites), and `chunk_size<=0` raises `ValueError`.
 
 ### Reproducibility across backends
 
-On `"numpy"`, `"numba"` and `"cpp"`, the result is **bit-identical** for any
-`chunk_size` — the compiled backends validate the argument but do not use it
-for tiling at all. On `"cupy"` this guarantee **relaxes to a tolerance**:
+On `"numba"` and `"cpp"`, the compiled loops do not use `chunk_size` for tiling,
+so results within each backend are strictly independent of `chunk_size`.
+On `"numpy"`, chunking accumulates intermediate partial sums via `out += ...`,
+which can change the floating-point summation order; while consistent to near machine
+precision, unconditional bit-level identity is not guaranteed for arbitrary inputs.
+On `"cupy"` this guarantee **relaxes to a device/kernel tolerance**:
 `chunk_size` becomes a genuine VRAM-tiling parameter, the in-chunk reduction
 is a non-associative parallel sum, and changing `chunk_size` changes the
 last bits of the answer. Reproducibility there means "same device, same

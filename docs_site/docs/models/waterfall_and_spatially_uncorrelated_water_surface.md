@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Waterfall and spatially uncorrelated water surface
 
 ## Model overview
@@ -26,13 +26,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- For incoherent cells: ASD_a=G rho sqrt(A_cell w) sqrt(pi/(8H^3)) ASD_eta.
+- Waterfall model: Vertical water stream with velocity \(v\) at horizontal distance \(D &gt; 0\) with cross-sectional area perturbation \(A(z,t) = A_0 e^{-i \Omega (t - z/v)}\). G-free transfer functions are \(T_{a_x, A}^{(G\text{-free})} = -2 \rho_w \frac{|\Omega|}{|v|} K_1(|\Omega| D / |v|)\) and \(T_{a_z, A}^{(G\text{-free})} = 2i \rho_w \frac{\Omega}{v} K_0(|\Omega| D / |v|)\).
+- Uncorrelated channel surface model: Narrow water channel with independent surface displacement fluctuations of correlation cell area \(A_{\mathrm{cell}}\). The integrated geometric coupling evaluates as \(\int_{-\infty}^\infty \frac{x^2}{(H^2 + x^2)^3} dx = \frac{\pi}{8 H^3}\).
+- Acceleration ASD: \(\mathrm{ASD}_a(f) = G \rho_w \sqrt{A_{\mathrm{cell}} w} \sqrt{\frac{\pi}{8 H^3}} \mathrm{ASD}_\eta(f)\) in \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- water_channel_uncorrelated_asd: H m&gt;0, width_m w m&gt;0, correlation_area_m2 m²&gt;0, surface_asd_m_per_rt_hz m/√Hz &gt;=0, rho kg/m³ default 1000.
+- Waterfall API (water_waterfall_asd): frequency_hz: float &gt; 0 in Hz; velocity_mps: float nonzero in m/s; distance_m: float D &gt; 0 in meters; area_asd_m2_per_rt_hz: float &gt;= 0, stream cross-sectional area ASD in m^2/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
+- Uncorrelated channel API (water_channel_uncorrelated_asd): distance_m: float H &gt; 0 in meters; width_m: float w &gt; 0 in meters; correlation_area_m2: float A_cell &gt; 0 in m^2; surface_asd_m_per_rt_hz: float &gt;= 0 in m/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
 
 ### Calculation paths
 

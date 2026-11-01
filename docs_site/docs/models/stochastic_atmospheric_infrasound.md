@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Stochastic atmospheric infrasound
 
 ## Model overview
@@ -26,13 +26,15 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 
 **Existing source formula notes:**
 
-A1 G-free diagonal [1/3,1/3,2/3] S_p/(c_s f)². A2 x=4πfh/c_s, I_iso(x)=1/2∫ sin³θ exp(-x sinθ)dθ; diagonal [1,1,2] S_p I_iso/(c_s f)². A3 component=(2/(c_s f))²S_p(1-sinc(kr))²/3, k r=2πfr/c_s. SI CSD ×G².
+- A1 (Surface isotropic infrasound): Acceleration CSD tensor in G-free units is \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)\), where \(S_p(f)\) is surface pressure PSD in \(\mathrm{Pa^2/Hz}\), \(c_s\) is sound speed, and \(f\) is frequency.
+- A2 (Underground depth \(h \ge 0\)): \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)\), where \(x = 4\pi f h / c_s\) and \(I_{\mathrm{iso}}(x) = \frac{1}{2}\int_0^{\\pi/2} \sin^3\theta e^{-x \sin\theta} d\theta\).
+- A3 (Centered in spherical cavern of radius \(R \ge 0\)): Isotropic diagonal tensor \(\mathbf S_a^{(G\text{-free})}(f) = S_{a,ii} \mathbf I_3\) with component \(S_{a,ii}^{(G\text{-free})}(f) = \frac{4}{3(c_s f)^2} S_{p,\mathrm{cav}}(f) [1 - \operatorname{sinc}(2\pi f R / c_s)]^2\), vanishing smoothly as \(R \to 0\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-A1 sound_speed_m_s, frequency_hz, surface_pressure_psd_pa2_hz. A2 adds depth_m. A3 radius_m, sound speed, cavern_pressure_psd_pa2_hz. Pressure PSD Pa²/Hz; f&gt;0; geometry nonnegative; c_s&gt;0.
+- sound_speed_m_s: float &gt; 0, speed of sound in air in m/s; frequency_hz: float or array-like &gt; 0, evaluation frequency in Hz; surface_pressure_psd_pa2_hz: float or array-like &gt;= 0, one-sided pressure PSD at surface in Pa^2/Hz (for A1, A2); depth_m: float &gt;= 0, detector depth below surface in meters (for A2); radius_m: float &gt;= 0, cavern inner radius in meters (for A3); cavern_pressure_psd_pa2_hz: float or array-like &gt;= 0, pressure PSD inside cavern in Pa^2/Hz (for A3).
 
 ### Calculation paths
 
@@ -85,7 +87,7 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-Test implementation records explicit A1/A2/A3 checks; no tests were run in this inventory. No committed executed-result artifact for these exact test functions was identified.
+Test implementation records explicit A1/A2/A3 checks; tests were not run in this editorial review. No committed executed-result artifact for these exact test functions was identified.
 
 - [`tests/test_stochastic_acoustic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_acoustic.py) A1: c_s=343 m/s, pressure PSD=4e-4 Pa²/Hz, f=2 Hz; closed tensor equality rtol=0, atol=0; doubled-frequency 1/f² scaling rtol=2e-15.
 - A2 depth factor independent angular quadrature uses x={0,0.1,0.7,1,5,10,20,50}, scipy quad epsabs=epsrel=2e-14, limit=200; comparison rtol=2e-4, atol=2e-14. Test comment says implementation-conditioning, not final science acceptance.

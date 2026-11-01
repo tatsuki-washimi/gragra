@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Uniform-density cuboid
 
 ## Model overview
@@ -26,13 +26,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- F1 = uv ln(w+r)+vw ln(u+r)+wu ln(v+r) - 1/2 u² atan(vw/(ur)) -1/2 v² atan(wu/(vr)) -1/2 w² atan(uv/(wr)); source report gives explicit adopted sign convention. Potential G-free kg/m; acceleration kg/m²; gradient kg/m³; SI conversion once.
+- For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), relative corner coordinates are \((u_i, v_j, w_k) = (x_t - c_x \mp L_x/2, y_t - c_y \mp L_y/2, z_t - c_z \mp L_z/2)\) with distance \(r = \sqrt{u^2 + v^2 + w^2}\).
+- The G-free potential is \(\Phi^{(G\text{-free})} = \rho \sum_{i,j,k=1}^2 (-1)^{i+j+k} F_1(u_i, v_j, w_k)\), where \(F_1(u, v, w) = u v \ln(w+r) + v w \ln(u+r) + w u \ln(v+r) - \frac{u^2}{2}\operatorname{atan}\left(\frac{vw}{ur}\right) - \frac{v^2}{2}\operatorname{atan}\left(\frac{wu}{vr}\right) - \frac{w^2}{2}\operatorname{atan}\left(\frac{uv}{wr}\right)\) (Nagy et al. 2000, Petrovic 1996).
+- Acceleration components use \(F_2(u, v, w) = u \ln(v+r) + v \ln(u+r) - w \operatorname{atan}\left(\frac{uv}{wr}\right)\), and the diagonal gradient satisfies \(\Gamma_{xx}^{(G\text{-free})} = \rho \sum (-1)^{i+j+k} \operatorname{atan}\left(\frac{vw}{ur}\right)\). Off-diagonal terms use \(\ln(w+r)\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- center_m (3,) m; lengths_m=(Lx,Ly,Lz) m all positive; density_kg_m3 kg/m³; targets_m (M,3) m; cuboid material-boundary targets rejected. High-level Cuboid + density Quantity.
+- center_m: array-like (3,), cuboid center c in meters; lengths_m: array-like (3,), full side lengths (Lx, Ly, Lz) in meters (all positive); density_kg_m3: float, uniform mass density rho in kg/m^3 (positive); targets_m: array-like (M, 3), evaluation targets in meters.
+- High-level model gragra.analytic.objects.uniform_cuboid accepts a Cuboid geometry object and an Astropy Quantity density. Points on faces, edges, or vertices raise ValueError.
 
 ### Calculation paths
 

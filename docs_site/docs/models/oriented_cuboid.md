@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Oriented cuboid
 
 ## Model overview
@@ -27,13 +27,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Only coordinate transform differs: acceleration Q a_local; Gamma Q Gamma_local Qᵀ; potential unchanged.
+- Applies an explicit proper rotation matrix \(\mathbf Q \in \mathrm{SO}(3)\) mapping local cuboid frame coordinates to world coordinates.
+- Potential is invariant: \(\Phi(\mathbf x) = \Phi_{\mathrm{loc}}(\mathbf Q^T(\mathbf x - \mathbf c))\). Acceleration and gravity-gradient tensor transform covariantly: \(\mathbf a = \mathbf Q \mathbf a_{\mathrm{loc}}\), \(\mathbf\Gamma = \mathbf Q \mathbf\Gamma_{\mathrm{loc}} \mathbf Q^T\).
+- Interior and exterior Poisson/Laplace trace conditions and boundary rejection behavior match the aligned cuboid.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- center_m, lengths_m, density_kg_m3, targets_m; rotation_matrix explicit proper local-to-world rotation.
+- center_m: array-like (3,), cuboid center c in meters; lengths_m: array-like (3,), side lengths in meters; density_kg_m3: float, uniform density in kg/m^3; targets_m: array-like (M, 3), targets in meters.
+- rotation_matrix: array-like (3, 3), proper rotation matrix Q in SO(3) (det Q = +1, Q^T Q = I). Improper rotations or reflections raise ValueError.
 
 ### Calculation paths
 

@@ -36,14 +36,14 @@ Only leaf sections are counted: parent headings, chapter summaries and sections 
 |---|---:|---:|---:|---:|---|
 | 2 — Gravity measurements | 3 | 2 | 67% | **33%** | The observable side exists; there is no dedicated gravitoelastic coupling benchmark |
 | 3 — Gravity perturbations from seismic fields | 12 | 10 | 83% | **42%** | The strongest area, and the one gragra was built for |
-| 4 — Gravity perturbations from seismic point sources | 4 | 0 | 0% | **0%** | Untouched |
+| 4 — Gravity perturbations from seismic point sources | 4 | 1 | 25% | **8%** | Causal point-force response is implemented (§4.1); moment tensors, fault ruptures, and half-space point sources are absent |
 | 5 — Atmospheric gravity perturbations | 4 | 2 | 50% | **13%** | Generic density-integration machinery only |
 | 6 — Gravity perturbations from objects | 6 | 6 | 100% | **54%** | Generic prescribed trajectories and rigid rotations are available; object-specific formula catalogues are incomplete |
-| **Total, chapters 2–6** | **29** | **20** | **69%** | **34%** | A well-verified core with an incomplete formula catalogue |
+| **Total, chapters 2–6** | **29** | **21** | **72%** | **35%** | A well-verified core with an expanding analytical formula catalogue |
 
 "Reach rate" counts a section as reached if generic infrastructure alone can address it. "Weighted coverage" penalises the absence of a dedicated analytic result, and is the more honest of the two.
 
-**A weighted coverage of about 34% does not mean the engine is 34% correct.** For the cases it does cover, the quality of the implementation and the independence of its verification are high — that is what the rest of the [verification section](index.md) is about. What the 34% measures is *breadth*: about a third of the physical cases catalogued in chapters 2–6 have a dedicated treatment here, and the remainder do not.
+**A weighted coverage of about 35% does not mean the engine is 35% correct.** For the cases it does cover, the quality of the implementation and the independence of its verification are high — that is what the rest of the [verification section](index.md) is about. What the 35% measures is *breadth*: about a third of the physical cases catalogued in chapters 2–6 have a dedicated treatment here, and the remainder do not.
 
 ## What is fully covered
 
@@ -67,6 +67,7 @@ The bulk of chapter 3, plus scattered sections elsewhere. In each case something
 - **§2.1.1 and §2.1.4, static gravity and gradient coupling.** Both quantities are computable; there is no dedicated coupling API or benchmark for the response of a suspended test mass, and the instrument side is out of scope by design.
 - **§3.5, numerical simulations.** External field ingest and gravity post-processing exist. A standard solver benchmark workflow and an end-to-end mesh/HDF5 comparison do not; see [External field data and HDF5](../external/hdf5-fields.md).
 - **§3.6.1 and §3.6.4, seismic noise estimates.** Known complex responses and directional weighting can be handled, and multi-target gradient calculations exist; there is no spectrum-to-noise-estimate API and no dedicated long-wavelength differential-response benchmark.
+- **§4.1, point forces.** The causal point-force response in an unbounded homogeneous medium is implemented with its dedicated acceleration observable and CAS derivation verification. Moment tensors (§4.2), finite fault ruptures (§4.3), and point sources in a half space (§4.4) are absent.
 - **§5.1 and §5.2, atmospheric sound and quasi-static temperature perturbations.** Adiabatic pressure-to-density and isobaric temperature-to-density constructors are implemented, together with independent finite-air-box and infinite-halfspace references. The finite and infinite domains are different physical problems, and the prescribed-density references do not establish general acoustic-propagation or CFD accuracy.
 - **§6.1, §6.4 and §6.5, rules of thumb, interacting distributions, oscillating extended objects.** The building blocks are present; the systematic APIs the review's formulas suggest are not.
 - **§6.2, objects moving at constant speed along a prescribed trajectory.** `PrescribedPointTrajectory` evaluates supplied positive point-mass samples, with a point-flyby closed-form check. It does not generate motion, interpolate samples, or provide a vehicle-specific geometry or formula catalogue.

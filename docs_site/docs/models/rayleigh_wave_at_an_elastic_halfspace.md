@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Rayleigh wave at an elastic halfspace
 
 ## Model overview
@@ -26,13 +26,17 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Phi Eq.96/97 above/below ground; Eq.98 amplitude; a=-grad(Phi), Gamma=grad(a).
+- For a Rayleigh wave with horizontal wavenumber \(k_R = \omega / c_R\), vertical decay parameters \(q_P = \sqrt{k_R^2 - \omega^2/v_P^2}\) and \(q_S = \sqrt{k_R^2 - \omega^2/v_S^2}\), and surface vertical displacement amplitude \(\xi_z(0)\).
+- Above ground (\(z &gt; 0\)), the potential is \(\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}\) (Harms 2019 Eq. 96), where \(\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}\).
+- Below ground (\(z \le 0\)), the field combines the volume dilatation perturbation and the free-surface vertical mass-sheet displacement (Eq. 97). Acceleration and gradient are analytic derivatives \(\mathbf a = -\nabla\Phi\), \(\mathbf\Gamma = \nabla\mathbf a\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- density kg/m³, vp/vs m/s, f Hz, vertical displacement m, direction, phase origin m, reference_time; response API has no amplitude and uses one-metre basis.
+- density_kg_m3: float, background mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)).
+- frequency_hz: float, wave frequency in Hz; displacement_m: float or Quantity, vertical surface displacement amplitude \(\xi_z(0)\) in meters.
+- propagation_direction: array-like (3,), wave propagation unit vector; phase_origin_m: array-like (3,), phase reference point; reference_time: time origin for phasor.
 
 ### Calculation paths
 

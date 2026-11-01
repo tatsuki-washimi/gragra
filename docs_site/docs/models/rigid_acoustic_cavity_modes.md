@@ -1,4 +1,4 @@
-<!-- GENERATED MODEL REFERENCE: regenerate through gragra-dev catalogue workflow. -->
+<!-- GENERATED MODEL REFERENCE: regenerate through the catalogue workflow. -->
 # Rigid acoustic cavity modes
 
 ## Model overview
@@ -26,15 +26,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Existing source formula notes:**
 
-- Cuboid Ψ=N∏cos(n_jπ(x_j+L_j/2)/L_j); k²=Σ(n_jπ/L_j)²; N=2^(r/2).
-- Cylinder Ψ∝J_m(α_mn r/R)A_m(φ)cos(qπ(z+H/2)/H), J′_m(α)=0.
-- Sphere uses nth strictly positive root of spherical Bessel derivative j′_l.
+- Modes satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition \(\partial_n \Psi = 0\) on the cavity boundary; frequency is derived as \(f = c_s k / (2\pi)\). The static zero mode (\(k=0\)) is excluded.
+- Cuboid modes: \(\Psi = N \prod_{j\in\{x,y,z\}} \cos\left(\frac{n_j \pi (x_j + L_j/2)}{L_j}\right)\) with \(k^2 = \sum_j (n_j \pi / L_j)^2\) and \(N = 2^{r/2}\) where \(r\) is the number of non-zero indices, giving unit spatial RMS.
+- Cylinder modes: \(\Psi \propto J_m(\alpha_{mn} r/R) A_m(\phi) \cos(q\pi (z+H/2)/H)\) with \(J\'_m(\alpha_{mn}) = 0\) and \(k^2 = (\alpha_{mn}/R)^2 + (q\pi/H)^2\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- Sphere R m and l,m,n; cuboid Lx,Ly,Lz m and nx,ny,nz; cylinder R,H m and m,n,q,azimuth; pressure Pa spatial-RMS peak phasor; sound_speed m/s; f derived.
+- geometry: Cavity geometry instance (Sphere with radius R; Cuboid with edge lengths Lx, Ly, Lz; Cylinder with radius R and height H); mode: Mode descriptor (SphereAcousticMode(l, m, n), CuboidAcousticMode(nx, ny, nz), CylinderAcousticMode(m, n, q, azimuth)); pressure_amplitude_pa: complex or float, spatial-RMS peak pressure phasor in Pa; sound_speed_m_s: float, positive speed of sound in m/s; targets_m: array-like (M, 3) in cavity local frame.
 
 ### Calculation paths
 
