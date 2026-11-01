@@ -39,18 +39,30 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `oriented_cuboid_observables` | `center_m` | array-like (3,) | required | Cuboid center coordinates in world frame (meters) |
+| `oriented_cuboid_observables` | `lengths_m` | array-like (3,) | required | Full side lengths in local body frame (meters) |
+| `oriented_cuboid_observables` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
+| `oriented_cuboid_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in world frame (meters) |
+| `oriented_cuboid_observables` | `rotation_matrix` | array-like (3, 3) | required (kw-only) | Proper rotation matrix Q in SO(3) mapping local body to world frame |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\mathbf c\) | `center_m` | Cuboid center | m |
-| \(\mathbf L\) | `lengths_m` | Full side lengths in local body frame | m |
-| \(\rho\) | `density_kg_m3` | Uniform mass density | kg/m³ |
-| \(\mathbf x\) | `targets_m` | Evaluation targets in world frame | m |
-| \(\mathbf Q\) | `rotation_matrix` | Proper rotation matrix in SO(3) (det Q = +1, Q^T Q = I) | dimensionless |
+| \(\mathbf c\) | Cuboid center | m | Center in world coordinate frame |
+| \(\mathbf L\) | Body side lengths | m | Edge lengths in local principal axis frame |
+| \(\rho\) | Mass density | kg/m³ | Uniform interior mass density |
+| \(\mathbf Q\) | Rotation matrix | dimensionless | Proper orthogonal matrix \(\mathbf Q \in \mathrm{SO}(3)\) (\(\det \mathbf Q = +1, \mathbf Q^T \mathbf Q = \mathbf I\)) |
+| \(\mathbf x\) | World target position | m | Transformed to body frame via \(\mathbf x_{\mathrm{local}} = \mathbf Q^T (\mathbf x - \mathbf c)\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- center_m: array-like (3,), cuboid center c in meters; lengths_m: array-like (3,), side lengths in meters; density_kg_m3: float, uniform density in kg/m^3; targets_m: array-like (M, 3), targets in meters.
-- rotation_matrix: array-like (3, 3), proper rotation matrix Q in SO(3) (det Q = +1, Q^T Q = I). Improper rotations or reflections raise ValueError.
+- The `rotation_matrix` argument must satisfy proper rotation conditions (\(\det \mathbf Q = +1\) and \(\mathbf Q^T \mathbf Q = \mathbf I\)). Improper rotations or reflections raise `ValueError`.
+- Observables are transformed back to world frame: \(\Phi = \Phi_{\mathrm{local}}\), \(\mathbf a = \mathbf Q \mathbf a_{\mathrm{local}}\), \(\mathbf \Gamma = \mathbf Q \mathbf \Gamma_{\mathrm{local}} \mathbf Q^T\).
 
 ### Calculation paths
 

@@ -40,17 +40,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `isobaric_temperature` | `profile` | _Profile | required | Temperature spatial profile instance (Fourier, Gaussian, or finite body) |
+| `isobaric_temperature` | `delta_temperature` | u.Quantity (temperature) | required | Temperature fluctuation amplitude delta T |
+| `isobaric_temperature` | `rho0` | u.Quantity (density) | required (kw-only) | Ambient unperturbed air mass density |
+| `isobaric_temperature` | `T0` | u.Quantity (temperature) | required (kw-only) | Ambient absolute temperature in Kelvin |
+| `isobaric_temperature` | `frequency` | u.Quantity | None | None | Optional oscillation frequency for phasor evaluation |
+| `isobaric_temperature` | `reference_time` | object | None | None | Optional reference epoch for phasor representation |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho_0\) | `ambient_density_kg_m3` | Ambient unperturbed air density | kg/m³ |
-| \(T_0\) | `ambient_temperature_k` | Ambient absolute temperature | K |
-| \(\delta T(\mathbf x, t)\) | `temperature_perturbation_k` | Temperature fluctuation field (delta rho = -rho0 delta T / T0) | K |
-| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+| \(\rho_0\) | Ambient air density | kg/m³ | Unperturbed background air mass density |
+| \(T_0\) | Ambient temperature | K | Background absolute temperature (\(T_0 > 0\)) |
+| \(\delta T\) | Temperature perturbation | K | Local temperature fluctuation |
+| \(\delta\rho\) | Density perturbation | kg/m³ | Isobaric ideal gas relation \(\delta\rho = -\rho_0 \frac{\delta T}{T_0}\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- rho0_kg_m3: float &gt; 0, ambient atmospheric density; T0_k: float &gt; 0, ambient temperature in Kelvin; delta_temperature: float, complex, or profile-specific amplitude in Kelvin; targets_m: array-like (M, 3), evaluation points in meters.
-- Profile parameters: TemperatureFourierMode(wavevector_rad_m, phase_origin_m, frequency_hz); TemperatureGaussian(center_m, sigma_m); TemperaturePerturbationGrid(edges_m, temperatures_k).
+- Evaluates via `.at(targets).run()` based on the linearized isobaric coupling \(\delta\rho / \rho_0 = -\delta T / T_0\).
 
 ### Calculation paths
 

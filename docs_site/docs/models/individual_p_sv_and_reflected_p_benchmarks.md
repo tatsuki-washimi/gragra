@@ -39,23 +39,34 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `halfspace_single_bodywave_observables` | `targets_m` | array-like (M, 3) | required | Target positions in elastic halfspace (meters) |
+| `halfspace_single_bodywave_observables` | `wave_type` | Literal['P', 'SV'] | required (kw-only) | Wave mode to evaluate ('P' or 'SV') |
+| `halfspace_single_bodywave_observables` | `density_kg_m3` | float | required (kw-only) | Medium mass density in kg/m³ |
+| `halfspace_single_bodywave_observables` | `v_p_m_s` | float | required (kw-only) | P-wave speed in m/s |
+| `halfspace_single_bodywave_observables` | `v_s_m_s` | float | required (kw-only) | S-wave speed in m/s |
+| `halfspace_single_bodywave_observables` | `frequency_hz` | float | array-like | required (kw-only) | Wave frequency in Hz |
+| `halfspace_single_bodywave_observables` | `incidence_angle_rad` | float | required (kw-only) | Incidence angle in radians |
+| `halfspace_single_bodywave_observables` | `displacement_m` | float | complex | array-like | required (kw-only) | Wave displacement amplitude in meters |
+| `halfspace_reflected_p_above_observables` | `incident_displacement_m` | float | complex | array-like | required (kw-only) | Incident P-wave displacement amplitude in meters |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho\) | `density_kg_m3` | Medium mass density | kg/m³ |
-| \(v_P\) | `vp_m_s` | Elastic P-wave speed | m/s |
-| \(v_S\) | `vs_m_s` | Elastic S-wave speed | m/s |
-| \(f\) | `frequency_hz` | Wave frequency | Hz |
-| \(\xi\) | `displacement_m` | Wave displacement amplitude | m |
-| \(\theta\) | `incidence_angle_rad` | Incidence angle from surface normal | rad |
-| \(\phi\) | `azimuth_rad` | Azimuth angle | rad |
-| \(\mathbf x\) | `targets_m` | Evaluation targets in halfspace (z > 0) | m |
+| \(\rho\) | Medium density | kg/m³ | Elastic background mass density |
+| \(v_P, v_S\) | Elastic wave speeds | m/s | Compressional and shear wave speeds |
+| \(f\) | Wave frequency | Hz | Linear frequency |
+| \(\xi\) | Displacement phasor | m | Wave component phasor amplitude |
+| \(\theta\) | Incidence angle | rad | Angle from downward vertical |
+| \(\phi\) | Azimuth angle | rad | Horizontal propagation direction |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- targets_m: array-like (M, 3), evaluation points in meters (z-up coordinate system; \(z \le 0\) rejected for the above-ground reflected composite).
-- density_kg_m3: float, background mass density in \(\mathrm{kg/m^3}\); v_p_m_s, v_s_m_s: float, P- and S-wave speeds in m/s (\(v_P &gt; \sqrt{4/3}v_S &gt; 0\)).
-- frequency_hz: float or array-like, positive frequency in Hz; displacement_m: float, incident displacement amplitude in meters.
-- incidence_angle_rad: float, angle \(0 \le \theta &lt; \pi/2\) from normal; azimuth_rad: float, azimuth angle; phase_origin_m: array-like (3,), phase origin in meters.
+- Benchmark APIs isolate individual wave contributions (e.g. single upward incident P or SV, or incident P plus reflected P and converted SV) for analytical validation.
 
 ### Calculation paths
 

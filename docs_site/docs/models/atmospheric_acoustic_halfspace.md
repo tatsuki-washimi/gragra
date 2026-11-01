@@ -40,20 +40,36 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `acoustic_halfspace` | `halfspace` | HalfSpace | required | HalfSpace geometry representing atmospheric interface (z >= 0) |
+| `acoustic_halfspace` | `surface_pressure` | u.Quantity (pressure) | required | Acoustic surface pressure perturbation amplitude |
+| `acoustic_halfspace` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound in air c_s |
+| `acoustic_halfspace` | `frequency` | u.Quantity (frequency) | required (kw-only) | Acoustic wave frequency f in Hz |
+| `acoustic_halfspace` | `incidence_angle` | u.Quantity (angle) | required (kw-only) | Incidence angle theta from normal in [0, pi/2) |
+| `acoustic_halfspace` | `azimuth` | u.Quantity (angle) | required (kw-only) | Horizontal propagation azimuth angle phi |
+| `acoustic_halfspace` | `phase_origin` | u.Quantity (length 3-vector) | required (kw-only) | Coordinate phase reference origin |
+| `acoustic_halfspace` | `reference_time` | object | required (kw-only) | Reference time epoch for phasor evaluation |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho_{\mathrm{air}}\) | `air_density_kg_m3` | Atmospheric air mass density | kg/m³ |
-| \(\rho_{\mathrm{ground}}\) | `ground_density_kg_m3` | Subsurface ground mass density | kg/m³ |
-| \(c_s\) | `sound_speed_m_s` | Speed of sound in air | m/s |
-| \(f\) | `frequency_hz` | Acoustic wave frequency | Hz |
-| \(P_0\) | `pressure_amplitude_pa` | Acoustic pressure wave amplitude | Pa |
-| \(\mathbf k_H\) | `horizontal_wavenumber_rad_m` | Horizontal wavevector (k_x, k_y) | rad/m |
-| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+| \(P_0\) | Surface pressure amplitude | Pa | Peak acoustic pressure wave amplitude at ground |
+| \(c_s\) | Speed of sound | m/s | Speed of sound in atmospheric air |
+| \(f\) | Acoustic frequency | Hz | Acoustic oscillation frequency |
+| \(\theta\) | Incidence angle | rad | Angle from downward normal (\(\theta \in [0, \pi/2)\)) |
+| \(\phi\) | Azimuth angle | rad | Horizontal propagation azimuth |
+| \(\mathbf k_H\) | Horizontal wavevector | rad/m | \((k_x, k_y) = \frac{2\pi f}{c_s} \sin\theta (\cos\phi, \sin\phi)\) |
+| \(\rho_{\mathrm{air}}\) | Air density | kg/m³ | Ambient atmospheric air mass density |
+| \(\rho_{\mathrm{ground}}\) | Ground density | kg/m³ | Subsurface medium density |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- surface_pressure_pa: float, acoustic pressure amplitude P0 at z=0 in Pa; sound_speed_m_s: float, positive speed of sound in m/s; frequency_hz: float, positive wave frequency in Hz; incidence_angle_rad: float in (0, pi/2], zenith angle theta (theta=0 normal incidence excluded, theta=pi/2 grazing allowed); azimuth_rad: float, horizontal propagation azimuth phi0 in radians; phase_origin_m: array-like (3,), reference point for phase zero in meters; targets_m: array-like (M, 3), target coordinates in meters.
-- Observables return complex phasors (peak amplitude, time reconstruction Re[X exp(-2 pi i f (t - t_ref))]). SI outputs multiply G_free by G.
+- High-level factory returns an `AcousticHalfspaceModel` evaluated via `.at(targets).run()`.
+- Models acoustic reflection from a rigid ground boundary with air occupying \(z \ge 0\).
 
 ### Calculation paths
 

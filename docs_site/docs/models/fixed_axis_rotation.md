@@ -38,22 +38,32 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `rotating_point_mass` | `point_mass` | PointMass | required | Point mass object defining mass m |
+| `rotating_point_mass` | `radius` | u.Quantity (length) | required | Perpendicular orbital radius r > 0 |
+| `rotating_point_mass` | `angular_velocity` | u.Quantity (angular speed) | required | Constant rotation angular velocity omega |
+| `rotating_point_mass` | `axis` | array-like (3,) | required (kw-only) | Rotation axis direction vector |
+| `rotating_point_mass` | `initial_phase` | u.Quantity (angle) | required (kw-only) | Initial azimuthal phase angle at t = 0 |
+| `rotating_point_mass` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `rotating_point_mass` | `sampling` | TimeSampling | required (kw-only) | Output time axis discretization |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(m\) | `mass_kg` | Rotating point mass (positive) | kg |
-| \(\mathbf x_c\) | `center_m` | Center of rotation on axis | m |
-| \(\hat{\mathbf n}\) | `axis_unit_vector` | Unit vector along axis of rotation | dimensionless |
-| \(r\) | `radius_m` | Orbital radius perpendicular to axis (r > 0) | m |
-| \(\omega\) | `angular_velocity_rad_s` | Constant angular speed | rad/s |
-| \(\phi_0\) | `initial_phase_rad` | Initial azimuthal angle at t = 0 | rad |
-| \(t\) | `times_s` | Evaluation time points | s |
-| \(\mathbf x\) | `targets_m` | Sensor target coordinates | m |
+| \(m\) | Rotating mass | kg | Mass of revolving point body (\(m > 0\)) |
+| \(\mathbf x_c\) | Axis center | m | Origin point on rotation axis |
+| \(\hat{\mathbf n}\) | Axis unit vector | dimensionless | Unit vector defining orientation of rotation axis |
+| \(r\) | Orbital radius | m | Perpendicular radius from axis (\(r > 0\)) |
+| \(\omega\) | Angular velocity | rad/s | Constant rotation speed |
+| \(\phi_0\) | Initial phase | rad | Azimuthal phase angle at \(t = 0\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- angular_velocity: float, angular rotation speed \(\omega\) in rad/s; origin: array-like (3,), axis anchor position in meters.
-- axis: array-like (3,), rotation axis unit vector \(\hat{\mathbf n}\); angle0: float, initial angle \(\theta_0\) in radians; angle_epoch: GPS time of initial angle.
-- source: PointMassCloud object containing masses (kg) and body-fixed coordinates (m); time_sampling: TimeSampling object defining timestamps.
+- Axis vector must be nonzero. Target points lying on the circular orbit path raise collision `ValueError`.
 
 ### Calculation paths
 

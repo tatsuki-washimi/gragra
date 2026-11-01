@@ -39,20 +39,36 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `uniform_advection_temperature_acceleration_psd` | `density_kg_m3` | float | required (kw-only) | Ambient air mass density in kg/m³ (positive) |
+| `uniform_advection_temperature_acceleration_psd` | `temperature_k` | float | required (kw-only) | Ambient absolute temperature in Kelvin (T0 > 0) |
+| `uniform_advection_temperature_acceleration_psd` | `structure_coefficient_k_m_neg_p_over_2` | float | required (kw-only) | Temperature structure parameter c_T in K·m^(-p/2) |
+| `uniform_advection_temperature_acceleration_psd` | `structure_exponent` | float | required (kw-only) | Power-law structure scaling exponent p in (0, 2) (p = 2/3 for Kolmogorov) |
+| `uniform_advection_temperature_acceleration_psd` | `wind_speed_m_s` | float | required (kw-only) | Advection wind speed v in m/s (v > 0) |
+| `uniform_advection_temperature_acceleration_psd` | `minimum_approach_m` | float | required (kw-only) | Closest approach distance from wind path to sensor r_min in meters |
+| `uniform_advection_temperature_acceleration_psd` | `wind_axis_angle_rad` | float | required (kw-only) | Angle theta between wind velocity and sensor projection axis in radians |
+| `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho_0\) | `density_kg_m3` | Ambient air mass density | kg/m³ |
-| \(T_0\) | `temperature_k` | Ambient absolute temperature | K |
-| \(c_T\) | `structure_coefficient_k_m_neg_p_over_2` | Temperature structure parameter | K·m^(-p/2) |
-| \(p\) | `structure_exponent` | Power-law scaling exponent (Kolmogorov p = 2/3) | dimensionless |
-| \(v\) | `wind_speed_m_s` | Advection wind speed | m/s |
-| \(r_{\min}\) | `minimum_approach_m` | Closest distance from advection path to sensor | m |
-| \(\theta\) | `wind_axis_angle_rad` | Angle between wind velocity and sensor projection axis | rad |
-| \(f\) | `frequency_hz` | Evaluation frequency | Hz |
+| \(\rho_0\) | Ambient air density | kg/m³ | Unperturbed atmospheric air mass density (\(\rho_0 > 0\)) |
+| \(T_0\) | Ambient temperature | K | Mean ambient absolute temperature (\(T_0 > 0\)) |
+| \(c_T\) | Structure parameter | K·m^(-p/2) | Temperature structure constant |
+| \(p\) | Structure exponent | dimensionless | Power-law scaling index (\(p = 2/3\) for Kolmogorov turbulence) |
+| \(v\) | Wind speed | m/s | Mean horizontal wind advection speed (\(v > 0\)) |
+| \(r_{\min}\) | Closest approach distance | m | Perpendicular distance from advection line to sensor (\(r_{\min} > 0\)) |
+| \(\theta\) | Wind projection angle | rad | Angle between wind velocity vector and detector projection axis |
+| \(f\) | Frequency | Hz | Evaluation frequency (\(f > 0\)) |
+| \(S_a(f)\) | Projected acceleration PSD | (m/s²)²/Hz | One-sided acceleration PSD along sensor axis |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- density_kg_m3: float &gt;= 0, ambient air mass density rho0 in kg/m^3; temperature_k: float &gt; 0, ambient absolute temperature T0 in Kelvin; structure_coefficient_k_m_neg_p_over_2: float &gt;= 0, temperature structure parameter c_T in K*m^(-p/2); structure_exponent: float in (0, 2), power-law scaling exponent p (Kolmogorov p=2/3); wind_speed_m_s: float &gt; 0, advection wind speed v in m/s; minimum_approach_m: float &gt; 0, closest distance r_min from path to sensor in meters; wind_axis_angle_rad: float, angle theta between wind direction and sensor projection axis in radians; frequency_hz: float or array-like &gt; 0, evaluation frequency f in Hz.
+- Evaluates Harms (2019) Sect. 5.2 and Creighton (2000) for frozen-turbulence temperature advection past a gravitational-wave detector test mass.
 
 ### Calculation paths
 

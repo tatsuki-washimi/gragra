@@ -38,19 +38,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `constant_velocity` | `point_mass` | PointMass | required | Point mass object containing mass and initial position |
+| `constant_velocity` | `velocity` | u.Quantity (speed 3-vector) | required | Constant velocity vector v in frame |
+| `constant_velocity` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `constant_velocity` | `motion_epoch` | object | required (kw-only) | Reference epoch t0 at which position equals initial position |
+| `constant_velocity` | `sampling` | TimeSampling | required (kw-only) | Evaluation time axis discretization |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(m_i\) | `masses_kg` | Discrete point masses (all positive) | kg |
-| \(\mathbf x_{0,i}\) | `initial_positions_m` | Initial positions at t = t_0 | m |
-| \(\mathbf v_i\) | `velocities_m_s` | Constant velocity vectors | m/s |
-| \(t_0\) | `t0_s` | Initial reference time | s |
-| \(t\) | `times_s` | Evaluation time points | s |
-| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+| \(m\) | Point mass | kg | Discrete mass magnitude (\(m > 0\)) |
+| \(\mathbf x_0\) | Initial position | m | Body location at reference epoch \(t = t_0\) |
+| \(\mathbf v\) | Velocity vector | m/s | Constant translation velocity |
+| \(t_0\) | Motion epoch | s | Reference time for initial coordinates |
+| \(t\) | Evaluation time | s | Evaluation time sample points |
+| \(\mathbf x(t)\) | Trajectory position | m | \(\mathbf x(t) = \mathbf x_0 + \mathbf v (t - t_0)\) |
+| \(\mathbf x_{\mathrm{target}}\) | Target position | m | Sensor evaluation coordinates |
+| \(r(t)\) | Target distance | m | \(r(t) = \|\mathbf x_{\mathrm{target}} - \mathbf x(t)\|\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- mass: array-like (N,), positive point masses in kg; position: array-like (N, 3), initial coordinates in meters; velocity: array-like (N, 3), velocities in m/s.
-- motion_epoch: GPS time of initial position definition; targets: array-like (M, 3), evaluation coordinates in meters; time_sampling: TimeSampling object defining timestamps.
+- Evaluates via `.at(targets).run()` to yield discrete time-series for potential, acceleration, and gradient.
+- Collision check: if the trajectory intersects any target point (\(r(t) = 0\)), evaluation raises `ValueError`.
 
 ### Calculation paths
 

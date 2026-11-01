@@ -39,24 +39,36 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `halfspace_psv` | `geometry` | HalfSpace | required | Traction-free elastic halfspace geometry |
+| `halfspace_psv` | `density` | u.Quantity (density) | required | Medium mass density |
+| `halfspace_psv` | `vp` | u.Quantity (speed) | required | Compressional P-wave speed |
+| `halfspace_psv` | `vs` | u.Quantity (speed) | required | Shear S-wave speed |
+| `halfspace_psv` | `displacement` | FrequencySeries | required | Incident displacement amplitude series |
+| `halfspace_psv` | `wave_type` | Literal['P', 'SV'] | required | Incident wave mode ('P' or 'SV') |
+| `halfspace_psv` | `incidence_angle_rad` | float | required | Incidence angle from surface normal in [0, pi/2) |
+| `halfspace_psv` | `azimuth_rad` | float | required | Horizontal propagation azimuth in radians |
+| `halfspace_psv_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
+| `halfspace_psv_observables` | `incident_displacement_m` | float | complex | array-like | required (kw-only) | Incident displacement amplitude in meters |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho\) | `density_kg_m3` | Medium mass density (rho > 0) | kg/m³ |
-| \(v_P\) | `vp_m_s` | Elastic P-wave speed | m/s |
-| \(v_S\) | `vs_m_s` | Elastic S-wave speed | m/s |
-| \(\xi_{\mathrm{inc}}\) | `displacement` | Incident displacement amplitude | m |
-| — | `wave_type` | Incident wave mode ('P' or 'SV') | dimensionless |
-| \(\theta\) | `incidence_angle_rad` | Incidence angle from surface normal, in [0, pi/2) | rad |
-| \(\phi\) | `azimuth_rad` | Horizontal propagation azimuth angle | rad |
-| \(\mathbf x_0\) | `phase_origin` | Phase reference coordinates | m |
-| \(t_0\) | `reference_time` | Phasor time origin | s |
+| \(\rho\) | Medium density | kg/m³ | Elastic medium density (\(\rho > 0\)) |
+| \(v_P, v_S\) | Elastic wave speeds | m/s | Compressional and shear wave speeds |
+| \(\theta\) | Incidence angle | rad | Angle from downward normal (\(\theta \in [0, \pi/2)\)) |
+| \(\phi\) | Azimuth angle | rad | Horizontal propagation azimuth |
+| \(\xi_{\mathrm{inc}}\) | Incident displacement | m | Incoming plane wave phasor amplitude |
+| \(R_{PP}, R_{PS}, R_{SP}, R_{SS}\) | Reflection coefficients | dimensionless | Aki-Richards free-surface mode conversion coefficients |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- density_kg_m3: float, medium mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, elastic wave speeds in m/s.
-- displacement: FrequencySeries or Quantity, incident displacement amplitude in meters; wave_type: 'P' or 'SV'.
-- incidence_angle_rad: float, incidence angle \(\theta \in [0, \pi/2)\) from surface normal (exact grazing \(\pi/2\) rejected); azimuth_rad: float, azimuth angle.
-- phase_origin: array-like (3,), phase reference coordinate in meters; reference_time: time origin for phasor evaluation.
+- Exact grazing incidence (\(\theta = \pi/2\)) is rejected by the API.
+- Evaluates combined displacement and gravitational perturbation including incident, reflected, and mode-converted waves.
 
 ### Calculation paths
 

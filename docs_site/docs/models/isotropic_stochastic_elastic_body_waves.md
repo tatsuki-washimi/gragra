@@ -38,20 +38,34 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `fullspace_p_isotropic_acceleration_csd` | `density_kg_m3` | float | required (kw-only) | Elastic medium mass density in kg/m³ |
+| `fullspace_p_isotropic_acceleration_csd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `fullspace_p_isotropic_acceleration_csd` | `p_displacement_psd_m2_hz` | float | ArrayLike | required (kw-only) | One-sided per-component P-wave displacement PSD in m²/Hz |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavity radius R in meters (R > 0) |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (0 < v_S < v_P) |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `s_displacement_psd_m2_hz` | float | ArrayLike | required (kw-only) | One-sided per-component S-wave displacement PSD in m²/Hz |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\rho\) | `density_kg_m3` | Elastic medium mass density | kg/m³ |
-| \(v_P\) | `v_p_m_s` | Compressional P-wave speed | m/s |
-| \(v_S\) | `v_s_m_s` | Shear S-wave speed (0 < v_S < v_P) | m/s |
-| \(R\) | `radius_m` | Cavity radius (spherical cavity B2 model) | m |
-| \(f\) | `frequency_hz` | Wave frequency | Hz |
-| \(S_{\xi,P}(f)\) | `p_displacement_psd_m2_hz` | Per-component one-sided P-wave displacement PSD | m²/Hz |
-| \(S_{\xi,S}(f)\) | `s_displacement_psd_m2_hz` | Per-component one-sided S-wave displacement PSD | m²/Hz |
+| \(\rho\) | Medium density | kg/m³ | Elastic background mass density |
+| \(v_P, v_S\) | Elastic wave speeds | m/s | Compressional and shear wave speeds |
+| \(R\) | Cavity radius | m | Spherical cavity radius (\(R > 0\), cavity B2 model) |
+| \(f\) | Frequency | Hz | Evaluation frequency in Hz |
+| \(S_{\xi,P}(f)\) | P displacement PSD | m²/Hz | Per-component one-sided P-wave displacement PSD |
+| \(S_{\xi,S}(f)\) | S displacement PSD | m²/Hz | Per-component one-sided S-wave displacement PSD |
+| \(\mathbf S_a(f)\) | Acceleration CSD tensor | (m/s²)²/Hz | 3x3 diagonal isotropic tensor \(\frac{4\pi}{3} G^2 \rho^2 S_{\xi,P}(f) \mathbf I_3\) (fullspace) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- Full-space B1 (fullspace_p_isotropic_acceleration_csd_g_free): density_kg_m3: float rho &gt;= 0 in kg/m^3; frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0, one-sided per-component P-displacement PSD in m^2/Hz.
-- Spherical cavity B2 (spherical_cavity_ps_isotropic_acceleration_csd_g_free): radius_m: float R &gt; 0 in meters; density_kg_m3: float rho &gt;= 0 in kg/m^3; v_p_m_s: float v_P &gt; 0 in m/s; v_s_m_s: float v_S &gt; 0 in m/s (satisfying 0 &lt; v_S &lt; v_P); frequency_hz: float or array-like &gt; 0 in Hz; p_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz; s_displacement_psd_m2_hz: float or array-like &gt;= 0 in m^2/Hz.
+- Fullspace model B1 evaluates the homogeneous unbounded P-wave field.
+- Cavity model B2 evaluates centered test mass inside spherical cavity with P and S boundary couplings.
 
 ### Calculation paths
 

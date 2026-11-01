@@ -44,19 +44,37 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `water_channel_advection_observables` | `frequency_hz` | float | array-like | required | Water surface wave frequency in Hz (f > 0) |
+| `water_channel_advection_observables` | `velocity_mps` | float | required | Channel stream flow velocity in m/s (v != 0) |
+| `water_channel_advection_observables` | `distance_m` | float | required | Perpendicular horizontal distance to channel in meters (D > 0) |
+| `water_channel_advection_observables` | `width_m` | float | required | Water channel surface width in meters (w > 0) |
+| `water_channel_advection_observables` | `density_kg_m3` | float | 1000.0 | Water mass density in kg/m³ |
+| `water_channel_advection_observables` | `eta_m` | complex | float | array-like | 1.0 | Water surface elevation phasor amplitude in meters |
+| `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float | array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
+| `water_channel_advection_asd` | `component` | str | 'x' | Acceleration output component ('x' or 'z') |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(f\) | `frequency_hz` | Water surface wave frequency | Hz |
-| \(v\) | `velocity_mps` | Water stream flow velocity (nonzero) | m/s |
-| \(D\) | `distance_m` | Perpendicular distance from channel to detector | m |
-| \(w\) | `width_m` | Channel surface width | m |
-| \(\rho_w\) | `density_kg_m3` | Fluid mass density (default 1000.0) | kg/m³ |
-| \(\eta\) | `eta_m` | Surface displacement phasor amplitude (observables API) | m |
-| \(S_\eta^{1/2}(f)\) | `surface_asd_m_per_rt_hz` | Surface displacement ASD (ASD API) | m/√Hz |
+| \(f\) | Wave frequency | Hz | Water surface fluctuation frequency |
+| \(\Omega\) | Angular frequency | rad/s | \(\Omega = 2\pi f\) |
+| \(v\) | Flow velocity | m/s | Water stream advection velocity (\(v \ne 0\)) |
+| \(D\) | Perpendicular distance | m | Horizontal distance from channel to detector (\(D > 0\)) |
+| \(w\) | Channel width | m | Width of water surface (\(w > 0\)) |
+| \(\rho_w\) | Water density | kg/m³ | Fluid mass density (default 1000.0 kg/m³) |
+| \(\eta\) | Surface displacement | m | Surface wave elevation phasor amplitude |
+| \(S_\eta^{1/2}(f)\) | Surface displacement ASD | m/√Hz | One-sided surface elevation ASD |
+| \(q\) | Dimensionless wavenumber | dimensionless | \(q = |\Omega| D / |v|\) |
+| \(K_0(q), K_1(q)\) | Modified Bessel functions | dimensionless | Second kind modified Bessel functions |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- frequency_hz: float or array-like &gt; 0, wave frequency in Hz; velocity_mps: float nonzero, water flow velocity v in m/s; distance_m: float D &gt; 0, perpendicular distance to detector in meters; width_m: float w &gt; 0, channel width in meters; density_kg_m3: float rho &gt; 0, fluid density in kg/m^3 (default 1000.0); eta_m: complex or float, surface displacement phasor amplitude in meters (for observables API); surface_asd_m_per_rt_hz: float or array-like &gt;= 0, surface displacement ASD in m/sqrt(Hz) (for ASD API).
+- Evaluated for \(0 < q \le 700\). Direct G-free transfer functions convert to physical SI units by multiplying by \(G\).
 
 ### Calculation paths
 

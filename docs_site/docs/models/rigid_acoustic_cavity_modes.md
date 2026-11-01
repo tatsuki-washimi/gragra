@@ -40,18 +40,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `acoustic_cavity_mode` | `geometry` | Sphere | Cuboid | Cylinder | required | Cavity boundary geometry instance |
+| `acoustic_cavity_mode` | `mode` | SphereAcousticMode | CuboidAcousticMode | CylinderAcousticMode | required | Acoustic eigenmode descriptor instance |
+| `acoustic_cavity_mode` | `pressure_amplitude` | u.Quantity (pressure) | required | Spatial-RMS modal peak pressure phasor amplitude |
+| `acoustic_cavity_mode` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound inside cavity air |
+| `acoustic_cavity_mode` | `reference_time` | object | required (kw-only) | Time origin for phasor evaluation |
+| `acoustic_cavity_mode` | `numerics` | AcousticCavityNumerics | default settings | Numerical convergence controls (max evaluations/refinements) |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| — | `cavity_geometry` | Enclosing cavity geometry ('Sphere', 'Cuboid', 'Cylinder') | dimensionless |
-| \((l, m, n)\) | `mode_indices` | Acoustic eigenmode numbers | dimensionless |
-| \(\rho_0\) | `air_density_kg_m3` | Cavity equilibrium air density | kg/m³ |
-| \(c_s\) | `sound_speed_m_s` | Speed of sound inside cavity | m/s |
-| \(\delta p_0\) | `pressure_amplitude_pa` | Modal acoustic pressure amplitude | Pa |
-| \(\mathbf x\) | `targets_m` | Sensor coordinates strictly outside cavity | m |
+| \((l, m, n)\) | Mode numbers | dimensionless | Acoustic eigenmode indices |
+| \(c_s\) | Sound speed | m/s | Speed of sound inside cavity |
+| \(\rho_0\) | Air equilibrium density | kg/m³ | Ambient unperturbed cavity air density |
+| \(\delta p_0\) | Pressure amplitude | Pa | Spatial-RMS peak pressure phasor amplitude |
+| \(k\) | Modal wavenumber | rad/m | Eigenvalue of Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) |
+| \(f\) | Modal frequency | Hz | Acoustic eigenfrequency \(f = c_s k / (2\pi)\) |
+| \(\Psi(\mathbf x)\) | Spatial mode function | dimensionless | Normalized eigenmode satisfying Neumann boundary condition |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- geometry: Cavity geometry instance (Sphere with radius R; Cuboid with edge lengths Lx, Ly, Lz; Cylinder with radius R and height H); mode: Mode descriptor (SphereAcousticMode(l, m, n), CuboidAcousticMode(nx, ny, nz), CylinderAcousticMode(m, n, q, azimuth)); pressure_amplitude_pa: complex or float, spatial-RMS peak pressure phasor in Pa; sound_speed_m_s: float, positive speed of sound in m/s; targets_m: array-like (M, 3) in cavity local frame.
+- Evaluates via `.at(targets).run()` for target points strictly outside the cavity.
+- Targets on the physical cavity walls, caps, or rims raise `ValueError`.
 
 ### Calculation paths
 

@@ -39,18 +39,32 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `surface_isotropic_acoustic_acceleration_csd` | `sound_speed_m_s` | float | required (kw-only) | Speed of sound in air c_s in m/s (positive) |
+| `surface_isotropic_acoustic_acceleration_csd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `surface_isotropic_acoustic_acceleration_csd` | `surface_pressure_psd_pa2_hz` | float | ArrayLike | required (kw-only) | One-sided surface pressure PSD in Pa²/Hz |
+| `underground_isotropic_acoustic_acceleration_csd` | `depth_m` | float | required (kw-only) | Detector depth below surface h in meters (h >= 0) |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavern inner radius R in meters (R >= 0) |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float | ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(c_s\) | `sound_speed_m_s` | Speed of sound in air | m/s |
-| \(f\) | `frequency_hz` | Acoustic infrasound frequency | Hz |
-| \(S_p^{\mathrm{surf}}(f)\) | `surface_pressure_psd_pa2_hz` | One-sided surface pressure PSD (A1, A2) | Pa²/Hz |
-| \(h\) | `depth_m` | Detector depth below surface (A2) | m |
-| \(R\) | `radius_m` | Inner cavern radius (A3) | m |
-| \(S_p^{\mathrm{cav}}(f)\) | `cavern_pressure_psd_pa2_hz` | One-sided cavern pressure PSD (A3) | Pa²/Hz |
+| \(c_s\) | Speed of sound | m/s | Speed of sound in air (\(c_s > 0\)) |
+| \(f\) | Frequency | Hz | Acoustic evaluation frequency in Hz |
+| \(S_p^{\mathrm{surf}}(f)\) | Surface pressure PSD | Pa²/Hz | One-sided pressure PSD at ground surface (A1, A2) |
+| \(h\) | Detector depth | m | Depth below ground surface (\(h \ge 0\), A2) |
+| \(R\) | Cavern radius | m | Inner cavern radius (\(R \ge 0\), A3) |
+| \(S_p^{\mathrm{cav}}(f)\) | Cavern pressure PSD | Pa²/Hz | Pressure PSD inside cavern (A3) |
+| \(\mathbf S_a(f)\) | Acceleration CSD tensor | (m/s²)²/Hz | 3x3 diagonal CSD tensor with SI factor \(G^2\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- sound_speed_m_s: float &gt; 0, speed of sound in air in m/s; frequency_hz: float or array-like &gt; 0, evaluation frequency in Hz; surface_pressure_psd_pa2_hz: float or array-like &gt;= 0, one-sided pressure PSD at surface in Pa^2/Hz (for A1, A2); depth_m: float &gt;= 0, detector depth below surface in meters (for A2); radius_m: float &gt;= 0, cavern inner radius in meters (for A3); cavern_pressure_psd_pa2_hz: float or array-like &gt;= 0, pressure PSD inside cavern in Pa^2/Hz (for A3).
+- Covers A1 (surface isotropic), A2 (underground at depth \(h\)), and A3 (centered inside spherical cavern of radius \(R\)).
 
 ### Calculation paths
 

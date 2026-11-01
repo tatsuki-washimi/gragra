@@ -30,26 +30,49 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Analytical formulation and field equations:**
 
-- For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\|\) and unit radial direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})\) (Love 1927, Harms 2019 Section 4.1).
-- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) (\mathbf e \cdot \hat{\mathbf n}) \hat{\mathbf n} \right]\), where \(J(t, r) = \int_{r/v_P}^{r/v_S} \tau f(t - \tau) d\tau\).
-- Gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t)\) is evaluated by closed-form spatial derivatives with analytic \(C, D\) coefficients. Field strictly vanishes prior to P-wave arrival \(t &lt; r/v_P\) (causality).
+- For a dynamic point force \(\mathbf F(t) = F(t) \mathbf e\) at source position \(\mathbf x_0\), with target distance \(r = \|\mathbf x - \mathbf x_0\| &gt; 0\), radial unit vector \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), and direction cosine \(\mu = \mathbf e \cdot \hat{\mathbf n}\), the induced gravitational potential is \(\Phi(\mathbf x, t) = -G \frac{\mu}{r^2} J(t, r)\) (Love 1927, Harms 2019 Section 4.1).
+- Acceleration: \(\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{F(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) \mu \hat{\mathbf n} \right]\), where \(J(t, r) = \int_0^{t - r/v_P} (t - r/v_P - s) F(s) ds\) is the causal delay moment and \(v_P\) is the medium compressional wave speed.
+- Gravity-gradient tensor: \(\mathbf\Gamma(\mathbf x, t) = G \left[ C(t, r) (\mathbf e \otimes \hat{\mathbf n} + \hat{\mathbf n} \otimes \mathbf e + \mu \mathbf I_3) + \mu D(t, r) (\hat{\mathbf n} \otimes \hat{\mathbf n}) \right]\), with analytic coefficients \(C(t, r) = \frac{F(t - r/v_P)}{v_P^2 r^2} - \frac{3 J(t, r)}{r^4}\) and \(D(t, r) = \frac{15 J(t, r)}{r^4} - \frac{6 F(t - r/v_P)}{v_P^2 r^2} - \frac{\dot{F}(t - r/v_P)}{v_P^3 r}\).
+- Causality: All perturbation fields strictly vanish prior to P-wave arrival (\(t &lt; r/v_P\)). Targets coincident with the source (\(r = 0\)) raise ValueError.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `point_force` | `position` | u.Quantity (length 3-vector) | required | Source location coordinates in frame |
+| `point_force` | `direction` | array-like (3,) | required | Nonzero force line-of-action vector |
+| `point_force` | `history` | ForceHistory | required | Piecewise-polynomial causal force time-history object |
+| `point_force` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `point_force` | `vp` | u.Quantity (speed) | required (kw-only) | Medium compressional P-wave speed |
+| `point_force` | `sampling` | TimeSampling | required (kw-only) | Evaluation time axis discretization grid |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(\mathbf x_0\) | `source_position_m` | Point force location | m |
-| \(\mathbf F(t)\) | `force_vector_n` | Applied causal point force vector | N |
-| \(t\) | `times_s` | Evaluation time points (t >= 0) | s |
-| \(\mathbf x\) | `targets_m` | Sensor evaluation coordinates | m |
+| \(\mathbf x_0\) | Source position | m | Point-force application location |
+| \(\mathbf x\) | Target position | m | Observation target coordinates |
+| \(\mathbf r\) | Separation vector | m | \(\mathbf r = \mathbf x - \mathbf x_0\) |
+| \(r\) | Target distance | m | \(r = \|\mathbf r\| = \|\mathbf x - \mathbf x_0\| > 0\) |
+| \(\hat{\mathbf n}\) | Radial unit vector | dimensionless | \(\hat{\mathbf n} = \mathbf r / r\) |
+| \(\mathbf e\) | Force direction unit vector | dimensionless | Unit vector along force line of action |
+| \(\mu\) | Direction cosine | dimensionless | \(\mu = \mathbf e \cdot \hat{\mathbf n}\) |
+| \(v_P\) | Compressional P-wave speed | m/s | Medium P-wave propagation speed |
+| \(v_S\) | Shear S-wave speed | m/s | Medium S-wave propagation speed |
+| \(F(t)\) | Force history | N | Applied time-dependent force amplitude |
+| \(\dot{F}(t)\) | Force time derivative | N/s | First time derivative of force history |
+| \(J(t, r)\) | Causal delay moment | N·s² | \(\int_0^{t - r/v_P} (t - r/v_P - s) F(s) ds\) |
+| \(C(t, r), D(t, r)\) | Gradient coefficients | N·s²/m⁴ | Closed-form tensor coefficients defined in equations |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- source_position_m: array-like (3,), point force position in meters; direction: array-like (3,), force unit vector \(\mathbf e\).
-- vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)); force_history: ForceHistory knots (seconds) and polynomial coefficients.
-- targets_m: array-like (M, 3), target coordinates in meters (source collision \(r = 0\) rejected); times_s: array-like (K,), evaluation times in seconds.
+- High-level factory `point_force(...)` evaluates to a `PointForceModel` object; call `.at(targets).run()` to evaluate time series.
+- Collision check: targets coincident with the source position (\(r = 0\)) raise `ValueError`.
+- Causality: gravitational perturbations identically vanish prior to P-wave arrival (\(t < r / v_P\)).
 
 ### Calculation paths
 

@@ -38,21 +38,31 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-| Symbol | Parameter | Meaning | SI unit |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `small_oscillation` | `point_mass` | PointMass | required | Point mass object with mass and equilibrium coordinates |
+| `small_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector xi_0 |
+| `small_oscillation` | `frequency` | u.Quantity (frequency) | required | Oscillation frequency f in Hz |
+| `small_oscillation` | `phase` | u.Quantity (angle) | required (kw-only) | Initial oscillation phase angle |
+| `small_oscillation` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `small_oscillation` | `sampling` | TimeSampling | required (kw-only) | Output time axis discretization |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
 |---|---|---|---|
-| \(m\) | `mass_kg` | Oscillating body mass (positive) | kg |
-| \(\mathbf x_0\) | `equilibrium_position_m` | Center of oscillation equilibrium | m |
-| \(\boldsymbol{\xi}_0\) | `amplitude_m` | Displacement amplitude vector | m |
-| \(\omega\) | `angular_frequency_rad_s` | Oscillation angular frequency (2 pi f) | rad/s |
-| \(\phi\) | `phase_rad` | Initial phase angle | rad |
-| \(t\) | `times_s` | Evaluation time points | s |
-| \(\mathbf x\) | `targets_m` | Sensor target coordinates | m |
+| \(m\) | Point mass | kg | Oscillating body mass (\(m > 0\)) |
+| \(\mathbf x_0\) | Equilibrium center | m | Center of harmonic oscillation |
+| \(\boldsymbol{\xi}_0\) | Displacement amplitude | m | Peak displacement amplitude 3-vector |
+| \(f\) | Oscillation frequency | Hz | Linear frequency (\(\omega = 2\pi f\)) |
+| \(\phi\) | Initial phase | rad | Harmonic phase angle at \(t = 0\) |
+| \(\mathbf x(t)\) | Trajectory position | m | \(\mathbf x(t) = \mathbf x_0 + \boldsymbol{\xi}_0 \sin(2\pi f t + \phi)\) |
 
-**Additional notes on parameters and models:**
+#### Usage notes
 
-- mass: array-like (N,), positive masses in kg; position: array-like (N, 3), equilibrium positions in meters.
-- displacement: array-like (3,) or (N, 3), complex peak displacement vector in meters; frequency: float or Quantity, oscillation frequency in Hz.
-- reference_time: GPS epoch for phasor phase convention; targets: array-like (M, 3), evaluation points in meters.
+- Evaluates via `.at(targets).run()` to produce harmonic time series or phasor responses.
 
 ### Calculation paths
 
