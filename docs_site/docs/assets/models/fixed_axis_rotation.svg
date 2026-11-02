@@ -64,5 +64,5 @@
 
 
   <!-- Footer note -->
-  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Axis passing through point c with unit vector n̂ · Periodic gravitational acceleration & gradient harmonics</text>
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Axis passing through point c with unit vector n̂ · Periodic gravitational acceleration &amp; gradient harmonics</text>
 </svg>

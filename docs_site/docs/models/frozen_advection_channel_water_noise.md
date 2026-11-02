@@ -34,12 +34,47 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - The channel flows along the \(x\)-axis with velocity \(v\) and width \(w\) at perpendicular horizontal distance \(D &gt; 0\) from the mirror. Surface elevation wave is \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
 - Dimensionless wavenumber parameter is \(q = |\Omega| D / |v|\) (evaluated for \(0 &lt; q \le 700\); exact DC \(f=0\) gives \(q=0\)).
 - Analytic G-free transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
+- \(T_{\Phi,\eta}^{(G\text{-free})} = -2 \rho_w w K_0(q)\)
+- \(T_{a_x,\eta}^{(G\text{-free})} = 2i \rho_w w \left(\frac{\Omega}{v}\right) K_0(q)\)
+- \(T_{a_z,\eta}^{(G\text{-free})} = -2 \rho_w w \left(\frac{|\Omega|}{|v|}\right) K_1(q)\)
+- Gravity gradient components satisfy \(\mathrm{tr}(\mathbf\Gamma) = \Gamma_{xx} + \Gamma_{yy} + \Gamma_{zz} = 0\) (Laplace vacuum condition), with \(T_{\Gamma_{xx},\eta}^{(G\text{-free})} = -2\rho_w w (\Omega/v)^2 K_0(q)\), \(T_{\Gamma_{yy},\eta}^{(G\text{-free})} = -2\rho_w w (q/D^2) K_1(q)\), \(T_{\Gamma_{zz},\eta}^{(G\text{-free})} = 2\rho_w w [(\Omega/v)^2 K_0(q) + (q/D^2) K_1(q)]\), and \(T_{\Gamma_{xz},\eta}^{(G\text{-free})} = -2i\rho_w w \frac{\Omega|\Omega|}{v|v|} K_1(q)\).
+- Multiplication by \(G\) yields physical SI observables: \(T^{(\mathrm{SI})} = G T^{(G\text{-free})}\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- frequency_hz: float or array-like &gt; 0, wave frequency in Hz; velocity_mps: float nonzero, water flow velocity v in m/s; distance_m: float D &gt; 0, perpendicular distance to detector in meters; width_m: float w &gt; 0, channel width in meters; density_kg_m3: float rho &gt; 0, fluid density in kg/m^3 (default 1000.0); eta_m: complex or float, surface displacement phasor amplitude in meters (for observables API); surface_asd_m_per_rt_hz: float or array-like &gt;= 0, surface displacement ASD in m/sqrt(Hz) (for ASD API).
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `water_channel_advection_observables` | `frequency_hz` | float \| array-like | required | Water surface wave frequency in Hz (f > 0) |
+| `water_channel_advection_observables` | `velocity_mps` | float | required | Channel stream flow velocity in m/s (v != 0) |
+| `water_channel_advection_observables` | `distance_m` | float | required | Perpendicular horizontal distance to channel in meters (D > 0) |
+| `water_channel_advection_observables` | `width_m` | float | required | Water channel surface width in meters (w > 0) |
+| `water_channel_advection_observables` | `density_kg_m3` | float | 1000.0 | Water mass density in kg/m³ |
+| `water_channel_advection_observables` | `eta_m` | complex \| float \| array-like | 1.0 | Water surface elevation phasor amplitude in meters |
+| `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
+| `water_channel_advection_asd` | `component` | str | 'x' | Acceleration output component ('x' or 'z') |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(f\) | Wave frequency | Hz | Water surface fluctuation frequency |
+| \(\Omega\) | Angular frequency | rad/s | \(\Omega = 2\pi f\) |
+| \(v\) | Flow velocity | m/s | Water stream advection velocity (\(v \ne 0\)) |
+| \(D\) | Perpendicular distance | m | Horizontal distance from channel to detector (\(D > 0\)) |
+| \(w\) | Channel width | m | Width of water surface (\(w > 0\)) |
+| \(\rho_w\) | Water density | kg/m³ | Fluid mass density (default 1000.0 kg/m³) |
+| \(\eta\) | Surface displacement | m | Surface wave elevation phasor amplitude |
+| \(S_\eta^{1/2}(f)\) | Surface displacement ASD | m/√Hz | One-sided surface elevation ASD |
+| \(q\) | Dimensionless wavenumber | dimensionless | \(q = \lvert\Omega\rvert D / \lvert v\rvert\) |
+| \(K_0(q), K_1(q)\) | Modified Bessel functions | dimensionless | Second kind modified Bessel functions |
+
+#### Usage notes
+
+- Evaluated for \(0 < q \le 700\). Direct G-free transfer functions convert to physical SI units by multiplying by \(G\).
 
 ### Calculation paths
 
@@ -74,6 +109,8 @@ Existing public documentation and original formulation context:
 
 - Atsushi Nishizawa (2021-03-31), 'Water Newtonian noise for KAGRA' (JGW-T1706440-v2).
 - Atsushi Nishizawa (2021-09-03), 'Edge contribution of a water channel to a Newtonian noise' (JGW-T2214308-v1).
+- Kentaro Somiya et al. (2019), TAUP2019 (JGW-T1910792); Somiya & Nishizawa (2017), KAGRA f2f.
+- Guide marks historical Chen 2016 notes / Somiya TAUP 2019 slide formulas ORIGINAL_SOURCE_UNVERIFIED; it does not claim identity with unverified external notebooks. The narrow-channel uncorrelated-cell derivation is explicitly INDEPENDENT_DERIVATION.
 
 ## Verification and applicability
 

@@ -20,9 +20,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ## Geometry and equations
 
-![Prescribed point-mass translation schematic](../assets/models/prescribed_point_mass_translation.svg)
+![Prescribed point-mass kinematics schematic](../assets/models/prescribed_point_mass_translation.svg)
 
-*Discrete point-mass cloud undergoing prescribed translational trajectory d(t) and its Newtonian field at target x.*
+*Discrete point masses m_i moving with individual velocities v_i from initial positions x_{0,i} and their Newtonian field at target x.*
 
 - Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
 
@@ -38,8 +38,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- mass: array-like (N,), positive point masses in kg; position: array-like (N, 3), initial coordinates in meters; velocity: array-like (N, 3), velocities in m/s.
-- motion_epoch: GPS time of initial position definition; targets: array-like (M, 3), evaluation coordinates in meters; time_sampling: TimeSampling object defining timestamps.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `constant_velocity` | `point_mass` | PointMass | required | Point mass object containing mass and initial position |
+| `constant_velocity` | `velocity` | u.Quantity (speed 3-vector) | required | Constant velocity vector v in frame |
+| `constant_velocity` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `constant_velocity` | `motion_epoch` | object | required (kw-only) | Reference epoch t0 at which position equals initial position |
+| `constant_velocity` | `sampling` | TimeSampling | required (kw-only) | Evaluation time axis discretization |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(m\) | Point mass | kg | Discrete mass magnitude (\(m > 0\)) |
+| \(\mathbf x_0\) | Initial position | m | Body location at reference epoch \(t = t_0\) |
+| \(\mathbf v\) | Velocity vector | m/s | Constant translation velocity |
+| \(t_0\) | Motion epoch | s | Reference time for initial coordinates |
+| \(t\) | Evaluation time | s | Evaluation time sample points |
+| \(\mathbf x(t)\) | Trajectory position | m | \(\mathbf x(t) = \mathbf x_0 + \mathbf v (t - t_0)\) |
+| \(\mathbf x_{\mathrm{target}}\) | Target position | m | Sensor evaluation coordinates |
+| \(r(t)\) | Target distance | m | \(r(t) = \|\mathbf x_{\mathrm{target}} - \mathbf x(t)\|\) |
+
+#### Usage notes
+
+- Evaluates via `.at(targets).run()` to yield discrete time-series for potential, acceleration, and gradient.
+- Collision check: if the trajectory intersects any target point (\(r(t) = 0\)), evaluation raises `ValueError`.
 
 ### Calculation paths
 

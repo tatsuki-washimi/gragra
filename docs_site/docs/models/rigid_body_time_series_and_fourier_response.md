@@ -40,9 +40,30 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- source: PointMassCloud object defining point masses in kg and body-frame positions in meters; transform: PrescribedRigidTransform or callable pose returning (R(t), c(t)).
-- Sampled route: uses TimeSampling specifying discrete evaluation epochs in seconds.
-- Fourier route: reference_time GPS epoch, frequencies list in Hz (requires \(f_{\mathrm{max}} |t_{\mathrm{epoch}} - t_{\mathrm{ref}}| \le 10^6\) cycles). Returns potential, acceleration, and gradient Fourier objects.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `rigid_motion` | `source` | PointMassCloud | required | Cloud of discrete point masses representing rigid body |
+| `rigid_motion` | `transform` | PrescribedRigidTransform \| PoseFunction | required | Rigid pose function or time-series transformation |
+| `rigid_motion` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `rigid_motion` | `sampling` | TimeSampling \| None | None | Discrete time sampling (required for sampled time-series path) |
+| `rigid_motion_observable` | `observable` | str | required (kw-only) | 'potential', 'acceleration', or 'gradient' |
+| `rigid_motion_observable` | `softening_m` | float | 0.0 | Plummer softening parameter in meters |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(M\) | Total body mass | kg | Sum of constituent point masses \(M = \sum_i m_i\) |
+| \(\mathbf x_{\mathrm{cm}}(t)\) | Center of mass | m | Rigid body center-of-mass trajectory |
+| \(\mathbf R(t)\) | Rotation matrix | dimensionless | Instantaneous orientation matrix in \(\mathrm{SO}(3)\) |
+| \(\mathbf I\) | Inertia tensor | kg·m² | Moment of inertia tensor around center of mass |
+| \(\mathbf x_i(t)\) | Point mass position | m | \(\mathbf x_i(t) = \mathbf x_{\mathrm{cm}}(t) + \mathbf R(t) \mathbf x_{i,\mathrm{body}}\) |
+
+#### Usage notes
+
+- Supports sampled time-series evaluation (`rigid_motion_observable`) and continuous Fourier series / Fourier transform evaluation.
 
 ### Calculation paths
 

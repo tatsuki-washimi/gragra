@@ -33,12 +33,36 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 - Models the transient gravitational perturbation produced by a single deterministic Heaviside volume step event \(\Delta V\) at channel inflow coordinate \(x_0\) at perpendicular distance \(D &gt; 0\).
 - Single-event acceleration Fourier amplitude: \(|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}\) with physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\).
 - Single-event strain Fourier spectral amplitude: \(|h(f)| = \frac{|\Delta a_x(f)|}{(2\pi f)^2 L_{\mathrm{arm}}}\), where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text{ m}\)).
+- Distinction: This is a single deterministic transient event spectrum, NOT a stationary noise ASD (units \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\)).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- x0_m: float finite, coordinate of inflow edge along channel axis in meters; distance_m: float D &gt; 0, perpendicular distance to test mass in meters; volume_m3: float Delta V &gt; 0, displaced volume step in m^3; frequency_hz: float or array-like &gt; 0, Fourier frequency in Hz; arm_length_m: float L &gt; 0, interferometer arm length in meters (default 3000.0 m); density_kg_m3: float rho &gt; 0, fluid density in kg/m^3 (default 1000.0).
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `water_edge_step_fourier_amplitude` | `x0_m` | float | required | Inflow edge coordinate along channel axis in meters |
+| `water_edge_step_fourier_amplitude` | `distance_m` | float | required | Perpendicular distance from channel to detector D in meters (D > 0) |
+| `water_edge_step_fourier_amplitude` | `volume_m3` | float | required | Displaced water volume step Delta V in m³ |
+| `water_edge_step_fourier_amplitude` | `frequency_hz` | float \| array-like | required | Fourier transform evaluation frequency in Hz (f > 0) |
+| `water_edge_step_fourier_amplitude` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(x_0\) | Inflow edge coordinate | m | Position of step volume event along channel |
+| \(D\) | Perpendicular distance | m | Distance from channel axis to test mass (\(D > 0\)) |
+| \(\Delta V\) | Volume step | m³ | Displaced water volume magnitude (\(\Delta V > 0\)) |
+| \(f\) | Fourier frequency | Hz | Evaluation frequency in Hz |
+| \(\rho_w\) | Water density | kg/m³ | Fluid mass density (default 1000.0 kg/m³) |
+| \(\Delta a_x(t)\) | Step acceleration response | m/s² | \(\Delta a_x(t) = G \rho_w \Delta V \frac{x_0}{(D^2 + x_0^2)^{3/2}} \Theta(t)\) |
+
+#### Usage notes
+
+- Evaluates single-event volume step Fourier amplitude \(\tilde{a}_x(f) = \frac{G \rho_w \Delta V x_0}{2\pi f (D^2 + x_0^2)^{3/2}}\).
 
 ### Calculation paths
 

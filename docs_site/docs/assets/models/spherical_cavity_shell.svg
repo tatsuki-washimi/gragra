@@ -75,5 +75,5 @@
 
 
   <!-- Footer note -->
-  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Medium density ρ between a and b · Potential evaluated at r < a, a ≤ r ≤ b, or r > b</text>
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Medium density ρ between a and b · Potential evaluated at r &lt; a, a ≤ r ≤ b, or r &gt; b</text>
 </svg>

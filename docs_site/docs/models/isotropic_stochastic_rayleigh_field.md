@@ -33,12 +33,39 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 - Evaluated in the elastic ground half-space at depth \(z &gt; 0\) beneath a free surface at \(z = 0\). Rayleigh wavenumber is \(k_R = 2\pi f / v_R\) with \(q = k_R / k_P\), \(s = k_R / k_S\), and \(\zeta = \sqrt{q/s}\).
 - Depth coupling factor: \(\gamma = \frac{1 - \zeta}{q - \zeta}\), and amplitude factor \(A(z) = 2\pi \rho \gamma e^{-k_R z}\).
 - G-free acceleration CSD tensor: \(\mathbf S_a^{(G\text{-free})}(f) = A^2(z) S_\xi(f) \operatorname{diag}\left(\frac{1}{2}, \frac{1}{2}, 1\right)\), where \(S_\xi(f)\) is the one-sided surface vertical displacement PSD in \(\mathrm{m^2/Hz}\). Off-diagonal terms vanish under ideal isotropy.
+- The horizontal diagonal reproduces Harms (2019) Eq. (112). Physical SI CSD multiplies by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f)\) in \(\mathrm{(m/s^2)^2/Hz}\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- targets_m: array-like (M, 3), target positions strictly in ground halfspace z &gt; 0 in meters; density_kg_m3: float rho &gt;= 0 in kg/m^3; v_p_m_s: float v_p &gt; 0 in m/s; v_s_m_s: float v_s &gt; 0 in m/s, satisfying stability condition v_p^2 &gt; (4/3) v_s^2; frequency_hz: float or array-like &gt; 0 in Hz; surface_vertical_displacement_psd_m2_hz: float or array-like &gt;= 0, one-sided vertical surface displacement PSD in m^2/Hz.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `rayleigh_isotropic_acceleration_csd` | `targets_m` | ArrayLike (M, 3) | required | Observation target coordinates strictly in ground halfspace (z > 0) in meters |
+| `rayleigh_isotropic_acceleration_csd` | `density_kg_m3` | float | required (kw-only) | Subsurface ground mass density in kg/m³ (positive) |
+| `rayleigh_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
+| `rayleigh_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (v_P^2 > 4/3 v_S^2) |
+| `rayleigh_isotropic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `rayleigh_isotropic_acceleration_csd` | `surface_vertical_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided vertical surface displacement PSD in m²/Hz |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(\mathbf x\) | Target position | m | Target coordinates strictly in subsurface halfspace (\(z > 0\)) |
+| \(\rho\) | Ground density | kg/m³ | Subsurface rock density (\(\rho > 0\)) |
+| \(v_P, v_S\) | Elastic wave speeds | m/s | P- and S-wave speeds satisfying \(v_P^2 > \frac{4}{3}v_S^2\) |
+| \(f\) | Frequency | Hz | Rayleigh wave evaluation frequency |
+| \(S_\xi(f)\) | Surface vertical PSD | m²/Hz | One-sided vertical surface displacement PSD |
+| \(\mathbf S_a(f, z)\) | Acceleration CSD tensor | (m/s²)²/Hz | Single-point 3x3 CSD tensor \(\mathbf S_a = A^2(z) S_\xi(f) \operatorname{diag}(1/2, 1/2, 1)\) |
+| \(A(z)\) | Depth coupling function | s⁻² | Analytical depth attenuation factor from Harms (2019) |
+
+#### Usage notes
+
+- Returns single-point 3x3 acceleration CSD tensor of shape `(M, 3, 3)` across target points.
+- Target constraint: targets must lie strictly in the ground subsurface (\(z > 0\)).
 
 ### Calculation paths
 
@@ -63,6 +90,7 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - The record is listed in the internal reference inventory. The literature content was not independently re-verified for this update.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 
 ## Verification and applicability
 

@@ -33,13 +33,43 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - The acoustic plane wave has frequency \(f\), sound speed \(c_s\), horizontal wavenumber \(q = k \sin\theta\), and vertical wavenumber \(k_z = k \cos\theta\), where \(k = 2\pi f / c_s\) and \(\theta \in (0, \pi/2]\) is the angle of incidence from zenith (normal incidence \(\theta=0\) is excluded; grazing incidence \(\theta=\pi/2\) is valid).
 - With horizontal wavevector \(\mathbf q = (q\cos\phi_0, q\sin\phi_0)\) and phase factor \(e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\), the surface pressure amplitude is \(P_0\). The G-free potential coefficient is \(C = \frac{4\pi P_0}{c_s^2 k^2}\).
 - In the atmospheric layer (\(z &gt; 0\)), \(\Phi^{(G\text{-free})} = C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} \left[\frac{1}{2} e^{-q z} - \cos(k_z z)\right]\), satisfying \(\nabla^2 \Phi^{(G\text{-free})} = 4\pi \delta\rho = -4\pi (P_0/c_s^2) e^{i \mathbf q \cdot \mathbf x_\perp} \cos(k_z z)\).
+- In the underground halfspace (\(z &lt; 0\)), density perturbation is zero and \(\Phi^{(G\text{-free})} = -\frac{1}{2} C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} e^{q z}\), satisfying Laplace\'s equation \(\nabla^2 \Phi = 0\).
+- Acceleration and gradient are \(\mathbf a^{(G\text{-free})} = -\nabla \Phi^{(G\text{-free})}\) and \(\mathbf\Gamma^{(G\text{-free})} = -\nabla\nabla \Phi^{(G\text{-free})}\). SI observables multiply by \(G\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- surface_pressure_pa: float, acoustic pressure amplitude P0 at z=0 in Pa; sound_speed_m_s: float, positive speed of sound in m/s; frequency_hz: float, positive wave frequency in Hz; incidence_angle_rad: float in (0, pi/2], zenith angle theta (theta=0 normal incidence excluded, theta=pi/2 grazing allowed); azimuth_rad: float, horizontal propagation azimuth phi0 in radians; phase_origin_m: array-like (3,), reference point for phase zero in meters; targets_m: array-like (M, 3), target coordinates in meters.
-- Observables return complex phasors (peak amplitude, time reconstruction Re[X exp(-2 pi i f (t - t_ref))]). SI outputs multiply G_free by G.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `acoustic_halfspace` | `halfspace` | HalfSpace | required | HalfSpace geometry representing atmospheric interface (z >= 0) |
+| `acoustic_halfspace` | `surface_pressure` | u.Quantity (pressure) | required | Acoustic surface pressure perturbation amplitude |
+| `acoustic_halfspace` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound in air c_s |
+| `acoustic_halfspace` | `frequency` | u.Quantity (frequency) | required (kw-only) | Acoustic wave frequency f in Hz |
+| `acoustic_halfspace` | `incidence_angle` | u.Quantity (angle) | required (kw-only) | Incidence angle theta from normal in (0, pi/2] (0 < theta <= pi/2) |
+| `acoustic_halfspace` | `azimuth` | u.Quantity (angle) | required (kw-only) | Horizontal propagation azimuth angle phi |
+| `acoustic_halfspace` | `phase_origin` | u.Quantity (length 3-vector) | required (kw-only) | Coordinate phase reference origin |
+| `acoustic_halfspace` | `reference_time` | object | required (kw-only) | Reference time epoch for phasor evaluation |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(P_0\) | Surface pressure amplitude | Pa | Peak acoustic pressure wave amplitude at ground |
+| \(c_s\) | Speed of sound | m/s | Speed of sound in atmospheric air |
+| \(f\) | Acoustic frequency | Hz | Acoustic oscillation frequency |
+| \(\theta\) | Incidence angle | rad | Angle from downward normal (\(0 < \theta \le \pi/2\)) |
+| \(\phi\) | Azimuth angle | rad | Horizontal propagation azimuth |
+| \(\mathbf k_H\) | Horizontal wavevector | rad/m | \((k_x, k_y) = \frac{2\pi f}{c_s} \sin\theta (\cos\phi, \sin\phi)\) |
+| \(\rho_{\mathrm{air}}\) | Air density | kg/m³ | Ambient atmospheric air mass density |
+| \(\rho_{\mathrm{ground}}\) | Ground density | kg/m³ | Subsurface medium density |
+
+#### Usage notes
+
+- High-level factory returns an `AcousticHalfspaceModel` evaluated via `.at(targets).run()`.
+- Models acoustic reflection from a rigid ground boundary with air occupying \(z \ge 0\).
 
 ### Calculation paths
 

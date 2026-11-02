@@ -38,8 +38,40 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- High-level models: geometry (Sphere or SphericalShell), density (Quantity kg/m^3), phase_speed (Quantity m/s or FrequencySeries), displacement (FrequencySeries m), wave_type ('P' or 'S'), propagation_direction (3,), polarization (3,), reference_time, phase_origin.
-- Center helper: inner_radius_m a, outer_radius_m R, wavenumber_rad_m k, density_kg_m3 rho, displacement_m xi, direction (3,). Returns acceleration in m/s^2.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `spherical_cavity` | `geometry` | Sphere | required | Sphere geometry defining cavity radius and center |
+| `spherical_cavity` | `density` | u.Quantity (density) | required | Surrounding medium mass density |
+| `spherical_cavity` | `phase_speed` | u.Quantity \| FrequencySeries | required | Compressional or shear phase speed |
+| `spherical_cavity` | `displacement` | FrequencySeries | required | Incident displacement amplitude FrequencySeries |
+| `spherical_cavity` | `wave_type` | str | required | Incident wave type ('P' or 'S') |
+| `spherical_cavity` | `propagation_direction` | array-like (3,) | required | Incident wave propagation direction vector |
+| `spherical_shell` | `geometry` | SphericalShell | required | SphericalShell geometry (inner radius a, outer radius R) |
+| `spherical_shell_p_acceleration_components` | `inner_radius_m` | float | required | Inner cavity radius a in meters |
+| `spherical_shell_p_acceleration_components` | `outer_radius_m` | float | required | Outer shell radius R in meters (R > a) |
+| `spherical_shell_p_acceleration_components` | `wavenumber_rad_m` | float \| array-like | required | Incident compressional wavenumber k in rad/m |
+| `spherical_shell_p_acceleration_components` | `density_kg_m3` | float | required | Shell medium density in kg/m³ |
+| `spherical_shell_p_acceleration_components` | `displacement_m` | float \| complex | required | Incident displacement phasor amplitude in meters |
+| `spherical_shell_p_acceleration_components` | `direction` | array-like (3,) | required | Wave propagation unit direction vector |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(a\) | Inner cavity radius | m | Inner boundary radius of cavity |
+| \(R\) | Outer shell radius | m | Outer boundary radius of shell (\(R > a\)) |
+| \(k\) | Wavenumber | rad/m | Compressional or shear wavenumber \(k = 2\pi f / v\) |
+| \(\rho\) | Medium density | kg/m³ | Mass density of shell medium |
+| \(\xi\) | Displacement phasor | m | Incident wave displacement phasor amplitude |
+| \(\hat{\mathbf n}\) | Propagation vector | dimensionless | Incident wave direction unit vector |
+| \(v_P, v_S\) | Elastic wave speeds | m/s | Compressional and shear wave speeds |
+
+#### Usage notes
+
+- High-level models evaluate to `SphericalCavityModel` or `_SphericalShellModel` via `.at(targets).run()`.
+- Center helper `spherical_shell_p_acceleration_components` calculates the 4 individual contributions at the cavity center: bulk compression, inner wall, outer wall, and total acceleration.
 
 ### Calculation paths
 
@@ -79,6 +111,7 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - ANNA v4 Section 4.1 Eqs.47–53 for finite-shell center P formulas. U10 validation says Harms 2019 continuity/bulk/surface definitions and Reumers v4 P/S center formulas were checked against actual PDFs in that recorded work.
+- [arXiv:2603.15157v4](https://arxiv.org/abs/2603.15157v4)
 
 ## Verification and applicability
 

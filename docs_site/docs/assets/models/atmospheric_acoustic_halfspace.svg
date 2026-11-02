@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
   <title id="title">Atmospheric Acoustic Halfspace Gravity Noise</title>
-  <desc id="desc">Acoustic plane waves propagating in atmospheric halfspace z > 0 creating pressure and density perturbations above ground.</desc>
+  <desc id="desc">Acoustic plane waves propagating in atmospheric halfspace z &gt; 0 creating pressure and density perturbations above ground.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
       <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>

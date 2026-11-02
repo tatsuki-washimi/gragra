@@ -31,14 +31,40 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 **Analytical formulation and field equations:**
 
 - A1 (Surface isotropic infrasound): Acceleration CSD tensor in G-free units is \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)\), where \(S_p(f)\) is surface pressure PSD in \(\mathrm{Pa^2/Hz}\), \(c_s\) is sound speed, and \(f\) is frequency.
-- A2 (Underground depth \(h \ge 0\)): \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)\), where \(x = 4\pi f h / c_s\) and \(I_{\mathrm{iso}}(x) = \frac{1}{2}\int_0^{\\pi/2} \sin^3\theta e^{-x \sin\theta} d\theta\).
+- A2 (Underground depth \(h \ge 0\)): \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)\), where \(x = 4\pi f h / c_s\) and \(I_{\mathrm{iso}}(x) = \frac{1}{2}\int_0^{\pi/2} \sin^3\theta e^{-x \sin\theta} d\theta\).
 - A3 (Centered in spherical cavern of radius \(R \ge 0\)): Isotropic diagonal tensor \(\mathbf S_a^{(G\text{-free})}(f) = S_{a,ii} \mathbf I_3\) with component \(S_{a,ii}^{(G\text{-free})}(f) = \frac{4}{3(c_s f)^2} S_{p,\mathrm{cav}}(f) [1 - \operatorname{sinc}(2\pi f R / c_s)]^2\), vanishing smoothly as \(R \to 0\).
+- SI observable multiplication: All G-free acceleration CSD tensors \(\mathbf S_a^{(G\text{-free})}\) in \(\mathrm{kg^2/(m^4\cdot Hz)}\) convert to SI units \(\mathrm{(m/s^2)^2/Hz}\) by multiplying by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})} = G^2 \mathbf S_a^{(G\text{-free})}\).
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- sound_speed_m_s: float &gt; 0, speed of sound in air in m/s; frequency_hz: float or array-like &gt; 0, evaluation frequency in Hz; surface_pressure_psd_pa2_hz: float or array-like &gt;= 0, one-sided pressure PSD at surface in Pa^2/Hz (for A1, A2); depth_m: float &gt;= 0, detector depth below surface in meters (for A2); radius_m: float &gt;= 0, cavern inner radius in meters (for A3); cavern_pressure_psd_pa2_hz: float or array-like &gt;= 0, pressure PSD inside cavern in Pa^2/Hz (for A3).
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `surface_isotropic_acoustic_acceleration_csd` | `sound_speed_m_s` | float | required (kw-only) | Speed of sound in air c_s in m/s (positive) |
+| `surface_isotropic_acoustic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `surface_isotropic_acoustic_acceleration_csd` | `surface_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided surface pressure PSD in Pa²/Hz |
+| `underground_isotropic_acoustic_acceleration_csd` | `depth_m` | float | required (kw-only) | Detector depth below surface h in meters (h >= 0) |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavern inner radius R in meters (R >= 0) |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(c_s\) | Speed of sound | m/s | Speed of sound in air (\(c_s > 0\)) |
+| \(f\) | Frequency | Hz | Acoustic evaluation frequency in Hz |
+| \(S_p^{\mathrm{surf}}(f)\) | Surface pressure PSD | Pa²/Hz | One-sided pressure PSD at ground surface (A1, A2) |
+| \(h\) | Detector depth | m | Depth below ground surface (\(h \ge 0\), A2) |
+| \(R\) | Cavern radius | m | Inner cavern radius (\(R \ge 0\), A3) |
+| \(S_p^{\mathrm{cav}}(f)\) | Cavern pressure PSD | Pa²/Hz | Pressure PSD inside cavern (A3) |
+| \(\mathbf S_a(f)\) | Acceleration CSD tensor | (m/s²)²/Hz | 3x3 diagonal CSD tensor with SI factor \(G^2\) |
+
+#### Usage notes
+
+- Covers A1 (surface isotropic), A2 (underground at depth \(h\)), and A3 (centered inside spherical cavern of radius \(R\)).
 
 ### Calculation paths
 
@@ -77,6 +103,8 @@ Existing public documentation and original formulation context:
 
 - The local model specification distinguishes the provenance of Eq. 13 from the separate A3 response. It is not an independent bibliographic record.
 - The A3 centered-cavern API is a related API identified in the source. The ledger group lists only the surface and underground APIs; A3 is not treated as an original catalogue symbol.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
+- [DOI 10.1063/5.0018414](https://doi.org/10.1063/5.0018414)
 
 ## Verification and applicability
 

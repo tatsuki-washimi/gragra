@@ -38,8 +38,37 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- Waterfall API (water_waterfall_asd): frequency_hz: float &gt; 0 in Hz; velocity_mps: float nonzero in m/s; distance_m: float D &gt; 0 in meters; area_asd_m2_per_rt_hz: float &gt;= 0, stream cross-sectional area ASD in m^2/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
-- Uncorrelated channel API (water_channel_uncorrelated_asd): distance_m: float H &gt; 0 in meters; width_m: float w &gt; 0 in meters; correlation_area_m2: float A_cell &gt; 0 in m^2; surface_asd_m_per_rt_hz: float &gt;= 0 in m/sqrt(Hz); density_kg_m3: float rho &gt; 0 in kg/m^3 (default 1000.0).
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `water_waterfall_asd` | `frequency_hz` | float \| array-like | required | Fluctuation frequency in Hz (f > 0) |
+| `water_waterfall_asd` | `velocity_mps` | float | required | Waterfall plunge velocity in m/s (v != 0) |
+| `water_waterfall_asd` | `distance_m` | float | required | Horizontal distance from stream to detector mirror (D > 0) |
+| `water_waterfall_asd` | `area_asd_m2_per_rt_hz` | float \| array-like | required | Stream cross-sectional area ASD in m²/sqrt(Hz) |
+| `water_channel_uncorrelated_asd` | `distance_m` | float | required | Perpendicular distance to uncorrelated channel H in meters |
+| `water_channel_uncorrelated_asd` | `width_m` | float | required | Channel surface width w in meters |
+| `water_channel_uncorrelated_asd` | `correlation_area_m2` | float | required | Incoherent surface patch correlation area A_cell in m² |
+| `water_channel_uncorrelated_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Surface elevation ASD in m/sqrt(Hz) |
+| `water_waterfall_asd` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(f\) | Frequency | Hz | Fluctuation frequency (\(f > 0\)) |
+| \(v\) | Plunge velocity | m/s | Vertical waterfall flow speed |
+| \(D\) | Waterfall distance | m | Horizontal distance from waterfall stream to mirror |
+| \(S_A^{1/2}(f)\) | Area fluctuation ASD | m²/√Hz | Stream cross-sectional area amplitude spectral density |
+| \(H\) | Channel distance | m | Perpendicular distance to uncorrelated channel |
+| \(w\) | Channel width | m | Channel surface width |
+| \(A_{\mathrm{cell}}\) | Correlation cell area | m² | Surface incoherence patch area |
+| \(S_\eta^{1/2}(f)\) | Elevation ASD | m/√Hz | Uncorrelated surface wave elevation ASD |
+| \(\rho_w\) | Water density | kg/m³ | Fluid mass density (default 1000.0 kg/m³) |
+
+#### Usage notes
+
+- Waterfall API evaluates cylindrical cross-sectional area fluctuations; uncorrelated channel API evaluates area-integrated incoherent patches.
 
 ### Calculation paths
 

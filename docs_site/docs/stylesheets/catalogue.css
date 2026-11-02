@@ -57,12 +57,9 @@
 /* pymdownx.arithmatex renders inline math as <span> and display math as <div>. */
 .md-typeset span.arithmatex {
   display: inline-block;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   vertical-align: middle;
   padding: 0;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Scroll standalone equations horizontally without breaking paragraph flow. */
@@ -88,13 +85,15 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Subtle scrollbar hint for touch/mobile devices */
-.arithmatex::-webkit-scrollbar,
+/* Subtle scrollbar hint for touch/mobile devices (standalone display equations and tables only) */
+div.arithmatex::-webkit-scrollbar,
+.md-typeset div.arithmatex::-webkit-scrollbar,
 .md-typeset table:not([class])::-webkit-scrollbar,
 .md-typeset__table::-webkit-scrollbar {
   height: 5px;
 }
-.arithmatex::-webkit-scrollbar-thumb,
+div.arithmatex::-webkit-scrollbar-thumb,
+.md-typeset div.arithmatex::-webkit-scrollbar-thumb,
 .md-typeset table:not([class])::-webkit-scrollbar-thumb,
 .md-typeset__table::-webkit-scrollbar-thumb {
   background: var(--md-default-fg-color--lighter);

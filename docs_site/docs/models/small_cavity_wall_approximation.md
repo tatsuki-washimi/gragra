@@ -32,17 +32,43 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Analytical formulation and field equations:**
 
-- High-level small_cavity_wall evaluates selected wall contributions to potential \(\Phi\), acceleration \(\mathbf a\), and gradient \(\mathbf\Gamma\) (static or single-frequency phasor) for cavity wall displacement \(\mathbf u\): \(\Phi_{\mathrm{wall}} = -\mathbf u \cdot \mathbf a_{\mathrm{body}}\), \(\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u\).
-- Harms 2022 scalar wall coupling factor is dimensionless geometric factor \(C\). sca_wall_acceleration computes the acceleration vector from the lookup factor: \(\mathbf a = C G \rho \mathbf u\).
+- High-level small_cavity_wall evaluates selected wall contributions to potential \(\Phi\), acceleration \(\mathbf a\), and gradient \(\mathbf\Gamma\) (static or single-frequency phasor) for cavity wall displacement \(\mathbf u\): \(\Phi_{\mathrm{wall}} = -\mathbf u \cdot \mathbf a_{\mathrm{body}}\), \(\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u\). This high-level evaluation is separate from the scalar lookup functions below.
+- Harms 2022 scalar wall coupling factor sca_wall_coupling_factor is a dimensionless geometric factor \(C_{\mathrm{sca}}\) (float). Function sca_wall_acceleration evaluates the G-free scalar acceleration amplitude: \(a_{\mathrm{G-free}} = -C_{\mathrm{sca}} \rho \xi\) (float), where \(\xi\) is scalar ground displacement amplitude. The physical SI acceleration amplitude is \(a_{\mathrm{SI}} = -G C_{\mathrm{sca}} \rho \xi\).
 - Tensor contraction G-free: \(\Delta\mathbf a / G = -\rho \mathbf C_g \mathbf u\); SI: \(\Delta\mathbf a = -G \rho \mathbf C_g \mathbf u\). SCA approximation applies only when the cavity is much smaller than source-to-target distance; high-level model displacement must be first-order small.
 
 ## Parameters and calculation paths
 
 ### Parameters and units
 
-- High-level small_cavity_wall: geometry (Sphere, Cuboid, or Cylinder), displacement (Quantity 3-vector in geometry frame), density (Quantity kg/m^3), optional frequency (Quantity Hz) and reference_time for peak phasor representation.
-- Scalar coupling factor sca_wall_coupling_factor: cavern_shape in {'sphere', 'cube', 'half_sphere', 'elongated_cuboid_2to1to1'}, test_mass_location in {'arbitrary', 'center_3d', 'floor_center_2d'}.
-- Scalar acceleration sca_wall_acceleration: adds density_kg_m3 (float) and displacement_m (array-like (3,)) to cavern_shape and test_mass_location.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `small_cavity_wall` | `geometry` | Sphere \| Cuboid \| Cylinder | required | Cavity boundary geometry instance |
+| `small_cavity_wall` | `displacement` | u.Quantity (length 3-vector) | required | Rigid cavity wall displacement vector |
+| `small_cavity_wall` | `density` | u.Quantity (density) | required (kw-only) | Surrounding rock mass density |
+| `sca_wall_coupling_factor` | `cavern_shape` | Literal | required | 'sphere', 'cube', 'half_sphere', or 'elongated_cuboid_2to1to1' |
+| `sca_wall_coupling_factor` | `test_mass_location` | Literal | required | 'arbitrary', 'center_3d', or 'floor_center_2d' |
+| `sca_wall_acceleration` | `density_kg_m3` | float | required | Surrounding rock mass density in kg/m³ |
+| `sca_wall_acceleration` | `displacement_m` | float | required | Wall displacement amplitude in meters |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(\mathbf u\) | Wall displacement vector | m | Rigid displacement vector of cavity wall (high-level model) |
+| \(\xi\) | Wall displacement amplitude | m | Ground displacement scalar amplitude (scalar lookup) |
+| \(\rho\) | Rock mass density | kg/m³ | Density of surrounding medium |
+| \(C_{\mathrm{sca}}\) | Coupling factor | dimensionless | Geometric factor from Harms et al. (2022) Table 1 |
+| \(a_{\mathrm{G-free}}\) | G-free acceleration amplitude | G-free | \(a_{\mathrm{G-free}} = -C_{\mathrm{sca}} \rho \xi\) |
+| \(a_{\mathrm{SI}}\) | Physical SI acceleration amplitude | m/s² | \(a_{\mathrm{SI}} = -G C_{\mathrm{sca}} \rho \xi\) |
+| \(\mathbf a\) | Coupled acceleration vector | m/s² | \(\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u\) |
+
+#### Usage notes
+
+- High-level `small_cavity_wall` evaluates the complete spatial acceleration field for supported boundary geometries using body field contraction.
+- Scalar functions `sca_wall_coupling_factor` and `sca_wall_acceleration` provide tabulated coupling constants and point evaluations for scalar displacement amplitude.
+- The scalar function `sca_wall_acceleration` returns G-free acceleration amplitude \(-C_{\mathrm{sca}}\rho\xi\); multiply by \(G\) for physical SI acceleration.
 
 ### Calculation paths
 

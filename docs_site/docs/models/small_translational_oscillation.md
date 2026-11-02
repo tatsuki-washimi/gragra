@@ -38,9 +38,31 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- mass: array-like (N,), positive masses in kg; position: array-like (N, 3), equilibrium positions in meters.
-- displacement: array-like (3,) or (N, 3), complex peak displacement vector in meters; frequency: float or Quantity, oscillation frequency in Hz.
-- reference_time: GPS epoch for phasor phase convention; targets: array-like (M, 3), evaluation points in meters.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `small_oscillation` | `point_mass` | PointMass | required | Point mass object with mass and equilibrium coordinates |
+| `small_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector xi_0 |
+| `small_oscillation` | `frequency` | u.Quantity (frequency) | required | Oscillation frequency f in Hz |
+| `small_oscillation` | `phase` | u.Quantity (angle) | required (kw-only) | Initial oscillation phase angle |
+| `small_oscillation` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `small_oscillation` | `sampling` | TimeSampling | required (kw-only) | Output time axis discretization |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(m\) | Point mass | kg | Oscillating body mass (\(m > 0\)) |
+| \(\mathbf x_0\) | Equilibrium center | m | Center of harmonic oscillation |
+| \(\boldsymbol{\xi}_0\) | Displacement amplitude | m | Peak displacement amplitude 3-vector |
+| \(f\) | Oscillation frequency | Hz | Linear frequency (\(\omega = 2\pi f\)) |
+| \(\phi\) | Initial phase | rad | Harmonic phase angle at \(t = 0\) |
+| \(\mathbf x(t)\) | Trajectory position | m | \(\mathbf x(t) = \mathbf x_0 + \boldsymbol{\xi}_0 \sin(2\pi f t + \phi)\) |
+
+#### Usage notes
+
+- Evaluates via `.at(targets).run()` to produce harmonic time series or phasor responses.
 
 ### Calculation paths
 

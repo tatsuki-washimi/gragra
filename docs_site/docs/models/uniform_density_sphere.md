@@ -67,14 +67,33 @@ one-sided limits because the density is discontinuous.
 
 ### Parameters and units
 
-| Parameter | Meaning | SI unit |
-|---|---|---|
-| center_m / \(\mathbf c\) | Sphere center | m |
-| radius_m / \(R\) | Positive radius | m |
-| density_kg_m3 / \(\rho\) | Uniform density | kg/m³ |
-| targets_m / \(\mathbf x\) | Evaluation targets, shape (N, 3) | m |
+#### API parameters
 
-The high-level factory instead accepts a Sphere geometry and an Astropy Quantity density. G-free helpers and SI wrappers have different return types.
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `uniform_sphere_observables` | `center_m` | array-like (3,) | required | Sphere center coordinates in meters |
+| `uniform_sphere_observables` | `radius_m` | float | required | Sphere radius (positive) in meters |
+| `uniform_sphere_observables` | `density_kg_m3` | float \| complex | required | Uniform mass density in kg/m³ |
+| `uniform_sphere_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
+| `uniform_sphere` | `geometry` | Sphere | required | Astropy Sphere geometry (center and radius) |
+| `uniform_sphere` | `density` | u.Quantity (density) | required | Astropy Quantity uniform mass density in kg/m³ |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(\mathbf c\) | Sphere center | m | Center of spherical mass distribution |
+| \(R\) | Sphere radius | m | Positive radius of sphere (\(R > 0\)) |
+| \(\rho\) | Uniform mass density | kg/m³ | Constant volumetric density inside sphere |
+| \(\mathbf x\) | Evaluation target | m | Field evaluation coordinate vector |
+| \(\mathbf r\) | Separation vector | m | \(\mathbf r = \mathbf x - \mathbf c\) |
+| \(r\) | Radial distance | m | \(r = \|\mathbf r\| = \|\mathbf x - \mathbf c\|\) |
+| \(M\) | Total sphere mass | kg | \(M = \frac{4}{3}\pi \rho R^3\) |
+
+#### Usage notes
+
+- High-level factory `uniform_sphere(geometry, density)` constructs a `UniformSphereModel` evaluated via `.at(targets).run()`.
+- Boundary evaluation: potential and acceleration are continuous at \(r = R\); gravity gradient uses the exterior expression at the boundary.
 
 ### Calculation paths
 

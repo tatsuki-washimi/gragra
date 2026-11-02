@@ -66,15 +66,36 @@ separate numerical-quadrature or elliptic/series paths.
 
 ### Parameters and units
 
-| Parameter | Meaning | SI unit |
-|---|---|---|
-| center_m / \(\mathbf c\) | Cylinder center | m |
-| radius_m / \(R\) | Positive radius | m |
-| height_m / \(H\) | Positive height | m |
-| density_kg_m3 / \(\rho\) | Uniform density | kg/m³ |
-| targets_m / \(\mathbf x\) | Evaluation targets, shape (M, 3) | m |
-| quadrature_order | Numerical route only; default 32 | dimensionless |
-| rotation_matrix | Optional local-to-world rotation for analytic route | dimensionless |
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `uniform_cylinder` | `geometry` | Cylinder | required | Astropy Cylinder geometry (center, radius, height) |
+| `uniform_cylinder` | `density` | u.Quantity (density) | required | Astropy Quantity uniform mass density |
+| `cylinder_axis_observables` | `center_m` | array-like (3,) | required | Cylinder center coordinates in meters |
+| `cylinder_axis_observables` | `radius_m` | float | required | Cylinder circular radius R > 0 in meters |
+| `cylinder_axis_observables` | `height_m` | float | required | Cylinder height H > 0 in meters |
+| `cylinder_axis_observables` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
+| `cylinder_axis_observables` | `targets_m` | array-like (M, 3) | required | Evaluation targets strictly on the symmetry axis |
+| `cylinder_observables` | `quadrature_order` | int | 32 | Gauss-Legendre numerical quadrature order for general points |
+| `cylinder_analytic_observables` | `rotation_matrix` | array-like (3, 3) \| None | None | Optional rotation matrix for analytic off-axis path |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(\mathbf c\) | Cylinder center | m | Center of circular cylinder |
+| \(R\) | Cylinder radius | m | Radius of circular cross section (\(R > 0\)) |
+| \(H\) | Cylinder height | m | Total height along cylinder axis (\(H > 0\)) |
+| \(\rho\) | Mass density | kg/m³ | Uniform cylinder mass density |
+| \(z\) | Relative axial coordinate | m | \(z = x_z - c_z\) |
+| \(u_1, u_2\) | End-cap distance offsets | m | \(u_1 = -H/2 - z\), \(u_2 = H/2 - z\) |
+| \(P(u), F(u)\) | On-axis potential and acceleration kernels | m², m | Antiderivatives defined in model equations |
+
+#### Usage notes
+
+- On-axis closed-form API (`cylinder_axis_observables`): targets must lie strictly on the cylinder symmetry axis (\(x = c_x, y = c_y\)). End-face targets \(z = \pm H/2\) raise `ValueError`.
+- General-point APIs: `cylinder_observables` uses Gauss-Legendre quadrature; `cylinder_analytic_observables` uses elliptic integral series expansions.
 
 ### Calculation paths
 

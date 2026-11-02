@@ -22,7 +22,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Rayleigh wave at an elastic halfspace schematic](../assets/models/rayleigh_wave_halfspace.svg)
 
-*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber q, elliptical retrograde orbit, and exponential depth decay.*
+*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber k_R, elliptical retrograde orbit, and exponential depth decay.*
 
 - High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
 
@@ -38,9 +38,42 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Parameters and units
 
-- density_kg_m3: float, background mass density \(\rho\) in \(\mathrm{kg/m^3}\); vp_m_s, vs_m_s: float, P- and S-wave speeds in m/s (\(0 &lt; v_S &lt; v_P\)).
-- frequency_hz: float, wave frequency in Hz; displacement_m: float or Quantity, vertical surface displacement amplitude \(\xi_z(0)\) in meters.
-- propagation_direction: array-like (3,), wave propagation unit vector; phase_origin_m: array-like (3,), phase reference point; reference_time: time origin for phasor.
+#### API parameters
+
+| Function / Path | Parameter | Type / Format | Default | Description |
+|---|---|---|---|---|
+| `rayleigh_halfspace` | `geometry` | HalfSpace | required | Elastic halfspace geometry instance (z <= 0) |
+| `rayleigh_halfspace` | `density` | u.Quantity (density) | required | Medium background mass density |
+| `rayleigh_halfspace` | `vp` | u.Quantity (speed) | required | Medium compressional P-wave speed |
+| `rayleigh_halfspace` | `vs` | u.Quantity (speed) | required | Medium shear S-wave speed (0 < v_S < v_P) |
+| `rayleigh_halfspace` | `vertical_displacement` | FrequencySeries | required | Vertical surface displacement amplitude series |
+| `rayleigh_halfspace_allspace_observables` | `targets_m` | array-like (M, 3) | required | Target evaluation coordinates in meters |
+| `rayleigh_halfspace_allspace_observables` | `density_kg_m3` | float | required (kw-only) | Medium density in kg/m³ |
+| `rayleigh_halfspace_allspace_observables` | `v_p_m_s` | float | required (kw-only) | P-wave speed in m/s |
+| `rayleigh_halfspace_allspace_observables` | `v_s_m_s` | float | required (kw-only) | S-wave speed in m/s |
+| `rayleigh_halfspace_allspace_observables` | `frequency_hz` | float \| array-like | required (kw-only) | Wave frequency in Hz |
+| `rayleigh_halfspace_allspace_observables` | `vertical_surface_amplitude_m` | float \| complex \| array-like | required (kw-only) | Vertical surface displacement amplitude in meters |
+| `rayleigh_halfspace_allspace_observables` | `direction` | array-like (3,) | (1.0, 0.0, 0.0) | Horizontal propagation unit direction vector |
+| `rayleigh_halfspace_allspace_observables` | `phase_origin_m` | array-like (3,) | (0.0, 0.0, 0.0) | Phase reference origin coordinate |
+
+#### Mathematical symbols and notation
+
+| Symbol | Meaning | SI unit | Definition / Relation |
+|---|---|---|---|
+| \(\rho\) | Medium density | kg/m³ | Background elastic medium density (\(\rho > 0\)) |
+| \(v_P\) | Compressional wave speed | m/s | P-wave propagation speed |
+| \(v_S\) | Shear wave speed | m/s | S-wave propagation speed (\(0 < v_S < v_P\)) |
+| \(f\) | Wave frequency | Hz | Linear oscillation frequency |
+| \(k_R\) | Rayleigh wavenumber | rad/m | Secular equation root \(k_R = 2\pi f / v_R\) |
+| \(\lambda_R\) | Rayleigh wavelength | m | \(\lambda_R = 2\pi / k_R\) |
+| \(q_P, q_S\) | Vertical decay rates | rad/m | \(q_P = \sqrt{k_R^2 - \omega^2/v_P^2}\), \(q_S = \sqrt{k_R^2 - \omega^2/v_S^2}\) |
+| \(\xi_z(0)\) | Surface vertical displacement | m | Vertical displacement phasor at \(z = 0\) |
+| \(\hat{\mathbf k}\) | Propagation vector | dimensionless | Surface propagation unit direction |
+
+#### Usage notes
+
+- Wave speeds must satisfy Poisson stability conditions: \(v_P > v_S > 0\) and \(v_P^2 > \frac{4}{3}v_S^2\).
+- Coordinate convention: \(z = 0\) is the planar traction-free boundary; ground occupies \(z \ge 0\) in observable function targets.
 
 ### Calculation paths
 
