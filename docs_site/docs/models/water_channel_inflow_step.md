@@ -49,6 +49,12 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 | `water_edge_step_fourier_amplitude` | `frequency_hz` | float \| array-like | required | Fourier transform evaluation frequency in Hz (f > 0) |
 | `water_edge_step_fourier_amplitude` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `water_edge_step_fourier_amplitude` | ndarray | Fourier | a: (m/s²)·s | (N_freq,) complex128 array | Fourier spectral amplitude of single transient acceleration step during water channel inflow |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -71,6 +77,26 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 - `gragra.observables.water_edge_step_fourier_amplitude`
 
 **Path-level source-declared output union:** a — Other (Fourier amplitude; see API)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import water_edge_step_fourier_amplitude
+
+f_amp = water_edge_step_fourier_amplitude(
+    x0_m=1.0, distance_m=3.0, volume_m3=0.5, frequency_hz=np.array([0.5, 1.0])
+)
+print('Fourier amplitude:', f_amp)
+```
+
+Representative output:
+
+```text
+Fourier amplitude: [3.3591226e-10 1.6795613e-10]
+```
 
 ## Derivation and sources
 

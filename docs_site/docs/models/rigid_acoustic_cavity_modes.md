@@ -51,6 +51,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `acoustic_cavity_mode` | `reference_time` | object | required (kw-only) | Time origin for phasor evaluation |
 | `acoustic_cavity_mode` | `numerics` | AcousticCavityNumerics | default settings | Numerical convergence controls (max evaluations/refinements) |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `acoustic_cavity_mode` | SphereAcousticCavityModel \| CuboidAcousticCavityModel \| CylinderAcousticCavityModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | Standing acoustic normal mode in rigid cavity evaluated via .at(targets).run() |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -88,6 +94,49 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame, Cuboid
+from gragra.targets import TargetPoints
+from gragra.analytic.atmospheric import acoustic_cavity_mode, CuboidAcousticMode
+
+frame = Frame('world')
+geom = Cuboid([0.0, 0.0, 0.0]*u.m, [5.0, 5.0, 5.0]*u.m, frame)
+mode = CuboidAcousticMode(1, 0, 0)
+model = acoustic_cavity_mode(
+    geom, mode, pressure_amplitude=10.0*u.Pa,
+    sound_speed=340.0*u.m/u.s, reference_time=(100, 0)
+)
+res = model.at(TargetPoints([[1.0, 1.0, 1.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+print('gradient:', res.gradient.value, res.gradient.units)
+```
+
+Representative output:
+
+```text
+potential: [[[7.01645514e-14+0.j]]] [[Unit("m2 / s2")]]
+acceleration: [[[-5.60469039e-14+0.j]
+  [ 7.45364444e-15+0.j]
+  [ 7.45364444e-15+0.j]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
+gradient: [[[ 4.15877681e-14+0.j]
+  [ 5.74388019e-15+0.j]
+  [ 5.74388019e-15+0.j]
+  [ 5.74388019e-15+0.j]
+  [ 9.36126236e-15+0.j]
+  [-1.03724514e-15+0.j]
+  [ 5.74388019e-15+0.j]
+  [-1.03724514e-15+0.j]
+  [ 9.36126236e-15+0.j]]] [[Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2")]]
+```
+
 ## Derivation and sources
 
 ### Derivation
@@ -124,7 +173,7 @@ Existing public documentation and original formulation context:
 
 Shape-specific high-level tests; not run here.
 
-- Cylinder frequency f=c_s k/(2π) rel=2e-15; gradient/Hessian finite differences use rtol 2e-8/3e-7 in selected checks. Test-code-only; other shapes have separate test suites.
+- Cylinder frequency \(f = c_s k / (2\pi)\) rel=2e-15; gradient/Hessian finite differences use rtol 2e-8/3e-7 in selected checks. Test-code-only; other shapes have separate test suites.
 
 ### Applicability and limitations
 

@@ -54,6 +54,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `halfspace_psv_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
 | `halfspace_psv_observables` | `incident_displacement_m` | float \| complex \| array-like | required (kw-only) | Incident displacement amplitude in meters |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `halfspace_psv` | HalfspacePSVModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level coupled P/SV halfspace model evaluated via .at(targets).run() |
+| `halfspace_psv_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Complex SI observables for incident P/SV waves reflecting at traction-free surface |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -79,13 +86,47 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import halfspace_psv_observables
+
+res = halfspace_psv_observables(
+    targets_m=[[0.0, 0.0, -50.0]], wave_type='P', density_kg_m3=2500.0,
+    v_p_m_s=4000.0, v_s_m_s=2000.0, frequency_hz=2.0,
+    incidence_angle_rad=np.pi/6, azimuth_rad=0.0, incident_displacement_m=1e-6
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [2.49416773e-11+8.49555084e-11j]
+acceleration: [[1.33447801e-13-3.91782950e-14j 0.00000000e+00+0.00000000e+00j
+  3.37585504e-12+5.74006817e-14j]]
+gradient: [[[ 6.15411219e-17+2.09619315e-16j  0.00000000e+00+0.00000000e+00j
+   -9.01647799e-17+5.30278069e-15j]
+  [ 0.00000000e+00+0.00000000e+00j  0.00000000e+00+0.00000000e+00j
+   -0.00000000e+00+0.00000000e+00j]
+  [-9.01647799e-17+5.30278069e-15j -0.00000000e+00+0.00000000e+00j
+    1.50998859e-15+1.36216044e-15j]]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
-Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+Formulation follows traction-free boundary conditions; internal validation records classified into inventory facts, literature correspondence, and proof assertions.
 
-- No separate derivation is asserted from the formula declaration alone.
+- Inventory fact: Implemented in [`src/gragra/analytic/seismic/_halfspace_psv_model.py`](https://github.com/tatsuki-washimi/gragra/blob/main/src/gragra/analytic/seismic/_halfspace_psv_model.py).
+- Literature assertion: Incident and reflected P/SV wave potentials and surface displacement boundary conditions match Aki & Richards (2002) and Harms (2019) Eqs. 86–91.
+- Proof assertion: Numerical boundary-matching checks and test oracles exist in test code; no separate mathematical proof is asserted in this catalogue.
 
 ### References
 
@@ -94,9 +135,11 @@ Existing public documentation and original formulation context:
 - [Analytic models](../guide/gen1-analytic-models.md)
 - [waves](../guide/waves.md)
 
-**Bibliographic inventory:** partial.
+**Bibliographic inventory:** located.
 
-- Local model metadata calls D1 traction-free P/SV halfspace; Fourier matching q&gt;0 and documented continuous normal-incidence q=0 family.
+- Aki, K., & Richards, P. G. (2002), ‘Quantitative Seismology’ (2nd ed.), University Science Books, Section 5.2 (P-SV wave reflection at a free surface).
+- Harms, J. (2019), ‘Terrestrial gravity fluctuations’, Living Reviews in Relativity, 22(1), 6, DOI 10.1007/s41114-019-0022-2, Section 4.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 
 ## Verification and applicability
 

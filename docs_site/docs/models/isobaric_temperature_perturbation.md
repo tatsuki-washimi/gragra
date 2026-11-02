@@ -51,6 +51,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `isobaric_temperature` | `frequency` | u.Quantity \| None | None | Optional oscillation frequency for phasor evaluation |
 | `isobaric_temperature` | `reference_time` | object \| None | None | Optional reference epoch for phasor representation |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `isobaric_temperature` | TemperatureModel | Static / Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with Astropy Quantities | Isobaric temperature perturbation model evaluated via .at(targets).run() |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -95,6 +101,43 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.analytic.atmospheric.isobaric_temperature`
 
 **Path-level source-declared output union:** Φ a Γ — Static; Φ a Γ — Phasor
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.targets import TargetPoints
+from gragra.analytic.atmospheric import isobaric_temperature
+from gragra.fields import TemperatureFourierMode
+
+frame = Frame('world')
+profile = TemperatureFourierMode(
+    wavevector=np.array([0.1, 0.0, 0.0]) / u.m,
+    phase_origin=np.zeros(3) * u.m,
+    frame=frame,
+)
+model = isobaric_temperature(
+    profile, 2.0 * u.K, rho0=1.2 * u.kg / u.m**3, T0=290.0 * u.K
+)
+res = model.at(TargetPoints([[0.0, 0.0, 10.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [6.94110847e-10] m2 / s2
+acceleration: [[0. 0. 0.]] m / s2
+gradient: [[[6.94110847e-12 0.00000000e+00 0.00000000e+00]
+  [0.00000000e+00 0.00000000e+00 0.00000000e+00]
+  [0.00000000e+00 0.00000000e+00 0.00000000e+00]]] 1 / s2
+```
 
 ## Derivation and sources
 

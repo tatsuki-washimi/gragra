@@ -50,6 +50,13 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (0 < v_S < v_P) |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `s_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided per-component S-wave displacement PSD in m²/Hz |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `fullspace_p_isotropic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor for isotropic full-space P waves |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor at center of spherical cavity for isotropic P/S waves |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -80,6 +87,28 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 - `gragra.observables.stochastic_bodywave.spherical_cavity_ps_isotropic_acceleration_csd`
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables.stochastic_bodywave import fullspace_p_isotropic_acceleration_csd
+
+csd = fullspace_p_isotropic_acceleration_csd(
+    density_kg_m3=2500.0, frequency_hz=2.0, p_displacement_psd_m2_hz=1e-14
+)
+print('P-wave CSD matrix:\n', csd)
+```
+
+Representative output:
+
+```text
+P-wave CSD matrix:
+ [[4.39654166e-26 0.00000000e+00 0.00000000e+00]
+ [0.00000000e+00 4.39654166e-26 0.00000000e+00]
+ [0.00000000e+00 0.00000000e+00 4.39654166e-26]]
+```
 
 ## Derivation and sources
 

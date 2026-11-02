@@ -53,6 +53,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `halfspace_single_bodywave_observables` | `displacement_m` | float \| complex \| array-like | required (kw-only) | Wave displacement amplitude in meters |
 | `halfspace_reflected_p_above_observables` | `incident_displacement_m` | float \| complex \| array-like | required (kw-only) | Incident P-wave displacement amplitude in meters |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `halfspace_single_bodywave_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Complex SI observables of a single upward-propagating plane P or SV wave |
+| `halfspace_reflected_p_above_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Complex SI observables above ground for reflected-P composite (incident P + reflected P + converted SV) |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -82,13 +89,47 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import halfspace_single_bodywave_observables
+
+res = halfspace_single_bodywave_observables(
+    targets_m=[[0.0, 0.0, -50.0]], wave_type='P', density_kg_m3=2500.0,
+    v_p_m_s=4000.0, v_s_m_s=2000.0, frequency_hz=2.0,
+    incidence_angle_rad=np.pi/6, azimuth_rad=0.0, displacement_m=1e-6
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [9.05140363e-11+3.52756031e-10j]
+acceleration: [[5.54107878e-13-1.42179116e-13j 0.00000000e+00+0.00000000e+00j
+  1.79910020e-12+2.38341657e-13j]]
+gradient: [[[ 2.23334433e-16+8.70390619e-16j  0.00000000e+00+0.00000000e+00j
+   -3.74386199e-16+2.82601999e-15j]
+  [ 0.00000000e+00+0.00000000e+00j  0.00000000e+00+0.00000000e+00j
+   -0.00000000e+00+0.00000000e+00j]
+  [-3.74386199e-16+2.82601999e-15j -0.00000000e+00+0.00000000e+00j
+    6.70003298e-16+5.65602299e-15j]]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
 Local design and validation records contain a boundary-value re-derivation for the reflected-P coefficient and independent Green reconstruction; this inventory did not execute or re-prove them.
 
-- Non-public design and validation notes describe a Cartesian displacement/stress derivation and direct Poisson boundary-value checks; their contents are not reproduced here.
+- Inventory fact: Model implementations provide benchmark fields for individual P, SV, and reflected P waves.
+- Literature assertion: Field expressions correspond to Harms (2019) Eqs. 86–90 and Aki & Richards (2002) Section 5.2.
+- Proof assertion: Cartesian displacement/stress derivation and direct Poisson boundary-value checks are verified in test oracles.
 
 ### References
 

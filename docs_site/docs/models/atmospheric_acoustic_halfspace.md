@@ -53,6 +53,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `acoustic_halfspace` | `phase_origin` | u.Quantity (length 3-vector) | required (kw-only) | Coordinate phase reference origin |
 | `acoustic_halfspace` | `reference_time` | object | required (kw-only) | Reference time epoch for phasor evaluation |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `acoustic_halfspace` | AcousticHalfspaceModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level atmospheric acoustic wavefield model evaluated via .at(targets).run() |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -78,6 +84,54 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.analytic.atmospheric.acoustic_halfspace`
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+import astropy.units as u
+from gragra.geometry import Frame, HalfSpace
+from gragra.targets import TargetPoints
+from gragra.analytic.atmospheric import acoustic_halfspace
+
+frame = Frame('world')
+model = acoustic_halfspace(
+    HalfSpace(frame),
+    surface_pressure=100.0*u.Pa,
+    sound_speed=340.0*u.m/u.s,
+    frequency=1.0*u.Hz,
+    incidence_angle=(np.pi / 4.0)*u.rad,
+    azimuth=0.0*u.rad,
+    phase_origin=[0.0, 0.0, 0.0]*u.m,
+    reference_time=(100, 0),
+)
+res = model.at(TargetPoints([[0.0, 0.0, 50.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+print('gradient:', res.gradient.value, res.gradient.units)
+```
+
+Representative output:
+
+```text
+potential: [[[-1.13426138e-09+0.j]]] [[Unit("m2 / s2")]]
+acceleration: [[[ 0.00000000e+00+1.48217369e-11j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [-9.65309052e-12+0.00000000e+00j]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
+gradient: [[[-1.93680124e-13+0.00000000e+00j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [ 0.00000000e+00-1.26139856e-13j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [ 0.00000000e+00-1.26139856e-13j]
+  [ 0.00000000e+00+0.00000000e+00j]
+  [-3.82424875e-13+0.00000000e+00j]]] [[Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2")]]
+```
 
 ## Derivation and sources
 
@@ -117,7 +171,7 @@ Noncavity production comparison script and module test suites exist; not run in 
 
 ### Applicability and limitations
 
-- θ in (0,π/2]; grazing has k_z=0 and q≠0.
+- \(\theta \in (0, \pi/2]\); grazing has \(k_z = 0\) and \(q \ne 0\).
 
 **Scope note:** Single plane wave in homogeneous sound speed halfspace; no normal incidence or interface targets.
 

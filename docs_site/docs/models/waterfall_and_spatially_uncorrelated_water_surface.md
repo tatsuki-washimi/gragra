@@ -52,6 +52,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `water_channel_uncorrelated_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Surface elevation ASD in m/sqrt(Hz) |
 | `water_waterfall_asd` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `water_waterfall_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Horizontal gravity acceleration ASD from plunging waterfall jet at distance D |
+| `water_channel_uncorrelated_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Gravity acceleration ASD from spatially incoherent surface displacement fluctuations |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -83,6 +90,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.observables.water_channel_uncorrelated_asd`
 
 **Path-level source-declared output union:** a — Spectral density (ASD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import water_waterfall_asd, water_channel_uncorrelated_asd
+
+w_asd = water_waterfall_asd(
+    frequency_hz=np.array([1.0, 5.0]), velocity_mps=5.0, distance_m=5.0,
+    area_asd_m2_per_rt_hz=np.array([1e-4, 1e-4])
+)
+u_asd = water_channel_uncorrelated_asd(
+    distance_m=2.0, width_m=0.5, correlation_area_m2=0.01,
+    surface_asd_m_per_rt_hz=np.array([1e-3, 1e-3])
+)
+print('waterfall ASD:', w_asd)
+print('uncorrelated ASD:', u_asd)
+```
+
+Representative output:
+
+```text
+waterfall ASD: [1.65562129e-14 4.30963771e-25]
+uncorrelated ASD: [1.04562432e-12 1.04562432e-12]
+```
 
 ## Derivation and sources
 

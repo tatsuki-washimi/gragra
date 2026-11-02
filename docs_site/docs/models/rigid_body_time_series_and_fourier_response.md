@@ -51,6 +51,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `rigid_motion_observable` | `observable` | str | required (kw-only) | 'potential', 'acceleration', or 'gradient' |
 | `rigid_motion_observable` | `softening_m` | float | 0.0 | Plummer softening parameter in meters |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `rigid_motion` | _ContinuousRigidMotionModel | TimeSeries / Fourier | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with continuous/discrete time or Fourier payloads | Continuous or sampled rigid-body motion model evaluated via .at(targets).run() |
+| `rigid_motion_observable` | ndarray | TimeSeries / Fourier | Φ: m²/s², a: m/s², Γ: s⁻² | (N_frames, N_targets, ...) float64 array | Assembled dense SI observables across time frames and targets for requested observable |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -85,6 +92,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.gravity_sources.rigid_motion`
 
 **Path-level source-declared output union:** Φ a Γ — Fourier transform
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.gravity_sources import PointMassCloud, PrescribedRigidTransform
+from gragra.observables import rigid_motion_observable
+
+cloud = PointMassCloud([1000.0], [[0.0, 0.0, 0.0]])
+transform = PrescribedRigidTransform(
+    time_s=[0.0, 1.0],
+    translations_m=[[0.0, 0.0, 0.0], [0.1, 0.0, 0.0]],
+    rotation_matrices=[np.eye(3), np.eye(3)]
+)
+acc = rigid_motion_observable(cloud, transform, [[0.0, 0.0, 5.0]], observable='acceleration')
+print('acceleration:', acc)
+```
+
+Representative output:
+
+```text
+acceleration: [[[ 0.00000000e+00  0.00000000e+00 -2.66972000e-09]]
+
+ [[ 5.33623794e-11  0.00000000e+00 -2.66811897e-09]]]
+```
 
 ## Derivation and sources
 

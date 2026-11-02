@@ -78,6 +78,13 @@ one-sided limits because the density is discontinuous.
 | `uniform_sphere` | `geometry` | Sphere | required | Astropy Sphere geometry (center and radius) |
 | `uniform_sphere` | `density` | u.Quantity (density) | required | Astropy Quantity uniform mass density in kg/m³ |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `uniform_sphere_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Direct SI observables container (float64 arrays) for M evaluation targets |
+| `uniform_sphere` | UniformSphereModel | Static | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with Astropy Quantities | High-level model factory; evaluate via .at(targets).run() to yield physical field quantities |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -110,6 +117,32 @@ one-sided limits because the density is discontinuous.
 **Observables after model evaluation:** Φ a Γ — Static
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables import uniform_sphere_observables
+
+res = uniform_sphere_observables(
+    center_m=[0.0, 0.0, 0.0], radius_m=1.0, density_kg_m3=2000.0,
+    targets_m=[[0.0, 0.0, 5.0]]
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [-1.1182897e-07]
+acceleration: [[-0.0000000e+00 -0.0000000e+00 -2.2365794e-08]]
+gradient: [[[-4.47315879e-09  0.00000000e+00  0.00000000e+00]
+  [ 0.00000000e+00 -4.47315879e-09  0.00000000e+00]
+  [ 0.00000000e+00  0.00000000e+00  8.94631759e-09]]]
+```
 
 ## Derivation and sources
 

@@ -52,6 +52,14 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `sca_wall_acceleration` | `density_kg_m3` | float | required | Surrounding rock mass density in kg/m³ |
 | `sca_wall_acceleration` | `displacement_m` | float | required | Wall displacement amplitude in meters |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `small_cavity_wall` | SmallCavityWallModel | Phasor | a: m/s² | EvaluationResult with acceleration Quantity | High-level small-cavity wall model evaluated via .at(targets).run() |
+| `sca_wall_coupling_factor` | float | Coupling factor | dimensionless | scalar float | Dimensionless cavity wall coupling factor C_sca (Harms et al. 2022 Table 1) |
+| `sca_wall_acceleration` | float | Phasor | a: m/s² | scalar float | Small-cavity limit cavern wall acceleration amplitude (G-free / SI) |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -96,6 +104,26 @@ This path provides a related coefficient, coupling quantity, or helper rather th
 - `gragra.analytic.seismic.small_cavity_wall`
 
 This path provides a related coefficient, coupling quantity, or helper rather than a direct Φ/a/Γ output.
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.analytic import sca_wall_coupling_factor, sca_wall_acceleration
+
+c_sca = sca_wall_coupling_factor('sphere', 'arbitrary')
+a_si = sca_wall_acceleration('sphere', 'arbitrary', density_kg_m3=2500.0, displacement_m=1e-6)
+print('coupling factor C_sca:', c_sca)
+print('wall acceleration a_SI:', a_si)
+```
+
+Representative output:
+
+```text
+coupling factor C_sca: 4.1887902047863905
+wall acceleration a_SI: -0.010471975511965976
+```
 
 ## Derivation and sources
 

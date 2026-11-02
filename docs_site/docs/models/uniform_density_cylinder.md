@@ -80,6 +80,15 @@ separate numerical-quadrature or elliptic/series paths.
 | `cylinder_observables` | `quadrature_order` | int | 32 | Gauss-Legendre numerical quadrature order for general points |
 | `cylinder_analytic_observables` | `rotation_matrix` | array-like (3, 3) \| None | None | Optional rotation matrix for analytic off-axis path |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `cylinder_analytic_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Full-space analytic cylinder observables with infinity-zero potential convention |
+| `cylinder_axis_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | On-axis closed-form SI potential, axial acceleration, and diagonal gradient |
+| `cylinder_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | General-point finite cylinder SI observables via numerical quadrature / series |
+| `uniform_cylinder` | UniformCylinderModel | Static | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with Astropy Quantities | High-level model factory; evaluate via .at(targets).run() to yield physical field quantities |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -134,6 +143,32 @@ separate numerical-quadrature or elliptic/series paths.
 - `gragra.observables.cylinder_analytic_observables`: Φ a Γ — Static
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables import cylinder_axis_observables
+
+res = cylinder_axis_observables(
+    center_m=[0.0, 0.0, 0.0], radius_m=1.0, height_m=4.0, density_kg_m3=2700.0,
+    targets_m=[[0.0, 0.0, 5.0]]
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [-4.73467059e-07]
+acceleration: [[ 0.00000000e+00  0.00000000e+00 -1.03274022e-07]]
+gradient: [[[-2.3362203e-08  0.0000000e+00  0.0000000e+00]
+  [ 0.0000000e+00 -2.3362203e-08  0.0000000e+00]
+  [ 0.0000000e+00  0.0000000e+00  4.6724406e-08]]]
+```
 
 ## Derivation and sources
 

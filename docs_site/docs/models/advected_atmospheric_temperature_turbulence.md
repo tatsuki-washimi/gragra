@@ -52,6 +52,12 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 | `uniform_advection_temperature_acceleration_psd` | `wind_axis_angle_rad` | float | required (kw-only) | Angle theta between wind velocity and sensor projection axis in radians |
 | `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `uniform_advection_temperature_acceleration_psd` | ndarray \| float | PSD | a: (m/s²)²/Hz | (N_freq,) float64 array or scalar | One-sided projected acceleration power spectral density along detector axis (T1) |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -77,6 +83,28 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 - `gragra.observables.stochastic_temperature.uniform_advection_temperature_acceleration_psd`
 
 **Path-level source-declared output union:** a — Spectral density (PSD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables.stochastic_temperature import uniform_advection_temperature_acceleration_psd
+
+psd = uniform_advection_temperature_acceleration_psd(
+    density_kg_m3=1.2, temperature_k=290.0, structure_coefficient_k_m_neg_p_over_2=0.01,
+    structure_exponent=2.0/3.0, wind_speed_m_s=5.0, minimum_approach_m=10.0,
+    wind_axis_angle_rad=0.0, frequency_hz=np.array([0.1, 1.0])
+)
+print('Temperature PSD:', psd)
+```
+
+Representative output:
+
+```text
+Temperature PSD: [3.55636303e-26 1.27367173e-39]
+```
 
 ## Derivation and sources
 

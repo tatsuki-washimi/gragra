@@ -24,7 +24,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *World frame (X, Y, Z) and rotated cuboid frame (x', y', z') related by rotation matrix R.*
 
-- API receives center_m, lengths_m, targets_m and rotation_matrix directly; it is not a Cuboid geometry object factory. The separate plotting helper takes a direct geometry/model/setup and resolves only Cuboid, Cylinder, SphericalShell; it can transform geometry coordinates through its Frame to display_frame.
+- API receives `center_m`, `lengths_m`, `targets_m` and `rotation_matrix` directly; it is not a Cuboid geometry object factory. The separate plotting helper takes a direct geometry/model/setup and resolves only Cuboid, Cylinder, SphericalShell; it can transform geometry coordinates through its Frame to `display_frame`.
 - Oriented API proper Q and inherited base cuboid boundary rejection.
 
 ### Equations
@@ -49,6 +49,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `oriented_cuboid_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in world frame (meters) |
 | `oriented_cuboid_observables` | `rotation_matrix` | array-like (3, 3) | required (kw-only) | Proper rotation matrix Q in SO(3) mapping local body to world frame |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `oriented_cuboid_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Direct SI observables transformed to world coordinates via proper rotation matrix Q |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -72,13 +78,42 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Static
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import oriented_cuboid_observables
+
+# 90-degree rotation around z-axis
+Q = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+res = oriented_cuboid_observables(
+    [0.0, 0.0, 0.0], [2.0, 3.0, 4.0], 2500.0, [[0.0, 0.0, 5.0]],
+    rotation_matrix=Q
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [-8.25392095e-07]
+acceleration: [[ 0.00000000e+00  0.00000000e+00 -1.74413976e-07]]
+gradient: [[[-3.61278900e-08  0.00000000e+00  0.00000000e+00]
+  [ 0.00000000e+00 -3.87983548e-08  0.00000000e+00]
+  [ 0.00000000e+00  0.00000000e+00  7.49262448e-08]]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
 Inherits the aligned-cuboid vertex-antiderivative derivation; the oriented wrapper applies a local-to-world coordinate transformation.
 
-- cuboid derivation document applies to same closed form. oriented wrapper computes local_targets=(targets-center)@Q, evaluates cuboid_observables_g_free, then covariant vector/tensor transport; this is coordinate transformation, not a new physical derivation.
+- cuboid derivation document applies to same closed form. oriented wrapper computes `local_targets = (targets - center) @ Q`, evaluates `cuboid_observables_g_free`, then covariant vector/tensor transport; this is coordinate transformation, not a new physical derivation.
 
 ### References
 
@@ -122,8 +157,8 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue has no output_contracts; no representative catalogue probe is defined.
-- Sphere geometry is not among plot_shape-supported types; direct oriented_cuboid_observables arrays are not themselves a geometry/model/setup argument. Reuse requires a separate Cuboid geometry object, with its own Frame transform.
-- formula_to_latex applicability is limited to its registered expressions; no claim for arbitrary oriented equations.
+- Catalogue has no `output_contracts`; no representative catalogue probe is defined.
+- Sphere geometry is not among `plot_shape`-supported types; direct `oriented_cuboid_observables` arrays are not themselves a geometry/model/setup argument. Reuse requires a separate Cuboid geometry object, with its own Frame transform.
+- `formula_to_latex` applicability is limited to its registered expressions; no claim for arbitrary oriented equations.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

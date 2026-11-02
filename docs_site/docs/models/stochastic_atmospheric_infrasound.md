@@ -50,6 +50,14 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 | `centered_cavern_isotropic_acoustic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavern inner radius R in meters (R >= 0) |
 | `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `surface_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor at surface (A1) for isotropic atmospheric infrasound |
+| `underground_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor underground at depth h (A2) for isotropic infrasound |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor at cavern center (A3) for isotropic infrasound |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -85,6 +93,28 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 - `gragra.observables.stochastic_acoustic.centered_cavern_isotropic_acoustic_acceleration_csd`
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables.stochastic_acoustic import surface_isotropic_acoustic_acceleration_csd
+
+csd = surface_isotropic_acoustic_acceleration_csd(
+    sound_speed_m_s=340.0, frequency_hz=1.0, surface_pressure_psd_pa2_hz=1e-4
+)
+print('Infrasound CSD matrix:\n', csd)
+```
+
+Representative output:
+
+```text
+Infrasound CSD matrix:
+ [[1.28449482e-30 0.00000000e+00 0.00000000e+00]
+ [0.00000000e+00 1.28449482e-30 0.00000000e+00]
+ [0.00000000e+00 0.00000000e+00 2.56898965e-30]]
+```
 
 ## Derivation and sources
 
@@ -127,7 +157,7 @@ Test implementation records explicit A1/A2/A3 checks; tests were not run in this
 ### Applicability and limitations
 
 
-**Scope note:** frequency strictly positive; c_s positive; depth/radius nonnegative in kernels; PSD nonnegative. A3 center and idealized geometry; acoustic formulations noted as under refinement in guide.
+**Scope note:** frequency \(f &gt; 0\); sound speed \(c_s &gt; 0\); depth/radius non-negative in kernels; PSD non-negative. A3 center and idealized geometry; acoustic formulations noted as under refinement in guide.
 
 See the public verification and limitations guidance for test-specific conditions and interpretation:
 

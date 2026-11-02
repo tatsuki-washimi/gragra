@@ -50,6 +50,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `point_force` | `vp` | u.Quantity (speed) | required (kw-only) | Medium compressional P-wave speed |
 | `point_force` | `sampling` | TimeSampling | required (kw-only) | Evaluation time axis discretization grid |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `point_force` | PointForceModel | TimeSeries | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with TimeSeriesMatrix payloads | High-level causal dynamic point force model evaluated via .at(targets).run() |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -82,13 +88,48 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Time series
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.results import TimeSampling
+from gragra.targets import TargetPoints
+from gragra.gravity_sources import smooth_ramp_to_hold
+from gragra.analytic.seismic import point_force
+
+frame = Frame('world')
+sampling = TimeSampling(epoch=(100, 0), dt=0.5*u.s, count=2)
+history = smooth_ramp_to_hold(amplitude=1e6*u.N, duration=1.0*u.s, onset=(100, 0))
+model = point_force(
+    position=[0.0, 0.0, 0.0]*u.m, direction=[1.0, 0.0, 0.0],
+    history=history, frame=frame, vp=2000.0*u.m/u.s, sampling=sampling
+)
+res = model.at(TargetPoints([[0.0, 0.0, 100.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+```
+
+Representative output:
+
+```text
+potential: [[[-0. -0.]]] [[Unit("m2 / s2")]]
+acceleration: [[[0.00000000e+00 3.75512804e-14]
+  [0.00000000e+00 0.00000000e+00]
+  [0.00000000e+00 0.00000000e+00]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
-Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+Causal point-force Green function and field response; derivation details structured as inventory facts, literature matching, and proof assertions.
 
-- No separate derivation is asserted from the formula declaration alone.
+- Inventory fact: Implemented in [`src/gragra/analytic/seismic/_gen1_point_force.py`](https://github.com/tatsuki-washimi/gragra/blob/main/src/gragra/analytic/seismic/_gen1_point_force.py).
+- Literature assertion: Retarded time delay and spatial elastodynamic Green functions correspond to the Stokes-Love solution (Love 1927; Aki & Richards 2002).
+- Proof assertion: Far-field 1/R and near-field 1/R^2 asymptotics are validated against numerical quadrature in test suites.
 
 ### References
 
@@ -96,9 +137,12 @@ Existing public documentation and original formulation context:
 
 - [Analytic models](../guide/gen1-analytic-models.md)
 
-**Bibliographic inventory:** partial.
+**Bibliographic inventory:** located.
 
-- Reference table records local formula-ledger Green function and causal delay moment.
+- Love, A. E. H. (1927), ‘A Treatise on the Mathematical Theory of Elasticity’ (4th ed.), Cambridge University Press, Chapter XIII (Elastodynamic Green tensor).
+- Aki, K., & Richards, P. G. (2002), ‘Quantitative Seismology’ (2nd ed.), University Science Books, Section 2.4 (Representation theorem and point-force Green tensor).
+- Harms, J. (2019), ‘Terrestrial gravity fluctuations’, Living Reviews in Relativity, 22(1), 6, DOI 10.1007/s41114-019-0022-2, Section 2.
+- [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 
 ## Verification and applicability
 

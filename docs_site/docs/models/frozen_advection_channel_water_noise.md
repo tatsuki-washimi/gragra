@@ -57,6 +57,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
 | `water_channel_advection_asd` | `component` | str | 'x' | Acceleration output component ('x' or 'z') |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `water_channel_advection_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (1,), acceleration: (1, 3), gradient: (1, 3, 3) | Direct SI gravity observables for advected sinusoidal water channel wave |
+| `water_channel_advection_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Acceleration amplitude spectral density at sensor distance D across specified frequencies |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -89,6 +96,34 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.observables.water_channel_advection_asd`
 
 **Path-level source-declared output union:** a — Spectral density (ASD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import water_channel_advection_observables, water_channel_advection_asd
+
+obs = water_channel_advection_observables(
+    frequency_hz=10.0, velocity_mps=1.5, distance_m=2.0, width_m=0.5, eta_m=1e-3
+)
+asd = water_channel_advection_asd(
+    frequency_hz=np.array([1.0, 2.0]), velocity_mps=1.5, distance_m=2.0, width_m=0.5,
+    surface_asd_m_per_rt_hz=np.array([1e-3, 1e-3])
+)
+print('obs acceleration:', obs.acceleration)
+print('ASD:', asd)
+```
+
+Representative output:
+
+```text
+obs acceleration: [[ 0.00000000e+00+1.58118015e-46j
+   0.00000000e+00+0.00000000e+00j
+  -1.59058929e-46+0.00000000e+00j]]
+ASD: [2.74488354e-14 8.98850056e-18]
+```
 
 ## Derivation and sources
 
