@@ -48,6 +48,12 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `constant_velocity` | `motion_epoch` | object | required (kw-only) | Reference epoch t0 at which position equals initial position |
 | `constant_velocity` | `sampling` | TimeSampling | required (kw-only) | Evaluation time axis discretization |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `constant_velocity` | _MotionModel | TimeSeries | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with TimeSeriesMatrix payloads | Constant-velocity point-mass motion model evaluated via .at(targets).run() |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -75,6 +81,42 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 **Observables after model evaluation:** Φ a Γ — Time series
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.results import TimeSampling
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import constant_velocity
+
+frame = Frame('world')
+pm = PointMass(1000.0, [0.0, 0.0, 0.0])
+sampling = TimeSampling(epoch=(100, 0), dt=0.1*u.s, count=5)
+model = constant_velocity(
+    pm, [10.0, 0.0, 0.0]*u.m/u.s, frame=frame, motion_epoch=(100, 0), sampling=sampling
+)
+res = model.at(TargetPoints([[0.0, 50.0, 0.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+```
+
+Representative output:
+
+```text
+potential: [[[-1.33486000e-09 -1.33459311e-09 -1.33379339e-09
+   -1.33246372e-09 -1.33060884e-09]]] [[Unit("m2 / s2")]]
+acceleration: [[[ 0.00000000e+00  5.33623794e-13  1.06533019e-12
+    1.59322087e-12  2.11543536e-12]
+  [-2.66972000e-11 -2.66811897e-11 -2.66332546e-11
+   -2.65536811e-11 -2.64429420e-11]
+  [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
+    0.00000000e+00  0.00000000e+00]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
+```
 
 ## Derivation and sources
 

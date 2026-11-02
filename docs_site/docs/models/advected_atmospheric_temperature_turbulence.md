@@ -28,12 +28,35 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Advected atmospheric temperature turbulence produces density perturbations via isobaric thermodynamic fluctuations. The turbulent temperature structure function follows:
 
-- Turbulent temperature structure function obeys \(D_T(r) = \langle [T(\mathbf x + \mathbf r) - T(\mathbf x)]^2 \rangle = c_T^2 r^p\) with structure exponent \(0 &lt; p &lt; 2\) (standard Kolmogorov turbulence has \(p = 2/3\)) and coefficient \(c_T\) in \(\mathrm{K\cdot m^{-p/2}}\).
-- Under Taylor\'s frozen-flow hypothesis with horizontal wind speed \(v &gt; 0\), turbulence advects across the sensor with minimum approach distance \(r_{\min} &gt; 0\) and wind angle \(\theta\). Let \(\Omega = 2\pi f\) and dimensionless parameter \(x = \Omega r_{\min} / v\).
-- The G-free one-sided projected acceleration PSD is \(S_a^{(G\text{-free})}(f) = 8\pi^2 \Gamma(p+2) \sin\left(\frac{\pi p}{2}\right) \left(\frac{\rho_0 r_{\min} c_T}{T_0}\right)^2 v^p \Omega^{-(p+1)} B(x, \theta)\), where \(B(x, \theta) = e^{-2x} [\cos^2\theta (K_1^2(x) - K_0^2(x)) + \frac{1}{2} \sin^2\theta (K_0(x) K_2(x) - K_1^2(x))]\) with modified Bessel functions \(K_n(x)\).
-- SI observable multiplication: \(S_a^{(\mathrm{SI})}(f) = G^2 S_a^{(G\text{-free})}(f)\) with units \(\mathrm{(m/s^2)^2/Hz}\).
+$$
+D_T(r) = \langle [T(\mathbf x + \mathbf r) - T(\mathbf x)]^2 \rangle = c_T^2 r^p
+$$
+
+with structure exponent \(0 < p < 2\) (Kolmogorov turbulence has \(p = 2/3\)) and structure constant \(c_T\) in \(\mathrm{K\cdot m^{-p/2}}\).
+
+Under Taylor's frozen-turbulence hypothesis with horizontal wind speed \(v > 0\), standoff distance \(r_{\min} > 0\), and wind angle \(\theta\), let \(\Omega = 2\pi f\) and define the dimensionless frequency parameter \(x = \Omega r_{\min} / v\).
+
+The G-free one-sided projected acceleration PSD is:
+
+$$
+S_a^{(G\text{-free})}(f) = 8\pi^2 \Gamma(p+2) \sin\left(\frac{\pi p}{2}\right) \left(\frac{\rho_0 r_{\min} c_T}{T_0}\right)^2 v^p \Omega^{-(p+1)} B(x, \theta)
+$$
+
+where the dimensionless geometric-Bessel factor \(B(x, \theta)\) is:
+
+$$
+B(x, \theta) = e^{-2x} \left[\cos^2\theta \left(K_1^2(x) - K_0^2(x)\right) + \frac{1}{2} \sin^2\theta \left(K_0(x) K_2(x) - K_1^2(x)\right)\right]
+$$
+
+Here \(K_n(x)\) are modified Bessel functions of the second kind.
+
+Physical SI acceleration PSDs with units \(\mathrm{(m/s^2)^2/Hz}\) are obtained by multiplying by \(G^2\):
+
+$$
+S_a^{(\mathrm{SI})}(f) = G^2 S_a^{(G\text{-free})}(f)
+$$
 
 ## Parameters and calculation paths
 
@@ -51,6 +74,12 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 | `uniform_advection_temperature_acceleration_psd` | `minimum_approach_m` | float | required (kw-only) | Closest approach distance from wind path to sensor r_min in meters |
 | `uniform_advection_temperature_acceleration_psd` | `wind_axis_angle_rad` | float | required (kw-only) | Angle theta between wind velocity and sensor projection axis in radians |
 | `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `uniform_advection_temperature_acceleration_psd` | ndarray \| float | PSD | a: (m/s²)²/Hz | (N_freq,) float64 array or scalar | One-sided projected acceleration power spectral density along detector axis (T1) |
 
 #### Mathematical symbols and notation
 
@@ -77,6 +106,28 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 - `gragra.observables.stochastic_temperature.uniform_advection_temperature_acceleration_psd`
 
 **Path-level source-declared output union:** a — Spectral density (PSD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables.stochastic_temperature import uniform_advection_temperature_acceleration_psd
+
+psd = uniform_advection_temperature_acceleration_psd(
+    density_kg_m3=1.2, temperature_k=290.0, structure_coefficient_k_m_neg_p_over_2=0.01,
+    structure_exponent=2.0/3.0, wind_speed_m_s=5.0, minimum_approach_m=10.0,
+    wind_axis_angle_rad=0.0, frequency_hz=np.array([0.1, 1.0])
+)
+print('Temperature PSD:', psd)
+```
+
+Representative output:
+
+```text
+Temperature PSD: [3.55636303e-26 1.27367173e-39]
+```
 
 ## Derivation and sources
 

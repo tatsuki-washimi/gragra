@@ -29,16 +29,46 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+An open water channel flows along the \(x\)-axis with mean velocity \(v\) and channel width \(w\), located at perpendicular horizontal standoff distance \(D > 0\) from the observation point. The surface elevation perturbation is modeled as a traveling wave \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
 
-- The channel flows along the \(x\)-axis with velocity \(v\) and width \(w\) at perpendicular horizontal distance \(D &gt; 0\) from the mirror. Surface elevation wave is \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
-- Dimensionless wavenumber parameter is \(q = |\Omega| D / |v|\) (evaluated for \(0 &lt; q \le 700\); exact DC \(f=0\) gives \(q=0\)).
-- Analytic G-free transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
-- \(T_{\Phi,\eta}^{(G\text{-free})} = -2 \rho_w w K_0(q)\)
-- \(T_{a_x,\eta}^{(G\text{-free})} = 2i \rho_w w \left(\frac{\Omega}{v}\right) K_0(q)\)
-- \(T_{a_z,\eta}^{(G\text{-free})} = -2 \rho_w w \left(\frac{|\Omega|}{|v|}\right) K_1(q)\)
-- Gravity gradient components satisfy \(\mathrm{tr}(\mathbf\Gamma) = \Gamma_{xx} + \Gamma_{yy} + \Gamma_{zz} = 0\) (Laplace vacuum condition), with \(T_{\Gamma_{xx},\eta}^{(G\text{-free})} = -2\rho_w w (\Omega/v)^2 K_0(q)\), \(T_{\Gamma_{yy},\eta}^{(G\text{-free})} = -2\rho_w w (q/D^2) K_1(q)\), \(T_{\Gamma_{zz},\eta}^{(G\text{-free})} = 2\rho_w w [(\Omega/v)^2 K_0(q) + (q/D^2) K_1(q)]\), and \(T_{\Gamma_{xz},\eta}^{(G\text{-free})} = -2i\rho_w w \frac{\Omega|\Omega|}{v|v|} K_1(q)\).
-- Multiplication by \(G\) yields physical SI observables: \(T^{(\mathrm{SI})} = G T^{(G\text{-free})}\).
+The dimensionless wavenumber parameter is:
+
+$$
+q = \frac{|\Omega| D}{|v|} \qquad (0 < q \le 700; \quad q = 0 \text{ at DC } f=0)
+$$
+
+The G-free potential and acceleration transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
+
+$$
+\begin{aligned}
+T_{\Phi,\eta}^{(G\text{-free})} &= -2 \rho_w w K_0(q), \\
+T_{a_x,\eta}^{(G\text{-free})} &= 2i \rho_w w \left(\frac{\Omega}{v}\right) K_0(q), \\
+T_{a_z,\eta}^{(G\text{-free})} &= -2 \rho_w w \left(\frac{|\Omega|}{|v|}\right) K_1(q).
+\end{aligned}
+$$
+
+The G-free gravity-gradient transfer function components are:
+
+$$
+\begin{aligned}
+T_{\Gamma_{xx},\eta}^{(G\text{-free})} &= -2\rho_w w \left(\frac{\Omega}{v}\right)^2 K_0(q), \\
+T_{\Gamma_{yy},\eta}^{(G\text{-free})} &= -2\rho_w w \left(\frac{q}{D^2}\right) K_1(q), \\
+T_{\Gamma_{zz},\eta}^{(G\text{-free})} &= 2\rho_w w \left[\left(\frac{\Omega}{v}\right)^2 K_0(q) + \left(\frac{q}{D^2}\right) K_1(q)\right], \\
+T_{\Gamma_{xz},\eta}^{(G\text{-free})} &= -2i\rho_w w \left(\frac{\Omega|\Omega|}{v|v|}\right) K_1(q).
+\end{aligned}
+$$
+
+These components strictly satisfy the Laplace vacuum trace condition:
+
+$$
+\mathrm{tr}(\mathbf\Gamma) = T_{\Gamma_{xx},\eta} + T_{\Gamma_{yy},\eta} + T_{\Gamma_{zz},\eta} = 0
+$$
+
+Physical SI observables are obtained by multiplying by \(G\):
+
+$$
+T^{(\mathrm{SI})} = G \, T^{(G\text{-free})}
+$$
 
 ## Parameters and calculation paths
 
@@ -56,6 +86,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `water_channel_advection_observables` | `eta_m` | complex \| float \| array-like | 1.0 | Water surface elevation phasor amplitude in meters |
 | `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
 | `water_channel_advection_asd` | `component` | str | 'x' | Acceleration output component ('x' or 'z') |
+
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `water_channel_advection_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (1,), acceleration: (1, 3), gradient: (1, 3, 3) | Direct SI gravity observables for advected sinusoidal water channel wave |
+| `water_channel_advection_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Acceleration amplitude spectral density at sensor distance D across specified frequencies |
 
 #### Mathematical symbols and notation
 
@@ -89,6 +126,34 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.observables.water_channel_advection_asd`
 
 **Path-level source-declared output union:** a — Spectral density (ASD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import numpy as np
+from gragra.observables import water_channel_advection_observables, water_channel_advection_asd
+
+obs = water_channel_advection_observables(
+    frequency_hz=10.0, velocity_mps=1.5, distance_m=2.0, width_m=0.5, eta_m=1e-3
+)
+asd = water_channel_advection_asd(
+    frequency_hz=np.array([1.0, 2.0]), velocity_mps=1.5, distance_m=2.0, width_m=0.5,
+    surface_asd_m_per_rt_hz=np.array([1e-3, 1e-3])
+)
+print('obs acceleration:', obs.acceleration)
+print('ASD:', asd)
+```
+
+Representative output:
+
+```text
+obs acceleration: [[ 0.00000000e+00+1.58118015e-46j
+   0.00000000e+00+0.00000000e+00j
+  -1.59058929e-46+0.00000000e+00j]]
+ASD: [2.74488354e-14 8.98850056e-18]
+```
 
 ## Derivation and sources
 

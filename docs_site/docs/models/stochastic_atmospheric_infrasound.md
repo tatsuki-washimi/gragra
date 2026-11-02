@@ -28,12 +28,53 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Atmospheric infrasound produces Newtonian noise through adiabatic pressure and density fluctuations advecting or propagating across the detector environment. Let \(S_p(f)\) denote the pressure power spectral density in \(\mathrm{Pa^2/Hz}\), \(c_s\) the atmospheric sound speed, and \(f\) the frequency.
 
-- A1 (Surface isotropic infrasound): Acceleration CSD tensor in G-free units is \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)\), where \(S_p(f)\) is surface pressure PSD in \(\mathrm{Pa^2/Hz}\), \(c_s\) is sound speed, and \(f\) is frequency.
-- A2 (Underground depth \(h \ge 0\)): \(\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)\), where \(x = 4\pi f h / c_s\) and \(I_{\mathrm{iso}}(x) = \frac{1}{2}\int_0^{\pi/2} \sin^3\theta e^{-x \sin\theta} d\theta\).
-- A3 (Centered in spherical cavern of radius \(R \ge 0\)): Isotropic diagonal tensor \(\mathbf S_a^{(G\text{-free})}(f) = S_{a,ii} \mathbf I_3\) with component \(S_{a,ii}^{(G\text{-free})}(f) = \frac{4}{3(c_s f)^2} S_{p,\mathrm{cav}}(f) [1 - \operatorname{sinc}(2\pi f R / c_s)]^2\), vanishing smoothly as \(R \to 0\).
-- SI observable multiplication: All G-free acceleration CSD tensors \(\mathbf S_a^{(G\text{-free})}\) in \(\mathrm{kg^2/(m^4\cdot Hz)}\) convert to SI units \(\mathrm{(m/s^2)^2/Hz}\) by multiplying by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})} = G^2 \mathbf S_a^{(G\text{-free})}\).
+**A1: Surface isotropic infrasound**
+
+The G-free acceleration cross-spectral density (CSD) tensor at the surface is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)
+$$
+
+**A2: Underground observation at depth \(h \ge 0\)**
+
+At depth \(h\), high horizontal wavenumbers are exponentially attenuated:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)
+$$
+
+with dimensionless depth parameter \(x = 4\pi f h / c_s\) and angular attenuation integral:
+
+$$
+I_{\mathrm{iso}}(x) = \frac{1}{2} \int_0^{\pi/2} \sin^3\theta \, e^{-x \sin\theta} \, d\theta
+$$
+
+**A3: Instrument centered in a spherical cavern of radius \(R \ge 0\)**
+
+The cavern acts as a geometric high-pass filter on ambient pressure fluctuations:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = S_{a,ii}^{(G\text{-free})}(f) \, \mathbf I_3
+$$
+
+with isotropic diagonal spectral component:
+
+$$
+S_{a,ii}^{(G\text{-free})}(f) = \frac{4}{3 (c_s f)^2} S_{p,\mathrm{cav}}(f) \left[1 - \operatorname{sinc}\left(\frac{2\pi f R}{c_s}\right)\right]^2
+$$
+
+which vanishes smoothly as \(R \to 0\).
+
+**SI observable conversion**
+
+All G-free acceleration CSD tensors \(\mathbf S_a^{(G\text{-free})}\) in units of \(\mathrm{kg^2/(m^4\cdot Hz)}\) convert to physical SI units \(\mathrm{(m/s^2)^2/Hz}\) by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})} = G^2 \mathbf S_a^{(G\text{-free})}
+$$
 
 ## Parameters and calculation paths
 
@@ -49,6 +90,14 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 | `underground_isotropic_acoustic_acceleration_csd` | `depth_m` | float | required (kw-only) | Detector depth below surface h in meters (h >= 0) |
 | `centered_cavern_isotropic_acoustic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavern inner radius R in meters (R >= 0) |
 | `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
+
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `surface_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor at surface (A1) for isotropic atmospheric infrasound |
+| `underground_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor underground at depth h (A2) for isotropic infrasound |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (3, 3) complex128 array | One-sided acceleration CSD tensor at cavern center (A3) for isotropic infrasound |
 
 #### Mathematical symbols and notation
 
@@ -85,6 +134,28 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 - `gragra.observables.stochastic_acoustic.centered_cavern_isotropic_acoustic_acceleration_csd`
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables.stochastic_acoustic import surface_isotropic_acoustic_acceleration_csd
+
+csd = surface_isotropic_acoustic_acceleration_csd(
+    sound_speed_m_s=340.0, frequency_hz=1.0, surface_pressure_psd_pa2_hz=1e-4
+)
+print('Infrasound CSD matrix:\n', csd)
+```
+
+Representative output:
+
+```text
+Infrasound CSD matrix:
+ [[1.28449482e-30 0.00000000e+00 0.00000000e+00]
+ [0.00000000e+00 1.28449482e-30 0.00000000e+00]
+ [0.00000000e+00 0.00000000e+00 2.56898965e-30]]
+```
 
 ## Derivation and sources
 
@@ -127,7 +198,7 @@ Test implementation records explicit A1/A2/A3 checks; tests were not run in this
 ### Applicability and limitations
 
 
-**Scope note:** frequency strictly positive; c_s positive; depth/radius nonnegative in kernels; PSD nonnegative. A3 center and idealized geometry; acoustic formulations noted as under refinement in guide.
+**Scope note:** frequency \(f &gt; 0\); sound speed \(c_s &gt; 0\); depth/radius non-negative in kernels; PSD non-negative. A3 center and idealized geometry; acoustic formulations noted as under refinement in guide.
 
 See the public verification and limitations guidance for test-specific conditions and interpretation:
 

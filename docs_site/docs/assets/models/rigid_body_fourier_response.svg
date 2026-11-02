@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-labelledby="title desc">
-  <title id="title">Rigid-Body Kinematics and Fourier Response</title>
-  <desc id="desc">Dual-representation pipeline: time-domain body pose (translation c(t), rotation R(t)) and harmonic Fourier series.</desc>
+  <title id="title">Rigid-Body Kinematics and Gravitational Response</title>
+  <desc id="desc">Physical configuration of rigid body with point-mass cloud rotated by R(t) and translated by c(t), with time series and Fourier harmonic response at target.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
       <path d="M0,1 L7,4 L0,7 Z" fill="#334155"/>
@@ -35,37 +35,127 @@
   <rect width="560" height="360" rx="16" fill="#fffaf8" stroke="#e2e8f0" stroke-width="1.5"/>
 
   <!-- Header -->
-  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Rigid-Body Kinematics and Fourier Response</text>
+  <text x="24" y="34" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Rigid-Body Kinematics and Gravitational Response</text>
   <text x="536" y="34" font-family="system-ui, sans-serif" font-size="12" fill="#64748b" text-anchor="end">Schematic · not to scale</text>
 
   <!-- Graphic Body -->
-  <!-- Left box: Time-Domain Kinematics -->
-  <rect x="50" y="80" width="200" height="190" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="150" y="108" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a" text-anchor="middle">Time-Domain Pose</text>
-  <text x="150" y="138" font-family="sans-serif" font-size="13" fill="#475569" text-anchor="middle">Translation c(t)</text>
-  <text x="150" y="162" font-family="sans-serif" font-size="13" fill="#475569" text-anchor="middle">Rotation matrix R(t)</text>
-  <!-- Mini trajectory -->
-  <path d="M80,220 Q120,180 150,230 T220,200" fill="none" stroke="#0284c7" stroke-width="2"/>
-  <text x="150" y="255" font-family="sans-serif" font-size="12" fill="#0284c7" text-anchor="middle">x(t) = R(t) x_body + c(t)</text>
-
-  <!-- Center conversion arrow -->
-  <line x1="265" y1="175" x2="315" y2="175" stroke="#e11d48" stroke-width="3" marker-end="url(#arrow-red)"/>
-  <text x="290" y="165" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c" text-anchor="middle">FFT / Series</text>
-
-  <!-- Right box: Fourier Spectral Domain -->
-  <rect x="330" y="80" width="180" height="190" rx="10" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.5"/>
-  <text x="420" y="108" font-family="sans-serif" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Fourier Harmonics</text>
-  <!-- Discrete spectral lines -->
-  <g stroke="#0284c7" stroke-width="3">
-    <line x1="365" y1="230" x2="365" y2="150"/>
-    <line x1="400" y1="230" x2="400" y2="130"/>
-    <line x1="435" y1="230" x2="435" y2="170"/>
-    <line x1="470" y1="230" x2="470" y2="195"/>
+  <defs>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#059669"/>
+    </marker>
+  </defs>
+  <!-- Left/Center 3D Physical Geometry: Rigid Body Kinematics & Target -->
+  <!-- World Reference Frame (O, X, Y, Z) -->
+  <g stroke="#64748b" stroke-width="1.5">
+    <line x1="60" y1="275" x2="110" y2="288" marker-end="url(#arrow)"/>
+    <line x1="60" y1="275" x2="115" y2="265" marker-end="url(#arrow)"/>
+    <line x1="60" y1="275" x2="60" y2="225" marker-end="url(#arrow)"/>
   </g>
-  <line x1="350" y1="230" x2="490" y2="230" stroke="#64748b" stroke-width="1.5"/>
-  <text x="420" y="255" font-family="sans-serif" font-size="12" fill="#0369a1" text-anchor="middle">Harmonics f_k = k f_0</text>
+  <circle cx="60" cy="275" r="3" fill="#64748b"/>
+  <text x="50" y="285" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">O</text>
+  <text x="114" y="298" font-family="sans-serif" font-size="10" fill="#64748b">X</text>
+  <text x="120" y="265" font-family="sans-serif" font-size="10" fill="#64748b">Y</text>
+  <text x="54" y="220" font-family="sans-serif" font-size="10" fill="#64748b">Z</text>
+  <text x="60" y="308" font-family="sans-serif" font-size="11" font-weight="600" fill="#64748b">World frame</text>
+
+  <!-- Center-of-mass Trajectory c(t) -->
+  <path d="M 85,205 Q 150,165 215,145 T 315,115" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,4"/>
+  <path d="M 310,117 L 318,114 L 314,122" fill="#94a3b8"/>
+  <text x="140" y="155" font-family="sans-serif" font-size="11" font-style="italic" fill="#64748b">Trajectory c(t)</text>
+
+  <!-- Translation vector c(t) from World Origin to c(t) -->
+  <line x1="60" y1="275" x2="212" y2="148" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+  <text x="125" y="220" font-family="sans-serif" font-size="11" font-weight="600" fill="#64748b">c(t)</text>
+
+  <!-- Rigid Body Envelope (Cloud representation) -->
+  <ellipse cx="215" cy="145" rx="65" ry="42" transform="rotate(-20 215 145)" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
+  <text x="215" y="95" font-family="sans-serif" font-size="12" font-weight="700" fill="#0369a1" text-anchor="middle">Rigid Body (PointMassCloud)</text>
+
+  <!-- Body-fixed reference frame at c(t) rotated by R(t) -->
+  <g stroke-width="2">
+    <!-- Body x_b (Red) -->
+    <line x1="215" y1="145" x2="265" y2="128" stroke="#e11d48" marker-end="url(#arrow-red)"/>
+    <text x="272" y="130" font-family="sans-serif" font-size="11" font-weight="700" fill="#e11d48">x_b</text>
+    <!-- Body y_b (Blue) -->
+    <line x1="215" y1="145" x2="242" y2="182" stroke="#0284c7" marker-end="url(#arrow-blue)"/>
+    <text x="248" y="192" font-family="sans-serif" font-size="11" font-weight="700" fill="#0284c7">y_b</text>
+    <!-- Body z_b (Green) -->
+    <line x1="215" y1="145" x2="198" y2="105" stroke="#059669" marker-end="url(#arrow-green)"/>
+    <text x="188" y="103" font-family="sans-serif" font-size="11" font-weight="700" fill="#059669">z_b</text>
+  </g>
+  <!-- Center of mass c(t) marker -->
+  <circle cx="215" cy="145" r="4.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="223" y="156" font-family="sans-serif" font-size="11" font-weight="700" fill="#b45309">c(t)</text>
+  <text x="252" y="112" font-family="sans-serif" font-size="10" fill="#475569">R(t) &#x2208; SO(3)</text>
+
+  <!-- Discrete Point Masses inside body -->
+  <circle cx="178" cy="155" r="4.5" fill="#334155"/>
+  <text x="162" y="152" font-family="sans-serif" font-size="10" font-weight="700" fill="#1e293b">m_1</text>
+  <circle cx="205" cy="125" r="4" fill="#334155"/>
+  <text x="195" y="122" font-family="sans-serif" font-size="10" font-weight="700" fill="#1e293b">m_3</text>
+  <circle cx="248" cy="160" r="5" fill="#334155"/>
+  <text x="256" y="165" font-family="sans-serif" font-size="10" font-weight="700" fill="#1e293b">m_4</text>
+
+  <!-- Selected Mass m_2 with relative body vector -->
+  <circle cx="238" cy="132" r="5.5" fill="#0f172a"/>
+  <text x="242" y="126" font-family="sans-serif" font-size="11" font-weight="700" fill="#0f172a">m_2</text>
+  <!-- Offset vector x_{body,2} -->
+  <line x1="215" y1="145" x2="235" y2="133" stroke="#d97706" stroke-width="1.5"/>
+  <text x="214" y="133" font-family="sans-serif" font-size="9" font-weight="600" fill="#d97706">x_b,2</text>
+
+  <!-- Target detector point x_target -->
+  <g transform="translate(305, 255)">
+    <rect x="-7" y="-7" width="14" height="14" fill="#fee2e2" stroke="#e11d48" stroke-width="2"/>
+    <circle cx="0" cy="0" r="2.5" fill="#e11d48"/>
+  </g>
+  <text x="320" y="255" font-family="sans-serif" font-size="12" font-weight="700" fill="#be123c">Target x_target</text>
+  <text x="320" y="270" font-family="sans-serif" font-size="10" fill="#64748b">Observation point</text>
+
+  <!-- Separation distance r_2(t) = x_target - x_2(t) -->
+  <line x1="238" y1="132" x2="303" y2="252" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="282" y="195" font-family="sans-serif" font-size="10" font-style="italic" fill="#e11d48">r_i(t) = x_t - x_i(t)</text>
+
+  <!-- Induced Acceleration Vector a(x_target, t) -->
+  <line x1="305" y1="255" x2="265" y2="200" stroke="#e11d48" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+  <text x="250" y="228" font-family="sans-serif" font-size="12" font-weight="700" fill="#e11d48">a(x_target, t)</text>
+
+  <!-- Right Panel: Fourier Harmonic Response -->
+  <rect x="365" y="65" width="170" height="235" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="450" y="90" font-family="sans-serif" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Fourier Harmonics</text>
+  <text x="450" y="108" font-family="sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Periodic pose (f_0 = 1/T)</text>
+
+  <!-- Spectral Axes -->
+  <g stroke="#64748b" stroke-width="1.5">
+    <line x1="385" y1="230" x2="515" y2="230" marker-end="url(#arrow)"/>
+    <line x1="390" y1="235" x2="390" y2="125" marker-end="url(#arrow)"/>
+  </g>
+  <text x="522" y="233" font-family="sans-serif" font-size="10" fill="#64748b">f</text>
+  <text x="390" y="118" font-family="sans-serif" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">|a(f)|</text>
+
+  <!-- Discrete Spectral Harmonic Bars -->
+  <g stroke="#0284c7" stroke-width="3.5">
+    <line x1="415" y1="230" x2="415" y2="165"/>
+    <line x1="445" y1="230" x2="445" y2="140"/>
+    <line x1="475" y1="230" x2="475" y2="185"/>
+    <line x1="505" y1="230" x2="505" y2="205"/>
+  </g>
+  <!-- Peak markers -->
+  <circle cx="415" cy="165" r="3" fill="#0284c7"/>
+  <circle cx="445" cy="140" r="3" fill="#0284c7"/>
+  <circle cx="475" cy="185" r="3" fill="#0284c7"/>
+  <circle cx="505" cy="205" r="3" fill="#0284c7"/>
+
+  <!-- Frequency ticks & labels -->
+  <text x="415" y="244" font-family="sans-serif" font-size="10" fill="#334155" text-anchor="middle">f_0</text>
+  <text x="445" y="244" font-family="sans-serif" font-size="10" fill="#334155" text-anchor="middle">2f_0</text>
+  <text x="475" y="244" font-family="sans-serif" font-size="10" fill="#334155" text-anchor="middle">3f_0</text>
+  <text x="505" y="244" font-family="sans-serif" font-size="10" fill="#334155" text-anchor="middle">4f_0</text>
+
+  <!-- Amplitude relation formulas -->
+  <text x="450" y="266" font-family="sans-serif" font-size="10" font-weight="600" fill="#0369a1" text-anchor="middle">A_n = 2 |C_n| (n &#x2265; 1)</text>
+  <text x="450" y="282" font-family="sans-serif" font-size="10" fill="#64748b" text-anchor="middle">a(t) = Re &#x2211; A_n e^{2&#x3c0;i n f_0 t}</text>
 
 
   <!-- Footer note -->
-  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">Rigid coordinates x_world(t) = R(t) x_body + c(t) · Fourier series expansion at harmonics f_k = k f_0</text>
+  <text x="24" y="338" font-family="system-ui, sans-serif" font-size="13" fill="#475569">World pose x_i(t) = R(t) x_{body,i} + c(t) · Newtonian field at target x_target · Harmonic series at f_k = k f_0</text>
 </svg>

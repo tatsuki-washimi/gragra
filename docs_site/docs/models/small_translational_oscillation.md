@@ -42,12 +42,18 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
-| `small_oscillation` | `point_mass` | PointMass | required | Point mass object with mass and equilibrium coordinates |
-| `small_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector xi_0 |
-| `small_oscillation` | `frequency` | u.Quantity (frequency) | required | Oscillation frequency f in Hz |
-| `small_oscillation` | `phase` | u.Quantity (angle) | required (kw-only) | Initial oscillation phase angle |
-| `small_oscillation` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
-| `small_oscillation` | `sampling` | TimeSampling | required (kw-only) | Output time axis discretization |
+| `translational_oscillation` | `point_mass` | PointMass | required | Point mass object with mass and equilibrium coordinates |
+| `translational_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector xi_0 |
+| `translational_oscillation` | `frequency` | u.Quantity (frequency) | required | Oscillation frequency f in Hz |
+| `translational_oscillation` | `phase` | u.Quantity (angle) | required (kw-only) | Initial oscillation phase angle |
+| `translational_oscillation` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
+| `translational_oscillation` | `sampling` | TimeSampling | required (kw-only) | Output time axis discretization |
+
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `translational_oscillation` | _MotionModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with FrequencySeriesMatrix payloads | First-order harmonic point-mass oscillation model evaluated via .at(targets).run() |
 
 #### Mathematical symbols and notation
 
@@ -73,6 +79,49 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 **Observables after model evaluation:** Φ a Γ — Phasor
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import translational_oscillation
+
+frame = Frame('world')
+pm = PointMass(1000.0, [0.0, 0.0, 0.0])
+model = translational_oscillation(
+    pm, [0.01, 0.0, 0.0]*u.m, frame=frame, frequency=5.0*u.Hz,
+    reference_time=(100, 0)
+)
+res = model.at(TargetPoints([[0.0, 0.0, 10.0]]*u.m, ('t1',), frame)).run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+print('gradient:', res.gradient.value, res.gradient.units)
+```
+
+Representative output:
+
+```text
+potential: [[[0.-0.j]]] [[Unit("m2 / s2")]]
+acceleration: [[[6.6743e-13+0.j]
+  [0.0000e+00+0.j]
+  [0.0000e+00+0.j]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
+gradient: [[[ 0.00000e+00+0.j]
+  [ 0.00000e+00+0.j]
+  [-2.00229e-13+0.j]
+  [ 0.00000e+00+0.j]
+  [ 0.00000e+00+0.j]
+  [ 0.00000e+00+0.j]
+  [-2.00229e-13+0.j]
+  [ 0.00000e+00+0.j]
+  [ 0.00000e+00+0.j]]] [[Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
+  Unit("1 / s2")]]
+```
 
 ## Derivation and sources
 

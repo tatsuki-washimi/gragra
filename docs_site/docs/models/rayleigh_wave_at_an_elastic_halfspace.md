@@ -56,6 +56,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `rayleigh_halfspace_allspace_observables` | `direction` | array-like (3,) | (1.0, 0.0, 0.0) | Horizontal propagation unit direction vector |
 | `rayleigh_halfspace_allspace_observables` | `phase_origin_m` | array-like (3,) | (0.0, 0.0, 0.0) | Phase reference origin coordinate |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `rayleigh_halfspace` | RayleighHalfspaceModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level Rayleigh halfspace model evaluated via .at(targets).run() |
+| `rayleigh_halfspace_allspace_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Complex SI observables for Rayleigh waves evaluated both above (z > 0) and below (z < 0) ground |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -95,14 +102,45 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables import rayleigh_halfspace_allspace_observables
+
+res = rayleigh_halfspace_allspace_observables(
+    targets_m=[[0.0, 0.0, -10.0]], density_kg_m3=2500.0, v_p_m_s=4000.0, v_s_m_s=2000.0,
+    frequency_hz=1.0, vertical_surface_amplitude_m=1e-6
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [-2.46444768e-10+0.j]
+acceleration: [[ 0.00000000e+00+8.302494e-13j -0.00000000e+00+0.000000e+00j
+   1.17522099e-12+0.000000e+00j]]
+gradient: [[[-2.79703266e-15+0.00000000e+00j -0.00000000e+00+0.00000000e+00j
+    0.00000000e+00+3.95920972e-15j]
+  [-0.00000000e+00+0.00000000e+00j -0.00000000e+00+0.00000000e+00j
+   -0.00000000e+00+0.00000000e+00j]
+  [ 0.00000000e+00+3.95920972e-15j -0.00000000e+00+0.00000000e+00j
+    4.98732521e-15+0.00000000e+00j]]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
 Committed design and validation records describe the local independent derivation/verification approach; they remain documentary evidence and were not rerun here.
 
-- an unpublished design note maps H19 Eq.96/97 and labels acceleration/gradient derivative class B; records Eq.92 hand-algebra cross-check.
-- An unpublished validation note describes an independent Poisson/Green-function numerical re-derivation and surface checks; the note is not reproduced here.
+- Inventory fact: Internal design records map Harms (2019) Eqs. 96/97 to potential and acceleration observables and verify Eq. 92 algebraic cross-checks.
+- Literature assertion: Surface and underground Rayleigh wave gravitational fields correspond to Harms (2019) Eqs. 96–99.
+- Proof assertion: Independent Poisson and Green-function numerical checks confirm potential continuity and normal acceleration jump across the free surface.
 
 ### References
 

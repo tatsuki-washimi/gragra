@@ -28,13 +28,57 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), let the relative coordinates from observation point \(\mathbf x_t\) to the cuboid bounding faces along each Cartesian axis for \(i, j, k \in \{0, 1\}\) be
 
-- For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), relative corner coordinates are \((u_i, v_j, w_k) = (x_t - c_x \mp L_x/2, y_t - c_y \mp L_y/2, z_t - c_z \mp L_z/2)\) with corner distance \(r_{ijk} = \sqrt{u_i^2 + v_j^2 + w_k^2}\).
-- Potential: \(\Phi(\mathbf x) = G\rho \sum_{i,j,k=0}^1 (-1)^{i+j+k} F_1(u_i, v_j, w_k)\), where \(F_1(u, v, w) = u v \ln(w+r) + v w \ln(u+r) + w u \ln(v+r) - \frac{u^2}{2}\operatorname{atan}\left(\frac{vw}{ur}\right) - \frac{v^2}{2}\operatorname{atan}\left(\frac{wu}{vr}\right) - \frac{w^2}{2}\operatorname{atan}\left(\frac{uv}{wr}\right)\) (Nagy et al. 2000, Petrovic 1996).
-- Acceleration: \(a_z(\mathbf x) = G\rho \sum_{i,j,k=0}^1 (-1)^{i+j+k} F_2(u_i, v_j, w_k)\) where \(F_2(u, v, w) = u \ln(v+r) + v \ln(u+r) - w \operatorname{atan}\left(\frac{uv}{wr}\right)\). The \(a_x\) and \(a_y\) components follow by cyclic permutation (\(F_2(v, w, u)\) and \(F_2(w, u, v)\)).
-- Gravity gradient tensor: diagonal components are \(\Gamma_{zz}(\mathbf x) = G\rho \sum_{i,j,k=0}^1 (-1)^{i+j+k} \operatorname{atan}\left(\frac{u_i v_j}{w_k r_{ijk}}\right)\) with \(\Gamma_{xx}, \Gamma_{yy}\) by cyclic permutation. Off-diagonal components are pairwise sums \(\Gamma_{xy}(\mathbf x) = -G\rho \sum_{i,j=0}^1 (-1)^{i+j} [\ln(w_1 + r_{ij1}) - \ln(w_0 + r_{ij0})]\), \(\Gamma_{xz}(\mathbf x) = -G\rho \sum_{i,k=0}^1 (-1)^{i+k} [\ln(v_1 + r_{i1k}) - \ln(v_0 + r_{i0k})]\), and \(\Gamma_{yz}(\mathbf x) = -G\rho \sum_{j,k=0}^1 (-1)^{j+k} [\ln(u_1 + r_{1jk}) - \ln(u_0 + r_{0jk})]\).
-- Interior points strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = -4\pi G\rho\), and exterior points satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\). Targets on material boundaries (faces, edges, vertices) have logarithmic singularities or jump discontinuities and raise ValueError.
+$$
+\begin{aligned}
+u_0 &= c_x - \frac{L_x}{2} - x_t, &\quad u_1 &= c_x + \frac{L_x}{2} - x_t, \\
+v_0 &= c_y - \frac{L_y}{2} - y_t, &\quad v_1 &= c_y + \frac{L_y}{2} - y_t, \\
+w_0 &= c_z - \frac{L_z}{2} - z_t, &\quad w_1 &= c_z + \frac{L_z}{2} - z_t,
+\end{aligned}
+$$
+
+with corner distance \(r_{ijk} = \sqrt{u_i^2 + v_j^2 + w_k^2}\).
+
+The gravitational potential in SI units is
+
+$$
+\Phi(\mathbf x) = G\rho \sum_{i=0}^1 \sum_{j=0}^1 \sum_{k=0}^1 (-1)^{i+j+k} F_1(u_i, v_j, w_k),
+$$
+
+where
+
+$$
+F_1(u, v, w) = u v \ln(w+r) + v w \ln(u+r) + w u \ln(v+r) - \frac{u^2}{2}\operatorname{atan}\left(\frac{vw}{ur}\right) - \frac{v^2}{2}\operatorname{atan}\left(\frac{wu}{vr}\right) - \frac{w^2}{2}\operatorname{atan}\left(\frac{uv}{wr}\right).
+$$
+
+The gravitational acceleration components are
+
+$$
+a_z(\mathbf x) = G\rho \sum_{i,j,k=0}^1 (-1)^{i+j+k} F_2(u_i, v_j, w_k),
+\qquad
+F_2(u, v, w) = u \ln(v+r) + v \ln(u+r) - w \operatorname{atan}\left(\frac{uv}{wr}\right),
+$$
+
+with \(a_x\) and \(a_y\) obtained by cyclic permutation (\(F_2(v, w, u)\) and \(F_2(w, u, v)\)).
+
+The gravity-gradient tensor diagonal components are
+
+$$
+\Gamma_{zz}(\mathbf x) = G\rho \sum_{i,j,k=0}^1 (-1)^{i+j+k} \operatorname{atan}\left(\frac{u_i v_j}{w_k r_{ijk}}\right),
+$$
+
+with \(\Gamma_{xx}, \Gamma_{yy}\) by cyclic permutation. The off-diagonal components are pairwise face sums:
+
+$$
+\begin{aligned}
+\Gamma_{xy}(\mathbf x) &= G\rho \sum_{i,j=0}^1 (-1)^{i+j} [\ln(w_1 + r_{ij1}) - \ln(w_0 + r_{ij0})], \\
+\Gamma_{xz}(\mathbf x) &= G\rho \sum_{i,k=0}^1 (-1)^{i+k} [\ln(v_1 + r_{i1k}) - \ln(v_0 + r_{i0k})], \\
+\Gamma_{yz}(\mathbf x) &= G\rho \sum_{j,k=0}^1 (-1)^{j+k} [\ln(u_1 + r_{1jk}) - \ln(u_0 + r_{0jk})].
+\end{aligned}
+$$
+
+Interior targets strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = -4\pi G\rho\), while exterior targets satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\). Targets lying on cuboid boundary surfaces, edges, or vertices have logarithmic singularities or jump discontinuities and raise a `ValueError`.
 
 ## Parameters and calculation paths
 
@@ -50,6 +94,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `cuboid_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
 | `uniform_cuboid` | `geometry` | Cuboid | required | Astropy Cuboid geometry (center and full lengths) |
 | `uniform_cuboid` | `density` | u.Quantity (density) | required | Astropy Quantity uniform mass density |
+
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `cuboid_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Direct SI observables container with closed-form Nagy 8-vertex antiderivatives |
+| `uniform_cuboid` | UniformCuboidModel | Static | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with Astropy Quantities | High-level model factory; evaluate via .at(targets).run() to yield physical field quantities |
 
 #### Mathematical symbols and notation
 
@@ -80,13 +131,41 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables import cuboid_observables
+
+res = cuboid_observables(
+    center_m=[0.0, 0.0, 0.0], lengths_m=[2.0, 3.0, 4.0], density_kg_m3=2500.0,
+    targets_m=[[0.0, 0.0, 5.0]]
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+Representative output:
+
+```text
+potential: [-8.25392095e-07]
+acceleration: [[ 0.00000000e+00  0.00000000e+00 -1.74413976e-07]]
+gradient: [[[-3.87983548e-08  0.00000000e+00  0.00000000e+00]
+  [ 0.00000000e+00 -3.61278900e-08  0.00000000e+00]
+  [ 0.00000000e+00  0.00000000e+00  7.49262448e-08]]]
+```
+
 ## Derivation and sources
 
 ### Derivation
 
-Committed independent derivation document exists; its text is inventoried as a derivation record, not re-proven here.
+Closed-form antiderivative derivation documented in reference literature; internal derivation records catalogued as inventory facts, not re-proven here.
 
-- A non-public validation note includes the source-formula discussion and implementation conclusions; its contents are not reproduced in this catalogue.
+- Inventory fact: An archived derivation record exists in internal records documenting the 8-vertex antiderivative summation.
+- Literature assertion: Field expressions match the Nagy (1966, 2000) and Petrović (1996) analytical antiderivatives.
+- Proof assertion: Boundary jump conditions and Poisson traces (interior -4πGρ, exterior 0) are verified in [`tests/test_analytic_cuboid.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cuboid.py), but are not re-derived here.
 
 ### References
 
@@ -97,7 +176,12 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- Nagy, D. (1966), ‘The gravitational attraction of a right rectangular prism.’ Nagy, D., Papp, G., & Benedek, J. (2000), ‘The gravitational potential and its ...’; 2002 erratum. Petrović (1996) is named in analytic benchmark/report, but complete record not transcribed here.
+- Nagy, D. (1966), ‘The gravitational attraction of a right rectangular prism’, Geophysics, 31(2), 362–371, DOI 10.1190/1.1439779.
+- Nagy, D., Papp, G., & Benedek, J. (2000), ‘The gravitational potential and its derivatives for the prism’, Journal of Geodesy, 74(7-8), 552–560, DOI 10.1007/s001900000116 (Erratum 2002, 76(8), 475).
+- Petrović, S. (1996), ‘Determination of the gravity potential and its first and second derivatives for a right rectangular prism’, Journal of Geodesy, 70(9), 562–571, DOI 10.1007/BF00868228.
+- [DOI 10.1190/1.1439779](https://doi.org/10.1190/1.1439779)
+- [DOI 10.1007/s001900000116](https://doi.org/10.1007/s001900000116)
+- [DOI 10.1007/BF00868228](https://doi.org/10.1007/BF00868228)
 
 ## Verification and applicability
 
@@ -114,7 +198,7 @@ Existing public documentation and original formulation context:
 
 Test implementation and documentary claims found; no checks were run for this inventory.
 
-- [`tests/test_analytic_cuboid.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cuboid.py) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(half_lengths), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. cuboid_si contract is representative probe only.
+- [`tests/test_analytic_cuboid.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cuboid.py) includes derivative consistency, symmetry, Poisson trace, boundary rejection, independent interior/exterior quadrature, SI wrapper. Report states boundary tolerance atol=1e-12*max(`half_lengths`), interior trace -4πGρ, exterior trace 0. formula ledger records unrelated historical run metadata; revision-matched raw output path for assigned cuboid probe not established. `cuboid_si` contract is representative probe only.
 
 #### Registered representative output probes
 

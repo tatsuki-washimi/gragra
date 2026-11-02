@@ -56,6 +56,14 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `spherical_shell_p_acceleration_components` | `displacement_m` | float \| complex | required | Incident displacement phasor amplitude in meters |
 | `spherical_shell_p_acceleration_components` | `direction` | array-like (3,) | required | Wave propagation unit direction vector |
 
+#### API return values
+
+| Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
+|---|---|---|---|---|---|
+| `spherical_cavity` | SphericalCavityModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level seismic spherical cavity model evaluated via .at(targets).run() |
+| `spherical_shell` | SphericalShellModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level finite spherical shell model evaluated via .at(targets).run() |
+| `spherical_shell_p_acceleration_components` | SphericalShellPComponents | Phasor | a: m/s² | total: (1, 3), bulk: (1, 3), inner_wall: (1, 3), outer_boundary: (1, 3) | Component decomposition of P-wave cavity acceleration (bulk, inner wall, outer boundary) |
+
 #### Mathematical symbols and notation
 
 | Symbol | Meaning | SI unit | Definition / Relation |
@@ -92,6 +100,32 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 - `gragra.observables.spherical_shell_p_acceleration_components`
 
 **Path-level source-declared output union:** a — Phasor
+
+### Calculation example and output
+
+The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
+
+```python
+from gragra.observables import spherical_shell_p_acceleration_components
+
+res = spherical_shell_p_acceleration_components(
+    inner_radius_m=1.0, outer_radius_m=10.0, wavenumber_rad_m=0.01,
+    density_kg_m3=2500.0, displacement_m=1e-6, direction=[0.0, 0.0, 1.0]
+)
+print('total acceleration:', res.total)
+print('bulk contribution:', res.bulk)
+print('inner wall contribution:', res.inner_wall)
+print('outer boundary contribution:', res.outer_boundary)
+```
+
+Representative output:
+
+```text
+total acceleration: [[0.00000000e+00 0.00000000e+00 1.38338441e-15]]
+bulk contribution: [[0.00000000e+00 0.00000000e+00 3.45796202e-15]]
+inner wall contribution: [[-0.00000000e+00 -0.00000000e+00 -6.98910094e-13]]
+outer boundary contribution: [[0.00000000e+00 0.00000000e+00 6.96835516e-13]]
+```
 
 ## Derivation and sources
 
