@@ -58,7 +58,7 @@ $$
 \Phi_-(\mathbf x, t) = 2\pi G \rho A \left[ -2 e^{q_P z} + (1 + \zeta) e^{k_R z} \right] e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}.
 $$
 
-At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \zeta) e^{i(\dots)}\), strictly satisfying potential continuity across the boundary. Across \(z = 0\), the normal acceleration satisfies the surface mass-sheet jump condition \(\partial_z \Phi_+ - \partial_z \Phi_- = 4\pi G \rho \xi_z(0)\). Evaluation targets on the surface boundary (\(z = 0\)) are rejected with a `ValueError`.
+At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \zeta) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\), strictly satisfying potential continuity across the boundary. Across \(z = 0\), the normal derivative jump satisfies the surface mass-sheet condition \(\left. (\partial_z \Phi_+ - \partial_z \Phi_-) \right|_{z=0} = 4\pi G \rho \xi_z(0) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\). Evaluation targets on the surface boundary (\(z = 0\)) are rejected with a `ValueError`.
 
 ## Parameters and calculation paths
 
