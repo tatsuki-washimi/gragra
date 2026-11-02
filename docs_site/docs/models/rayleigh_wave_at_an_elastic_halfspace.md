@@ -28,36 +28,37 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For a seismic Rayleigh wave propagating along the free surface (\(z = 0\)) of a homogeneous isotropic elastic halfspace (\(z \le 0\)) with horizontal wavenumber \(k_R = \omega / c_R\) and angular frequency \(\omega = 2\pi f\):
+For a harmonic Rayleigh wave propagating along the planar traction-free surface (\(z = 0\)) of a homogeneous isotropic elastic halfspace (\(z \le 0\)) with Rayleigh speed \(c_R\), angular frequency \(\omega = 2\pi f\), and horizontal wavenumber \(k_R = \omega / c_R\):
 
-The vertical decay parameters for compressional and shear components are:
-
-$$
-q_P = \sqrt{k_R^2 - \frac{\omega^2}{v_P^2}}, \qquad
-q_S = \sqrt{k_R^2 - \frac{\omega^2}{v_S^2}}
-$$
-
-where \(v_P\) and \(v_S\) are the medium P-wave and S-wave speeds.
-
-Above ground (\(z > 0\)), the gravitational potential amplitude is (Harms 2019 Eq. 96):
+With medium P-wave speed \(v_P\) and S-wave speed \(v_S\), the dimensionless vertical wave decay parameters are:
 
 $$
-\Phi(x, z, t) = -2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}
+q = \sqrt{1 - \left(\frac{c_R}{v_P}\right)^2}, \qquad
+s = \sqrt{1 - \left(\frac{c_R}{v_S}\right)^2}, \qquad
+\zeta = \sqrt{\frac{q}{s}} = \sqrt{\frac{q_P}{q_S}}
 $$
 
-where \(\xi_z(0)\) is the vertical surface displacement amplitude and the dimensionless depth-coupling factor is:
+where \(q_P = k_R q = \sqrt{k_R^2 - \omega^2 / v_P^2}\) and \(q_S = k_R s = \sqrt{k_R^2 - \omega^2 / v_S^2}\).
+
+For surface vertical displacement amplitude \(\xi_z(0)\) at reference origin \(\mathbf x_0\), the modal amplitude constant is (Harms 2019 Eq. 98):
 
 $$
-\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}.
+A = \frac{\xi_z(0)}{q_P - k_R \zeta}.
 $$
 
-Below ground (\(z \le 0\)), the gravitational field combines the volume dilatation perturbation with the surface vertical mass-sheet displacement:
+Above ground (\(z > 0\)), the combined surface-mass and bulk-dilatation gravitational potential evaluates as (Harms 2019 Eq. 96):
 
 $$
-\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \left[ \frac{2 q_P}{k_R^2 + q_S^2} e^{q_P z} - \frac{\gamma_R}{k_R} e^{k_R z} \right] e^{i(k_R x - \omega t)}.
+\Phi_+(\mathbf x, t) = -2\pi G \rho A (1 - \zeta) e^{-k_R z} e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}.
 $$
 
-The gravitational acceleration \(\mathbf a = -\nabla\Phi\) and gravity-gradient tensor \(\mathbf\Gamma = -\nabla\nabla\Phi\) are evaluated analytically.
+Below ground (\(z < 0\)), the gravitational potential combines the bulk compressional dilatation perturbation with surface mass displacement (Harms 2019 Eq. 97):
+
+$$
+\Phi_-(\mathbf x, t) = 2\pi G \rho A \left[ -2 e^{q_P z} + (1 + \zeta) e^{k_R z} \right] e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}.
+$$
+
+At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \zeta) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\), strictly satisfying potential continuity across the boundary. Across \(z = 0\), the normal derivative jump satisfies the surface mass-sheet condition \(\left. (\partial_z \Phi_+ - \partial_z \Phi_-) \right|_{z=0} = 4\pi G \rho \xi_z(0) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\). Evaluation targets on the surface boundary (\(z = 0\)) are rejected with a `ValueError`.
 
 ## Parameters and calculation paths
 
