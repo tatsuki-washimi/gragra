@@ -28,29 +28,44 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) acting at source position \(\mathbf x_0\), let the target distance be \(r = \|\mathbf x - \mathbf x_0\|\) and the unit radial direction be \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\).
+For a dynamic point force \(\mathbf F(t) = f(t) \mathbf e\) acting at source position \(\mathbf x_0\), let the target distance be \(r = \|\mathbf x - \mathbf x_0\| > 0\), unit radial direction \(\hat{\mathbf n} = (\mathbf x - \mathbf x_0)/r\), and direction cosine \(\mu = \mathbf e \cdot \hat{\mathbf n}\).
 
-Define the retarded memory integral (Love 1927, Harms 2019 Section 4.1):
+Define the causal delay moment (Love 1927, Harms 2019 Section 4.1):
 
 $$
-J(t, r) = \int_{r/v_P}^{r/v_S} \tau f(t - \tau) \, d\tau
+J(t, r) = \int_0^{r/v_P} \tau f(t - \tau) \, d\tau
 $$
+
+where \(v_P\) is the medium compressional wave speed.
 
 The induced gravitational potential in SI units is:
 
 $$
-\Phi(\mathbf x, t) = -G \frac{J(t, r)}{r^2} (\mathbf e \cdot \hat{\mathbf n})
+\Phi(\mathbf x, t) = -G \frac{J(t, r)}{r^2} \mu
 $$
 
 The gravitational acceleration vector is:
 
 $$
-\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) (\mathbf e \cdot \hat{\mathbf n}) \hat{\mathbf n} \right]
+\mathbf a(\mathbf x, t) = G \left[ \frac{J(t, r)}{r^3} \mathbf e + \left( \frac{f(t - r/v_P)}{v_P^2 r} - \frac{3 J(t, r)}{r^3} \right) \mu \hat{\mathbf n} \right]
 $$
 
-The gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t) = -\nabla\nabla\Phi\) is evaluated by closed-form spatial derivatives with analytic coefficients.
+The gravity-gradient tensor \(\mathbf\Gamma(\mathbf x, t) = -\nabla\nabla\Phi\) is:
 
-By relativistic and acoustic causality, the gravitational perturbation strictly vanishes prior to the earliest seismic arrival:
+$$
+\mathbf\Gamma(\mathbf x, t) = G \left[ C(t, r) (\mathbf e \otimes \hat{\mathbf n} + \hat{\mathbf n} \otimes \mathbf e + \mu \mathbf I_3) + \mu D(t, r) (\hat{\mathbf n} \otimes \hat{\mathbf n}) \right]
+$$
+
+with analytic time-dependent coefficients:
+
+$$
+\begin{aligned}
+C(t, r) &= \frac{f(t - r/v_P)}{v_P^2 r^2} - \frac{3 J(t, r)}{r^4}, \\
+D(t, r) &= \frac{15 J(t, r)}{r^4} - \frac{6 f(t - r/v_P)}{v_P^2 r^2} - \frac{\dot f(t - r/v_P)}{v_P^3 r}.
+\end{aligned}
+$$
+
+By relativistic and acoustic causality, all perturbation fields strictly vanish prior to P-wave arrival (\(t < r/v_P\)):
 
 $$
 \Phi(\mathbf x, t) = 0, \quad \mathbf a(\mathbf x, t) = \mathbf 0, \quad \mathbf\Gamma(\mathbf x, t) = \mathbf 0 \qquad \text{for } t < \frac{r}{v_P}
