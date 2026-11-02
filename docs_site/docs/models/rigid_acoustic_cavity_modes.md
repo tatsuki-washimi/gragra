@@ -51,14 +51,23 @@ $$
 
 and \(r\) is the number of non-zero mode indices (\(r = \sum_j \mathbf 1_{n_j > 0}\)).
 
-**2. Circular cylinder cavity** (radius \(R\), centered height \(z \in [-H/2, H/2]\)) with mode indices \((m, n, l)\):
+**2. Circular cylinder cavity** (radius \(R\), centered height \(z \in [-H/2, H/2]\)) with mode indices \((m, n, q)\):
 
 $$
-\Psi(r, \phi, z) = J_m\left(\frac{\alpha_{mn} r}{R}\right) \cos(m\phi) \cos\left[\frac{l \pi (z + H/2)}{H}\right], \qquad
-k = \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{l\pi}{H}\right)^2}
+\Psi_{mnq}(r, \phi, z) = N_{mnq} J_m\left(\frac{\alpha_{mn} r}{R}\right) A_m(\phi) \cos\left[\frac{q \pi (z + H/2)}{H}\right], \qquad
+k = \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{q\pi}{H}\right)^2}
 $$
 
-where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of the Bessel function (\(J_m'(\alpha_{mn}) = 0\)).
+where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of the Bessel function (\(J_m'(\alpha_{mn}) = 0\)), \(N_{mnq}\) is the spatial RMS normalization factor, and the azimuthal dependence is selected by `azimuth`:
+
+$$
+A_m(\phi) = \begin{cases}
+\cos(m\phi), & \text{for } \texttt{azimuth="cos"}, \\
+\sin(m\phi), & \text{for } \texttt{azimuth="sin"} \quad (m \ge 1).
+\end{cases}
+$$
+
+For \(m = 0\), the sine azimuthal branch vanishes and is disallowed by the API.
 
 **3. Spherical cavity** (radius \(R\)) with radial index \(n\) and angular index \(l\):
 
