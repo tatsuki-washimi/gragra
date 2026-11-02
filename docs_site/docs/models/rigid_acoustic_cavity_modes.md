@@ -28,42 +28,53 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For standing acoustic modes inside a rigid cavity filled with air of sound speed \(c_s\) and ambient density \(\rho_0\), rigid wall boundary conditions require the normal gradient of acoustic pressure to vanish:
+Acoustic eigenmodes in a rigid cavity filled with air of sound speed \(c_s\) satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition:
 
 $$
-\left. \frac{\partial P}{\partial n} \right|_{\partial V} = 0.
+\left. \frac{\partial \Psi}{\partial n} \right|_{\partial V} = 0.
 $$
 
-**1. Rectangular cuboid cavity** (\(L_x \times L_y \times L_z\)) with mode numbers \((n_x, n_y, n_z)\):
+The modal eigenfrequency is \(f = c_s k / (2\pi)\) (the static zero mode \(k = 0\) is excluded).
+
+**1. Rectangular cuboid cavity** (\([-L_j/2, L_j/2]\) along each axis \(j \in \{x, y, z\}\)) with mode indices \((n_x, n_y, n_z)\):
 
 $$
-P(\mathbf x) = P_0 \cos\left(\frac{n_x \pi x}{L_x}\right) \cos\left(\frac{n_y \pi y}{L_y}\right) \cos\left(\frac{n_z \pi z}{L_z}\right), \qquad
-\omega = c_s \pi \sqrt{\sum_{j=x,y,z} \left(\frac{n_j}{L_j}\right)^2}.
+\Psi(\mathbf x) = N \prod_{j \in \{x,y,z\}} \cos\left[\frac{n_j \pi (x_j + L_j/2)}{L_j}\right], \qquad
+k = \pi \sqrt{\sum_{j=x,y,z} \left(\frac{n_j}{L_j}\right)^2}
 $$
 
-**2. Circular cylinder cavity** (radius \(R\), height \(H\)) with mode indices \((m, n, l)\):
+where the spatial RMS normalization factor is:
 
 $$
-P(r, \theta, z) = P_0 J_m\left(\frac{\alpha_{mn} r}{R}\right) \cos(m\theta) \cos\left(\frac{l \pi z}{H}\right), \qquad
-\omega = c_s \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{l\pi}{H}\right)^2}
+N = 2^{r/2}
 $$
 
-where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of Bessel function \(J_m'(x) = 0\).
+and \(r\) is the number of non-zero mode indices (\(r = \sum_j \mathbf 1_{n_j > 0}\)).
+
+**2. Circular cylinder cavity** (radius \(R\), centered height \(z \in [-H/2, H/2]\)) with mode indices \((m, n, l)\):
+
+$$
+\Psi(r, \phi, z) = J_m\left(\frac{\alpha_{mn} r}{R}\right) \cos(m\phi) \cos\left[\frac{l \pi (z + H/2)}{H}\right], \qquad
+k = \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{l\pi}{H}\right)^2}
+$$
+
+where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of the Bessel function (\(J_m'(\alpha_{mn}) = 0\)).
 
 **3. Spherical cavity** (radius \(R\)) with radial index \(n\) and angular index \(l\):
 
 $$
-P(r, \theta, \phi) = P_0 j_l\left(\frac{\beta_{ln} r}{R}\right) Y_{lm}(\theta, \phi), \qquad
-\omega = c_s \frac{\beta_{ln}}{R}
+\Psi(r, \theta, \phi) = j_l(k_{ln} r) Y_{lm}(\theta, \phi)
 $$
 
-where \(\beta_{ln}\) is the \(n\)-th zero of spherical Bessel derivative \(j_l'(x) = 0\).
+where \(k_{ln}\) is determined by the boundary condition on the spherical Bessel derivative \(j_l'(k_{ln} R) = 0\).
 
-The induced G-free gravitational potential solves the inhomogeneous Helmholtz/Poisson system:
+The acoustic density perturbation is \(\delta\rho = (P_0 / c_s^2) \Psi(\mathbf x)\), and the induced G-free gravitational potential solves the Poisson system:
 
 $$
-\nabla^2 \Phi^{(G\text{-free})} = 4\pi \frac{P(\mathbf x)}{c_s^2}.
+\nabla^2 \Phi^{(G\text{-free})} = 4\pi \frac{P_0}{c_s^2} \Psi(\mathbf x).
 $$
+
+Target points on physical cavity walls, caps, and rims are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 

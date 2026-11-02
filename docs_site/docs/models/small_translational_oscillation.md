@@ -28,25 +28,33 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For point masses \(m_i\) undergoing small harmonic translational oscillations \(\mathbf u_i(t) = \mathbf u_{0,i} e^{-i\omega t}\) about unperturbed positions \(\mathbf x_{0,i}\), let the unperturbed separation vector to target \(\mathbf x\) be:
+For point masses \(m_i\) at equilibrium positions \(\mathbf x_{0,i}\) undergoing small harmonic translational oscillations \(\mathbf u_i(t) = \operatorname{Re}\left[\mathbf u_i e^{-2\pi i f (t - t_{\mathrm{ref}})}\right]\) (\(\|\mathbf u_i\| \ll r_i\)) with oscillation frequency \(f\) and reference epoch \(t_{\mathrm{ref}}\):
+
+Let the unperturbed separation vector to target \(\mathbf x\) be:
 
 $$
 \mathbf r_i = \mathbf x - \mathbf x_{0,i}, \qquad r_i = \|\mathbf r_i\| > 0.
 $$
 
+Under the peak phasor convention (representing physical amplitude without an extra factor of \(1/2\)), the first-order perturbation in gravitational potential is:
+
+$$
+\delta\Phi(\mathbf x) = -G \sum_{i=1}^N \frac{m_i (\mathbf r_i \cdot \mathbf u_i)}{r_i^3}.
+$$
+
 The first-order perturbation in gravitational acceleration is:
 
 $$
-\delta\mathbf a(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{\mathbf u_i(t)}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf r_i}{r_i^5} \right].
+\delta\mathbf a(\mathbf x) = G \sum_{i=1}^N m_i \left[ \frac{\mathbf u_i}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i}{r_i^5} \right].
 $$
 
 The first-order perturbation in the gravity-gradient tensor is:
 
 $$
-\delta\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ -\frac{3 \left( \mathbf u_i(t) \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i(t) + (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf I_3 \right)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right].
+\delta\mathbf\Gamma(\mathbf x) = G \sum_{i=1}^N m_i \left[ -\frac{3 \left( \mathbf u_i \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i + (\mathbf r_i \cdot \mathbf u_i) \mathbf I_3 \right)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right].
 $$
 
-The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \delta\mathbf\Gamma^T\) and \(\mathrm{tr}(\delta\mathbf\Gamma) = 0\).
+The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \delta\mathbf\Gamma^T\) and \(\mathrm{tr}(\delta\mathbf\Gamma) = 0\). Targets coincident with equilibrium positions (\(r_i = 0\)) are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 

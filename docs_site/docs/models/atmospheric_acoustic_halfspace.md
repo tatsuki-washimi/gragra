@@ -22,7 +22,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Atmospheric acoustic halfspace schematic](../assets/models/atmospheric_acoustic_halfspace.svg)
 
-*Acoustic waves in atmospheric halfspace z > 0 with density perturbation δρ = δp / c_s² acting on ground sensor at z = 0.*
+*Acoustic waves in atmospheric halfspace \(z > 0\) with density perturbation \(\delta\rho = \delta p / c_s^2\) acting on ground sensor at \(z = 0\).*
 
 - z=0 interface; target points on interface rejected.
 
@@ -30,7 +30,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 For acoustic pressure waves propagating in an atmospheric halfspace (\(z > 0\)) bounded by a rigid planar ground surface (\(z = 0\)), let \(c_s\) denote the atmospheric sound speed, \(f\) the acoustic frequency, and \(\omega = 2\pi f\).
 
-With horizontal wavenumber \(k_\rho = (\omega / c_s) \sin\theta\) and vertical wavenumber \(k_z = (\omega / c_s) \cos\theta\) (for angle of incidence \(0 \le \theta < \pi/2\)), the acoustic density perturbation is:
+With horizontal wavenumber \(k_\rho = (\omega / c_s) \sin\theta\) and vertical wavenumber \(k_z = (\omega / c_s) \cos\theta\) (for angle of incidence \(0 < \theta \le \pi/2\)), the acoustic density perturbation is:
 
 $$
 \delta\rho(\mathbf x, t) = \frac{P_0}{c_s^2} \cos(k_z z) e^{i (\mathbf k_\rho \cdot \mathbf x_\perp - \omega t)}.

@@ -28,13 +28,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For point masses \(m_i\) revolving at constant angular velocity \(\omega\) about an axis through origin with unit direction vector \(\hat{\mathbf n}_{\mathrm{axis}}\), the position of mass \(i\) at time \(t\) with initial angle \(\theta_{0,i}\) is:
+For point masses \(m_i\) with reference positions \(\mathbf x_{i,0}\) revolving rigidly at constant angular velocity \(\omega\) around a fixed axis defined by rotation center \(\mathbf x_{\mathrm{orig}}\), unit axis vector \(\hat{\mathbf n}\), initial angle \(\theta_0\), and reference epoch \(t_{\mathrm{epoch}}\):
 
 $$
-\mathbf x_i(t) = \mathbf R(\hat{\mathbf n}_{\mathrm{axis}}, \omega t + \theta_{0,i}) \, \mathbf x_{i,0}.
+\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R\left(\hat{\mathbf n}, \theta_0 + \omega(t - t_{\mathrm{epoch}})\right) (\mathbf x_{i,0} - \mathbf x_{\mathrm{orig}})
 $$
 
-Let \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) with \(r_i(t) = \|\mathbf r_i(t)\| > 0\). The instantaneous gravitational potential and acceleration are:
+where \(\mathbf R(\hat{\mathbf n}, \theta)\) is the Rodrigues rotation matrix about axis \(\hat{\mathbf n}\) by angle \(\theta\).
+
+With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the instantaneous gravitational potential and acceleration are:
 
 $$
 \Phi(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \qquad
@@ -47,7 +49,7 @@ $$
 \mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
 $$
 
-Fourier-series decomposition yields harmonic components at integer multiples \(k\omega\) of the rotational frequency.
+Target points lying on any source mass trajectory (\(r_i(t) = 0\)) are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 

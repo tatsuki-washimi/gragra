@@ -38,16 +38,28 @@ $$
 \mathbf x_i(t) = \mathbf c(t) + \mathbf R(t) \mathbf x_{\mathrm{body},i}.
 $$
 
-With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the time-domain acceleration is:
+With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the instantaneous Newtonian field observables evaluate as:
 
 $$
-\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}.
+\Phi(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \qquad
+\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}, \qquad
+\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
 $$
 
-For periodic motion with fundamental frequency \(\omega_0 = 2\pi / T\), the acceleration decomposes into a Fourier series:
+**Continuous Fourier series and Fourier transform paths:**
+
+The continuous Fourier path integrates callable pose over time using Fourier kernel convention \(\exp[-2\pi i f (t - t_{\mathrm{ref}})]\), where \(t_{\mathrm{ref}}\) is the reference epoch.
+
+1. **Periodic Fourier series**: For strictly periodic motion of fundamental period \(T = 1/f_0\), one-sided Fourier series amplitude coefficients \(A_n\) relate to complex two-sided coefficients \(C_n\) by:
 
 $$
-\mathbf a(\mathbf x, t) = \mathbf a_0(\mathbf x) + \sum_{k=1}^{K} \left[ \mathbf a_{k,c}(\mathbf x) \cos(k \omega_0 t) + \mathbf a_{k,s}(\mathbf x) \sin(k \omega_0 t) \right].
+A_0 = C_0, \qquad A_n = 2 C_n \quad (n \ge 1).
+$$
+
+2. **Finite-window Fourier transform**: For motion evaluated over a finite observation window \([T_{\mathrm{start}}, T_{\mathrm{end}}]\), windowed Fourier integral coefficients are retained directly without doubling:
+
+$$
+\tilde{\mathbf a}(f) = \int_{T_{\mathrm{start}}}^{T_{\mathrm{end}}} \mathbf a(t) e^{-2\pi i f (t - t_{\mathrm{ref}})} \, dt.
 $$
 
 ## Parameters and calculation paths
