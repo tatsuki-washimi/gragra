@@ -51,8 +51,8 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `rayleigh_halfspace_allspace_observables` | `density_kg_m3` | float | required (kw-only) | Medium density in kg/m³ |
 | `rayleigh_halfspace_allspace_observables` | `v_p_m_s` | float | required (kw-only) | P-wave speed in m/s |
 | `rayleigh_halfspace_allspace_observables` | `v_s_m_s` | float | required (kw-only) | S-wave speed in m/s |
-| `rayleigh_halfspace_allspace_observables` | `frequency_hz` | float | array-like | required (kw-only) | Wave frequency in Hz |
-| `rayleigh_halfspace_allspace_observables` | `vertical_surface_amplitude_m` | float | complex | array-like | required (kw-only) | Vertical surface displacement amplitude in meters |
+| `rayleigh_halfspace_allspace_observables` | `frequency_hz` | float \| array-like | required (kw-only) | Wave frequency in Hz |
+| `rayleigh_halfspace_allspace_observables` | `vertical_surface_amplitude_m` | float \| complex \| array-like | required (kw-only) | Vertical surface displacement amplitude in meters |
 | `rayleigh_halfspace_allspace_observables` | `direction` | array-like (3,) | (1.0, 0.0, 0.0) | Horizontal propagation unit direction vector |
 | `rayleigh_halfspace_allspace_observables` | `phase_origin_m` | array-like (3,) | (0.0, 0.0, 0.0) | Phase reference origin coordinate |
 

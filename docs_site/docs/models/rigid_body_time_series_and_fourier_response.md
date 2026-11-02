@@ -45,9 +45,9 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
 | `rigid_motion` | `source` | PointMassCloud | required | Cloud of discrete point masses representing rigid body |
-| `rigid_motion` | `transform` | PrescribedRigidTransform | PoseFunction | required | Rigid pose function or time-series transformation |
+| `rigid_motion` | `transform` | PrescribedRigidTransform \| PoseFunction | required | Rigid pose function or time-series transformation |
 | `rigid_motion` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
-| `rigid_motion` | `sampling` | TimeSampling | None | None | Discrete time sampling (required for sampled time-series path) |
+| `rigid_motion` | `sampling` | TimeSampling \| None | None | Discrete time sampling (required for sampled time-series path) |
 | `rigid_motion_observable` | `observable` | str | required (kw-only) | 'potential', 'acceleration', or 'gradient' |
 | `rigid_motion_observable` | `softening_m` | float | 0.0 | Plummer softening parameter in meters |
 

@@ -43,12 +43,12 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
 | `fullspace_p_isotropic_acceleration_csd` | `density_kg_m3` | float | required (kw-only) | Elastic medium mass density in kg/m³ |
-| `fullspace_p_isotropic_acceleration_csd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
-| `fullspace_p_isotropic_acceleration_csd` | `p_displacement_psd_m2_hz` | float | ArrayLike | required (kw-only) | One-sided per-component P-wave displacement PSD in m²/Hz |
+| `fullspace_p_isotropic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `fullspace_p_isotropic_acceleration_csd` | `p_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided per-component P-wave displacement PSD in m²/Hz |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavity radius R in meters (R > 0) |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (0 < v_S < v_P) |
-| `spherical_cavity_ps_isotropic_acceleration_csd` | `s_displacement_psd_m2_hz` | float | ArrayLike | required (kw-only) | One-sided per-component S-wave displacement PSD in m²/Hz |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `s_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided per-component S-wave displacement PSD in m²/Hz |
 
 #### Mathematical symbols and notation
 

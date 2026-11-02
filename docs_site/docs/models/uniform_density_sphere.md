@@ -73,7 +73,7 @@ one-sided limits because the density is discontinuous.
 |---|---|---|---|---|
 | `uniform_sphere_observables` | `center_m` | array-like (3,) | required | Sphere center coordinates in meters |
 | `uniform_sphere_observables` | `radius_m` | float | required | Sphere radius (positive) in meters |
-| `uniform_sphere_observables` | `density_kg_m3` | float | complex | required | Uniform mass density in kg/m³ |
+| `uniform_sphere_observables` | `density_kg_m3` | float \| complex | required | Uniform mass density in kg/m³ |
 | `uniform_sphere_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
 | `uniform_sphere` | `geometry` | Sphere | required | Astropy Sphere geometry (center and radius) |
 | `uniform_sphere` | `density` | u.Quantity (density) | required | Astropy Quantity uniform mass density in kg/m³ |

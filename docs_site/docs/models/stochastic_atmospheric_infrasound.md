@@ -44,11 +44,11 @@ A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic Sph
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
 | `surface_isotropic_acoustic_acceleration_csd` | `sound_speed_m_s` | float | required (kw-only) | Speed of sound in air c_s in m/s (positive) |
-| `surface_isotropic_acoustic_acceleration_csd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
-| `surface_isotropic_acoustic_acceleration_csd` | `surface_pressure_psd_pa2_hz` | float | ArrayLike | required (kw-only) | One-sided surface pressure PSD in Pa²/Hz |
+| `surface_isotropic_acoustic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `surface_isotropic_acoustic_acceleration_csd` | `surface_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided surface pressure PSD in Pa²/Hz |
 | `underground_isotropic_acoustic_acceleration_csd` | `depth_m` | float | required (kw-only) | Detector depth below surface h in meters (h >= 0) |
 | `centered_cavern_isotropic_acoustic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavern inner radius R in meters (R >= 0) |
-| `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float | ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
+| `centered_cavern_isotropic_acoustic_acceleration_csd` | `cavern_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided pressure PSD inside cavern in Pa²/Hz |
 
 #### Mathematical symbols and notation
 

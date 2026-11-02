@@ -44,16 +44,16 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 |---|---|---|---|---|
 | `spherical_cavity` | `geometry` | Sphere | required | Sphere geometry defining cavity radius and center |
 | `spherical_cavity` | `density` | u.Quantity (density) | required | Surrounding medium mass density |
-| `spherical_cavity` | `phase_speed` | u.Quantity | FrequencySeries | required | Compressional or shear phase speed |
+| `spherical_cavity` | `phase_speed` | u.Quantity \| FrequencySeries | required | Compressional or shear phase speed |
 | `spherical_cavity` | `displacement` | FrequencySeries | required | Incident displacement amplitude FrequencySeries |
 | `spherical_cavity` | `wave_type` | str | required | Incident wave type ('P' or 'S') |
 | `spherical_cavity` | `propagation_direction` | array-like (3,) | required | Incident wave propagation direction vector |
 | `spherical_shell` | `geometry` | SphericalShell | required | SphericalShell geometry (inner radius a, outer radius R) |
 | `spherical_shell_p_acceleration_components` | `inner_radius_m` | float | required | Inner cavity radius a in meters |
 | `spherical_shell_p_acceleration_components` | `outer_radius_m` | float | required | Outer shell radius R in meters (R > a) |
-| `spherical_shell_p_acceleration_components` | `wavenumber_rad_m` | float | array-like | required | Incident compressional wavenumber k in rad/m |
+| `spherical_shell_p_acceleration_components` | `wavenumber_rad_m` | float \| array-like | required | Incident compressional wavenumber k in rad/m |
 | `spherical_shell_p_acceleration_components` | `density_kg_m3` | float | required | Shell medium density in kg/m³ |
-| `spherical_shell_p_acceleration_components` | `displacement_m` | float | complex | required | Incident displacement phasor amplitude in meters |
+| `spherical_shell_p_acceleration_components` | `displacement_m` | float \| complex | required | Incident displacement phasor amplitude in meters |
 | `spherical_shell_p_acceleration_components` | `direction` | array-like (3,) | required | Wave propagation unit direction vector |
 
 #### Mathematical symbols and notation

@@ -78,7 +78,7 @@ separate numerical-quadrature or elliptic/series paths.
 | `cylinder_axis_observables` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
 | `cylinder_axis_observables` | `targets_m` | array-like (M, 3) | required | Evaluation targets strictly on the symmetry axis |
 | `cylinder_observables` | `quadrature_order` | int | 32 | Gauss-Legendre numerical quadrature order for general points |
-| `cylinder_analytic_observables` | `rotation_matrix` | array-like (3, 3) | None | None | Optional rotation matrix for analytic off-axis path |
+| `cylinder_analytic_observables` | `rotation_matrix` | array-like (3, 3) \| None | None | Optional rotation matrix for analytic off-axis path |
 
 #### Mathematical symbols and notation
 

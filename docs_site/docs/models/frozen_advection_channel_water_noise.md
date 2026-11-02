@@ -48,13 +48,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
-| `water_channel_advection_observables` | `frequency_hz` | float | array-like | required | Water surface wave frequency in Hz (f > 0) |
+| `water_channel_advection_observables` | `frequency_hz` | float \| array-like | required | Water surface wave frequency in Hz (f > 0) |
 | `water_channel_advection_observables` | `velocity_mps` | float | required | Channel stream flow velocity in m/s (v != 0) |
 | `water_channel_advection_observables` | `distance_m` | float | required | Perpendicular horizontal distance to channel in meters (D > 0) |
 | `water_channel_advection_observables` | `width_m` | float | required | Water channel surface width in meters (w > 0) |
 | `water_channel_advection_observables` | `density_kg_m3` | float | 1000.0 | Water mass density in kg/m³ |
-| `water_channel_advection_observables` | `eta_m` | complex | float | array-like | 1.0 | Water surface elevation phasor amplitude in meters |
-| `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float | array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
+| `water_channel_advection_observables` | `eta_m` | complex \| float \| array-like | 1.0 | Water surface elevation phasor amplitude in meters |
+| `water_channel_advection_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Water surface displacement ASD in m/sqrt(Hz) |
 | `water_channel_advection_asd` | `component` | str | 'x' | Acceleration output component ('x' or 'z') |
 
 #### Mathematical symbols and notation
@@ -69,7 +69,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | \(\rho_w\) | Water density | kg/m³ | Fluid mass density (default 1000.0 kg/m³) |
 | \(\eta\) | Surface displacement | m | Surface wave elevation phasor amplitude |
 | \(S_\eta^{1/2}(f)\) | Surface displacement ASD | m/√Hz | One-sided surface elevation ASD |
-| \(q\) | Dimensionless wavenumber | dimensionless | \(q = |\Omega| D / |v|\) |
+| \(q\) | Dimensionless wavenumber | dimensionless | \(q = \lvert\Omega\rvert D / \lvert v\rvert\) |
 | \(K_0(q), K_1(q)\) | Modified Bessel functions | dimensionless | Second kind modified Bessel functions |
 
 #### Usage notes

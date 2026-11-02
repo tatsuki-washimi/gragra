@@ -46,7 +46,7 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 | `water_edge_step_fourier_amplitude` | `x0_m` | float | required | Inflow edge coordinate along channel axis in meters |
 | `water_edge_step_fourier_amplitude` | `distance_m` | float | required | Perpendicular distance from channel to detector D in meters (D > 0) |
 | `water_edge_step_fourier_amplitude` | `volume_m3` | float | required | Displaced water volume step Delta V in m³ |
-| `water_edge_step_fourier_amplitude` | `frequency_hz` | float | array-like | required | Fourier transform evaluation frequency in Hz (f > 0) |
+| `water_edge_step_fourier_amplitude` | `frequency_hz` | float \| array-like | required | Fourier transform evaluation frequency in Hz (f > 0) |
 | `water_edge_step_fourier_amplitude` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
 
 #### Mathematical symbols and notation

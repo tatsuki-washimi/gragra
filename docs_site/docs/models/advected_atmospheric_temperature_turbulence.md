@@ -50,7 +50,7 @@ Line-of-sight/minimum-approach geometry and wind angle are scalar model paramete
 | `uniform_advection_temperature_acceleration_psd` | `wind_speed_m_s` | float | required (kw-only) | Advection wind speed v in m/s (v > 0) |
 | `uniform_advection_temperature_acceleration_psd` | `minimum_approach_m` | float | required (kw-only) | Closest approach distance from wind path to sensor r_min in meters |
 | `uniform_advection_temperature_acceleration_psd` | `wind_axis_angle_rad` | float | required (kw-only) | Angle theta between wind velocity and sensor projection axis in radians |
-| `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
 
 #### Mathematical symbols and notation
 

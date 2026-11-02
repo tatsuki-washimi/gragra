@@ -44,8 +44,8 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
-| `acoustic_cavity_mode` | `geometry` | Sphere | Cuboid | Cylinder | required | Cavity boundary geometry instance |
-| `acoustic_cavity_mode` | `mode` | SphereAcousticMode | CuboidAcousticMode | CylinderAcousticMode | required | Acoustic eigenmode descriptor instance |
+| `acoustic_cavity_mode` | `geometry` | Sphere \| Cuboid \| Cylinder | required | Cavity boundary geometry instance |
+| `acoustic_cavity_mode` | `mode` | SphereAcousticMode \| CuboidAcousticMode \| CylinderAcousticMode | required | Acoustic eigenmode descriptor instance |
 | `acoustic_cavity_mode` | `pressure_amplitude` | u.Quantity (pressure) | required | Spatial-RMS modal peak pressure phasor amplitude |
 | `acoustic_cavity_mode` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound inside cavity air |
 | `acoustic_cavity_mode` | `reference_time` | object | required (kw-only) | Time origin for phasor evaluation |

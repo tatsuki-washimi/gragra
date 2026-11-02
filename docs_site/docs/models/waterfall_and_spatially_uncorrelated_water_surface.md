@@ -42,14 +42,14 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
-| `water_waterfall_asd` | `frequency_hz` | float | array-like | required | Fluctuation frequency in Hz (f > 0) |
+| `water_waterfall_asd` | `frequency_hz` | float \| array-like | required | Fluctuation frequency in Hz (f > 0) |
 | `water_waterfall_asd` | `velocity_mps` | float | required | Waterfall plunge velocity in m/s (v != 0) |
 | `water_waterfall_asd` | `distance_m` | float | required | Horizontal distance from stream to detector mirror (D > 0) |
-| `water_waterfall_asd` | `area_asd_m2_per_rt_hz` | float | array-like | required | Stream cross-sectional area ASD in m²/sqrt(Hz) |
+| `water_waterfall_asd` | `area_asd_m2_per_rt_hz` | float \| array-like | required | Stream cross-sectional area ASD in m²/sqrt(Hz) |
 | `water_channel_uncorrelated_asd` | `distance_m` | float | required | Perpendicular distance to uncorrelated channel H in meters |
 | `water_channel_uncorrelated_asd` | `width_m` | float | required | Channel surface width w in meters |
 | `water_channel_uncorrelated_asd` | `correlation_area_m2` | float | required | Incoherent surface patch correlation area A_cell in m² |
-| `water_channel_uncorrelated_asd` | `surface_asd_m_per_rt_hz` | float | array-like | required | Surface elevation ASD in m/sqrt(Hz) |
+| `water_channel_uncorrelated_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Surface elevation ASD in m/sqrt(Hz) |
 | `water_waterfall_asd` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
 
 #### Mathematical symbols and notation

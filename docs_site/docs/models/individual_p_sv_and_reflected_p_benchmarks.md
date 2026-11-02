@@ -48,10 +48,10 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `halfspace_single_bodywave_observables` | `density_kg_m3` | float | required (kw-only) | Medium mass density in kg/m³ |
 | `halfspace_single_bodywave_observables` | `v_p_m_s` | float | required (kw-only) | P-wave speed in m/s |
 | `halfspace_single_bodywave_observables` | `v_s_m_s` | float | required (kw-only) | S-wave speed in m/s |
-| `halfspace_single_bodywave_observables` | `frequency_hz` | float | array-like | required (kw-only) | Wave frequency in Hz |
+| `halfspace_single_bodywave_observables` | `frequency_hz` | float \| array-like | required (kw-only) | Wave frequency in Hz |
 | `halfspace_single_bodywave_observables` | `incidence_angle_rad` | float | required (kw-only) | Incidence angle in radians |
-| `halfspace_single_bodywave_observables` | `displacement_m` | float | complex | array-like | required (kw-only) | Wave displacement amplitude in meters |
-| `halfspace_reflected_p_above_observables` | `incident_displacement_m` | float | complex | array-like | required (kw-only) | Incident P-wave displacement amplitude in meters |
+| `halfspace_single_bodywave_observables` | `displacement_m` | float \| complex \| array-like | required (kw-only) | Wave displacement amplitude in meters |
+| `halfspace_reflected_p_above_observables` | `incident_displacement_m` | float \| complex \| array-like | required (kw-only) | Incident P-wave displacement amplitude in meters |
 
 #### Mathematical symbols and notation
 

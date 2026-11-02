@@ -52,7 +52,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `halfspace_psv` | `incidence_angle_rad` | float | required | Incidence angle from surface normal in [0, pi/2) |
 | `halfspace_psv` | `azimuth_rad` | float | required | Horizontal propagation azimuth in radians |
 | `halfspace_psv_observables` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters |
-| `halfspace_psv_observables` | `incident_displacement_m` | float | complex | array-like | required (kw-only) | Incident displacement amplitude in meters |
+| `halfspace_psv_observables` | `incident_displacement_m` | float \| complex \| array-like | required (kw-only) | Incident displacement amplitude in meters |
 
 #### Mathematical symbols and notation
 

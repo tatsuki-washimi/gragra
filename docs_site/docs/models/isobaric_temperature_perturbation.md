@@ -48,8 +48,8 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `isobaric_temperature` | `delta_temperature` | u.Quantity (temperature) | required | Temperature fluctuation amplitude delta T |
 | `isobaric_temperature` | `rho0` | u.Quantity (density) | required (kw-only) | Ambient unperturbed air mass density |
 | `isobaric_temperature` | `T0` | u.Quantity (temperature) | required (kw-only) | Ambient absolute temperature in Kelvin |
-| `isobaric_temperature` | `frequency` | u.Quantity | None | None | Optional oscillation frequency for phasor evaluation |
-| `isobaric_temperature` | `reference_time` | object | None | None | Optional reference epoch for phasor representation |
+| `isobaric_temperature` | `frequency` | u.Quantity \| None | None | Optional oscillation frequency for phasor evaluation |
+| `isobaric_temperature` | `reference_time` | object \| None | None | Optional reference epoch for phasor representation |
 
 #### Mathematical symbols and notation
 

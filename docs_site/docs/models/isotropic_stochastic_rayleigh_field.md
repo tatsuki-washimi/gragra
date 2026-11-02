@@ -47,8 +47,8 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 | `rayleigh_isotropic_acceleration_csd` | `density_kg_m3` | float | required (kw-only) | Subsurface ground mass density in kg/m³ (positive) |
 | `rayleigh_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
 | `rayleigh_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (v_P^2 > 4/3 v_S^2) |
-| `rayleigh_isotropic_acceleration_csd` | `frequency_hz` | float | ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
-| `rayleigh_isotropic_acceleration_csd` | `surface_vertical_displacement_psd_m2_hz` | float | ArrayLike | required (kw-only) | One-sided vertical surface displacement PSD in m²/Hz |
+| `rayleigh_isotropic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
+| `rayleigh_isotropic_acceleration_csd` | `surface_vertical_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided vertical surface displacement PSD in m²/Hz |
 
 #### Mathematical symbols and notation
 
