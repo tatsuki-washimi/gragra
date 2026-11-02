@@ -28,12 +28,50 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Plane waves in an elastic halfspace (\(z < 0\)) reflecting at a planar traction-free boundary (\(z = 0\)). Let \(q\) be the horizontal wavenumber, and define the vertical P-wave and S-wave wavenumbers:
 
-- Plane waves in an elastic halfspace (\(z &lt; 0\)) reflecting at a planar traction-free boundary (\(z = 0\)), with horizontal wavenumber \(q\), vertical P-wavenumber \(p = \sqrt{(\omega/v_P)^2 - q^2}\), and vertical S-wavenumber \(s = \sqrt{(\omega/v_S)^2 - q^2}\).
-- Lossless reflection and mode-conversion potential ratios obey the characteristic traction-free system with denominator \(\Delta = (1 - 2q^2/k_S^2)^2 + 4 (q/k_S)^2 (p/k_S) (s/k_S)\). For incident P wave, reflection ratios are \(R_{PP} = [4 (q/k_S)^2 (p/k_S) (s/k_S) - (1 - 2q^2/k_S^2)^2]/\Delta\) and \(R_{PS} = [4 (q/k_S) (p/k_S) (1 - 2q^2/k_S^2)]/\Delta\).
-- Gravitational potential evaluates in G-free units (kg/m) with surface potential amplitudes \(\phi_{\mathrm{surf}} = A + B\) and \(\psi_{\mathrm{surf}} = C + D\) (where \(A, B\) are incident/reflected P-wave scalar potential amplitudes and \(C, D\) are incident/reflected SV-wave vector potential amplitudes). Above ground (\(z &gt; 0\)): \(\Phi^{(G\text{-free})}(\mathbf x) = -2\pi\rho (\phi_{\mathrm{surf}} + i \psi_{\mathrm{surf}}) e^{-q z} e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\). Underground (\(z &lt; 0\)): combines the surface displacement sheet \(2\pi\rho (\phi_{\mathrm{surf}} - i \psi_{\mathrm{surf}}) e^{q z}\) with the interior dilatational field \(-4\pi\rho [\phi_{\mathrm{inc}}(z) + \phi_{\mathrm{ref}}(z)]\).
-- Acceleration \(\mathbf a = -\nabla \Phi\) and gradient \(\mathbf\Gamma = -\nabla\nabla \Phi\) are analytic throughout. Physical SI observables multiply by \(G\). Non-grazing incident angles (\(0 \le \theta &lt; \pi/2\)) are supported analytically.
+$$
+p = \sqrt{\left(\frac{\omega}{v_P}\right)^2 - q^2}, \qquad
+s = \sqrt{\left(\frac{\omega}{v_S}\right)^2 - q^2}
+$$
+
+where \(v_P\) and \(v_S\) are compressional and shear wave speeds, and \(k_S = \omega / v_S\).
+
+The traction-free boundary conditions yield the characteristic denominator:
+
+$$
+\Delta = \left(1 - \frac{2q^2}{k_S^2}\right)^2 + 4 \left(\frac{q}{k_S}\right)^2 \left(\frac{p}{k_S}\right) \left(\frac{s}{k_S}\right)
+$$
+
+For an incident P wave, the lossless reflection and mode-conversion potential amplitude ratios are:
+
+$$
+R_{PP} = \frac{4 (q/k_S)^2 (p/k_S) (s/k_S) - (1 - 2q^2/k_S^2)^2}{\Delta},
+\qquad
+R_{PS} = \frac{4 (q/k_S) (p/k_S) (1 - 2q^2/k_S^2)}{\Delta}
+$$
+
+The G-free gravitational potential \(\Phi^{(G\text{-free})}(\mathbf x)\) evaluates in units of \(\mathrm{kg/m}\). Let \(\phi_{\mathrm{surf}} = A + B\) and \(\psi_{\mathrm{surf}} = C + D\) denote surface potential amplitudes (with \(A, B\) incident/reflected P scalar potentials, and \(C, D\) incident/reflected SV vector potentials).
+
+Above ground (\(z > 0\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = -2\pi\rho (\phi_{\mathrm{surf}} + i \psi_{\mathrm{surf}}) e^{-q z} e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}
+$$
+
+Underground (\(z < 0\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = 2\pi\rho (\phi_{\mathrm{surf}} - i \psi_{\mathrm{surf}}) e^{q z} e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} - 4\pi\rho [\phi_{\mathrm{inc}}(z) + \phi_{\mathrm{ref}}(z)] e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}
+$$
+
+The gravitational acceleration \(\mathbf a = -\nabla \Phi\) and gravity-gradient tensor \(\mathbf\Gamma = -\nabla\nabla \Phi\) are analytic throughout. Physical SI observables multiply by \(G\):
+
+$$
+\Phi^{(\mathrm{SI})} = G \Phi^{(G\text{-free})}, \qquad
+\mathbf a^{(\mathrm{SI})} = G \mathbf a^{(G\text{-free})}, \qquad
+\mathbf\Gamma^{(\mathrm{SI})} = G \mathbf\Gamma^{(G\text{-free})}
+$$
 
 ## Parameters and calculation paths
 

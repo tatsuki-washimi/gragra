@@ -29,16 +29,46 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+An open water channel flows along the \(x\)-axis with mean velocity \(v\) and channel width \(w\), located at perpendicular horizontal standoff distance \(D > 0\) from the observation point. The surface elevation perturbation is modeled as a traveling wave \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
 
-- The channel flows along the \(x\)-axis with velocity \(v\) and width \(w\) at perpendicular horizontal distance \(D &gt; 0\) from the mirror. Surface elevation wave is \(\eta(x,t) = \eta_0 e^{-i \Omega (t - x/v)}\) with angular frequency \(\Omega = 2\pi f\).
-- Dimensionless wavenumber parameter is \(q = |\Omega| D / |v|\) (evaluated for \(0 &lt; q \le 700\); exact DC \(f=0\) gives \(q=0\)).
-- Analytic G-free transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
-- \(T_{\Phi,\eta}^{(G\text{-free})} = -2 \rho_w w K_0(q)\)
-- \(T_{a_x,\eta}^{(G\text{-free})} = 2i \rho_w w \left(\frac{\Omega}{v}\right) K_0(q)\)
-- \(T_{a_z,\eta}^{(G\text{-free})} = -2 \rho_w w \left(\frac{|\Omega|}{|v|}\right) K_1(q)\)
-- Gravity gradient components satisfy \(\mathrm{tr}(\mathbf\Gamma) = \Gamma_{xx} + \Gamma_{yy} + \Gamma_{zz} = 0\) (Laplace vacuum condition), with \(T_{\Gamma_{xx},\eta}^{(G\text{-free})} = -2\rho_w w (\Omega/v)^2 K_0(q)\), \(T_{\Gamma_{yy},\eta}^{(G\text{-free})} = -2\rho_w w (q/D^2) K_1(q)\), \(T_{\Gamma_{zz},\eta}^{(G\text{-free})} = 2\rho_w w [(\Omega/v)^2 K_0(q) + (q/D^2) K_1(q)]\), and \(T_{\Gamma_{xz},\eta}^{(G\text{-free})} = -2i\rho_w w \frac{\Omega|\Omega|}{v|v|} K_1(q)\).
-- Multiplication by \(G\) yields physical SI observables: \(T^{(\mathrm{SI})} = G T^{(G\text{-free})}\).
+The dimensionless wavenumber parameter is:
+
+$$
+q = \frac{|\Omega| D}{|v|} \qquad (0 < q \le 700; \quad q = 0 \text{ at DC } f=0)
+$$
+
+The G-free potential and acceleration transfer functions use modified Bessel functions of the second kind \(K_0(q)\) and \(K_1(q)\):
+
+$$
+\begin{aligned}
+T_{\Phi,\eta}^{(G\text{-free})} &= -2 \rho_w w K_0(q), \\
+T_{a_x,\eta}^{(G\text{-free})} &= 2i \rho_w w \left(\frac{\Omega}{v}\right) K_0(q), \\
+T_{a_z,\eta}^{(G\text{-free})} &= -2 \rho_w w \left(\frac{|\Omega|}{|v|}\right) K_1(q).
+\end{aligned}
+$$
+
+The G-free gravity-gradient transfer function components are:
+
+$$
+\begin{aligned}
+T_{\Gamma_{xx},\eta}^{(G\text{-free})} &= -2\rho_w w \left(\frac{\Omega}{v}\right)^2 K_0(q), \\
+T_{\Gamma_{yy},\eta}^{(G\text{-free})} &= -2\rho_w w \left(\frac{q}{D^2}\right) K_1(q), \\
+T_{\Gamma_{zz},\eta}^{(G\text{-free})} &= 2\rho_w w \left[\left(\frac{\Omega}{v}\right)^2 K_0(q) + \left(\frac{q}{D^2}\right) K_1(q)\right], \\
+T_{\Gamma_{xz},\eta}^{(G\text{-free})} &= -2i\rho_w w \left(\frac{\Omega|\Omega|}{v|v|}\right) K_1(q).
+\end{aligned}
+$$
+
+These components strictly satisfy the Laplace vacuum trace condition:
+
+$$
+\mathrm{tr}(\mathbf\Gamma) = T_{\Gamma_{xx},\eta} + T_{\Gamma_{yy},\eta} + T_{\Gamma_{zz},\eta} = 0
+$$
+
+Physical SI observables are obtained by multiplying by \(G\):
+
+$$
+T^{(\mathrm{SI})} = G \, T^{(G\text{-free})}
+$$
 
 ## Parameters and calculation paths
 

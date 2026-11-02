@@ -28,13 +28,13 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), let the corner offsets for \(i, j, k \in \{0, 1\}\) be
+For an axis-aligned cuboid centered at \(\mathbf c\) with side lengths \((L_x, L_y, L_z)\) and uniform density \(\rho\), let the relative coordinates from observation point \(\mathbf x_t\) to the cuboid bounding faces along each Cartesian axis for \(i, j, k \in \{0, 1\}\) be
 
 $$
 \begin{aligned}
-u_0 &= x_t - c_x - \frac{L_x}{2}, &\quad u_1 &= x_t - c_x + \frac{L_x}{2}, \\
-v_0 &= y_t - c_y - \frac{L_y}{2}, &\quad v_1 &= y_t - c_y + \frac{L_y}{2}, \\
-w_0 &= z_t - c_z - \frac{L_z}{2}, &\quad w_1 &= z_t - c_z + \frac{L_z}{2},
+u_0 &= c_x - \frac{L_x}{2} - x_t, &\quad u_1 &= c_x + \frac{L_x}{2} - x_t, \\
+v_0 &= c_y - \frac{L_y}{2} - y_t, &\quad v_1 &= c_y + \frac{L_y}{2} - y_t, \\
+w_0 &= c_z - \frac{L_z}{2} - z_t, &\quad w_1 &= c_z + \frac{L_z}{2} - z_t,
 \end{aligned}
 $$
 
@@ -72,9 +72,9 @@ with \(\Gamma_{xx}, \Gamma_{yy}\) by cyclic permutation. The off-diagonal compon
 
 $$
 \begin{aligned}
-\Gamma_{xy}(\mathbf x) &= -G\rho \sum_{i,j=0}^1 (-1)^{i+j} [\ln(w_1 + r_{ij1}) - \ln(w_0 + r_{ij0})], \\
-\Gamma_{xz}(\mathbf x) &= -G\rho \sum_{i,k=0}^1 (-1)^{i+k} [\ln(v_1 + r_{i1k}) - \ln(v_0 + r_{i0k})], \\
-\Gamma_{yz}(\mathbf x) &= -G\rho \sum_{j,k=0}^1 (-1)^{j+k} [\ln(u_1 + r_{1jk}) - \ln(u_0 + r_{0jk})].
+\Gamma_{xy}(\mathbf x) &= G\rho \sum_{i,j=0}^1 (-1)^{i+j} [\ln(w_1 + r_{ij1}) - \ln(w_0 + r_{ij0})], \\
+\Gamma_{xz}(\mathbf x) &= G\rho \sum_{i,k=0}^1 (-1)^{i+k} [\ln(v_1 + r_{i1k}) - \ln(v_0 + r_{i0k})], \\
+\Gamma_{yz}(\mathbf x) &= G\rho \sum_{j,k=0}^1 (-1)^{j+k} [\ln(u_1 + r_{1jk}) - \ln(u_0 + r_{0jk})].
 \end{aligned}
 $$
 
