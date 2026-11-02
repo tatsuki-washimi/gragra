@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
-**Geometry:** halfspace
+**Geometry:** `halfspace`
 
 Surface-wave gravity, depth response and coherent phasors
 
@@ -22,17 +22,42 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Rayleigh wave at an elastic halfspace schematic](../assets/models/rayleigh_wave_halfspace.svg)
 
-*Free surface z = 0 and subsurface z < 0 with horizontal wavenumber k_R, elliptical retrograde orbit, and exponential depth decay.*
+*Free surface \(z = 0\) and subsurface \(z < 0\) with horizontal wavenumber \(k_R\), elliptical retrograde orbit, and exponential depth decay.*
 
 - High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For a seismic Rayleigh wave propagating along the free surface (\(z = 0\)) of a homogeneous isotropic elastic halfspace (\(z \le 0\)) with horizontal wavenumber \(k_R = \omega / c_R\) and angular frequency \(\omega = 2\pi f\):
 
-- For a Rayleigh wave with horizontal wavenumber \(k_R = \omega / c_R\), vertical decay parameters \(q_P = \sqrt{k_R^2 - \omega^2/v_P^2}\) and \(q_S = \sqrt{k_R^2 - \omega^2/v_S^2}\), and surface vertical displacement amplitude \(\xi_z(0)\).
-- Above ground (\(z &gt; 0\)), the potential is \(\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}\) (Harms 2019 Eq. 96), where \(\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}\).
-- Below ground (\(z \le 0\)), the field combines the volume dilatation perturbation and the free-surface vertical mass-sheet displacement (Eq. 97). Acceleration and gradient are analytic derivatives \(\mathbf a = -\nabla\Phi\), \(\mathbf\Gamma = \nabla\mathbf a\).
+The vertical decay parameters for compressional and shear components are:
+
+$$
+q_P = \sqrt{k_R^2 - \frac{\omega^2}{v_P^2}}, \qquad
+q_S = \sqrt{k_R^2 - \frac{\omega^2}{v_S^2}}
+$$
+
+where \(v_P\) and \(v_S\) are the medium P-wave and S-wave speeds.
+
+Above ground (\(z > 0\)), the gravitational potential amplitude is (Harms 2019 Eq. 96):
+
+$$
+\Phi(x, z, t) = -2\pi G \rho \xi_z(0) \frac{\gamma_R}{k_R} e^{-k_R z} e^{i(k_R x - \omega t)}
+$$
+
+where \(\xi_z(0)\) is the vertical surface displacement amplitude and the dimensionless depth-coupling factor is:
+
+$$
+\gamma_R = \frac{2 k_R (q_P - q_S)}{k_R^2 + q_S^2}.
+$$
+
+Below ground (\(z \le 0\)), the gravitational field combines the volume dilatation perturbation with the surface vertical mass-sheet displacement:
+
+$$
+\Phi(x, z, t) = 2\pi G \rho \xi_z(0) \left[ \frac{2 q_P}{k_R^2 + q_S^2} e^{q_P z} - \frac{\gamma_R}{k_R} e^{k_R z} \right] e^{i(k_R x - \omega t)}.
+$$
+
+The gravitational acceleration \(\mathbf a = -\nabla\Phi\) and gravity-gradient tensor \(\mathbf\Gamma = -\nabla\nabla\Phi\) are evaluated analytically.
 
 ## Parameters and calculation paths
 
@@ -45,7 +70,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `rayleigh_halfspace` | `geometry` | HalfSpace | required | Elastic halfspace geometry instance (z <= 0) |
 | `rayleigh_halfspace` | `density` | u.Quantity (density) | required | Medium background mass density |
 | `rayleigh_halfspace` | `vp` | u.Quantity (speed) | required | Medium compressional P-wave speed |
-| `rayleigh_halfspace` | `vs` | u.Quantity (speed) | required | Medium shear S-wave speed (0 < v_S < v_P) |
+| `rayleigh_halfspace` | `vs` | u.Quantity (speed) | required | Medium shear S-wave speed (\(0 < v_S < v_P\)) |
 | `rayleigh_halfspace` | `vertical_displacement` | FrequencySeries | required | Vertical surface displacement amplitude series |
 | `rayleigh_halfspace_allspace_observables` | `targets_m` | array-like (M, 3) | required | Target evaluation coordinates in meters |
 | `rayleigh_halfspace_allspace_observables` | `density_kg_m3` | float | required (kw-only) | Medium density in kg/m³ |
@@ -55,11 +80,19 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `rayleigh_halfspace_allspace_observables` | `vertical_surface_amplitude_m` | float \| complex \| array-like | required (kw-only) | Vertical surface displacement amplitude in meters |
 | `rayleigh_halfspace_allspace_observables` | `direction` | array-like (3,) | (1.0, 0.0, 0.0) | Horizontal propagation unit direction vector |
 | `rayleigh_halfspace_allspace_observables` | `phase_origin_m` | array-like (3,) | (0.0, 0.0, 0.0) | Phase reference origin coordinate |
+| `rayleigh_response` | `geometry` | HalfSpace | required | Elastic halfspace geometry instance (z <= 0) and surface frame |
+| `rayleigh_response` | `density` | u.Quantity (density) | required (kw-only) | Medium background mass density convertible to kg/m³ |
+| `rayleigh_response` | `vp` | u.Quantity (speed) | required (kw-only) | Medium compressional P-wave speed convertible to m/s |
+| `rayleigh_response` | `vs` | u.Quantity (speed) | required (kw-only) | Medium shear S-wave speed convertible to m/s |
+| `rayleigh_response` | `frequencies` | u.Quantity (frequency) | required (kw-only) | Positive frequency bins convertible to Hz |
+| `rayleigh_response` | `direction` | object | required (kw-only) | Nonzero horizontal propagation direction in surface frame |
+| `rayleigh_response` | `phase_origin` | u.Quantity (length) | required (kw-only) | Surface reference location defining the complex displacement phasor |
 
 #### API return values
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
+| `rayleigh_response` | _RayleighResponseModel | Phasor | Φ: (m²/s²)/m, a: (m/s²)/m, Γ: s⁻²/m | EvaluationModel; evaluate via .at(targets).run() to yield GravityResponse | Linear transfer response model mapping unit vertical surface displacement to gravity perturbations |
 | `rayleigh_halfspace` | RayleighHalfspaceModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level Rayleigh halfspace model evaluated via .at(targets).run() |
 | `rayleigh_halfspace_allspace_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Complex SI observables for Rayleigh waves evaluated both above (z > 0) and below (z < 0) ground |
 
@@ -188,7 +221,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- Catalogue `output_contracts` are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

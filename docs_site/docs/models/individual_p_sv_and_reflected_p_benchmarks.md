@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
-**Geometry:** halfspace
+**Geometry:** `halfspace`
 
 Single incident mode versus a traction-free reflected composite
 
@@ -28,12 +28,37 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Benchmarks for isolated and reflected plane body waves in an elastic halfspace (\(z \le 0\)) reflecting at a planar traction-free surface (\(z = 0\)):
 
-- Single upward plane P-wave (Harms 2019 Eqs. 86/87): with prefactor \(C_1 = -\frac{\rho \xi_0^P}{i k_P}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) above ground (\(z &gt; 0\)), and \(\Phi^{(G\text{-free})} = 2\pi C_1 [2 e^{i k_z z} - e^{k_\rho z}] e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) underground (\(z &lt; 0\)).
-- Single upward plane SV-wave (Harms 2019 Eq. 88): with prefactor \(C_2 = \frac{\rho \xi_0^{SV}}{k_S}\), G-free potential is \(\Phi^{(G\text{-free})} = 2\pi C_2 e^{-k_\rho |z|} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\), valid on both sides of the surface.
-- Reflected-P composite above ground (\(z &gt; 0\)): incident P + reflected P + converted SV satisfying traction-free surface boundary condition. Potential is \(\Phi^{(G\text{-free})} = 2\pi C_1 \delta(\theta, k_\rho) e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}\) with dimensionless wavenumber ratios \(r_\rho = k_\rho/k_S\), \(r_{zP} = k_{zP}/k_S\), \(r_{zS} = k_{zS}/k_S\) and transfer coefficient \(\delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}\).
-- Implementation detail (A-U08): Production API uses physical \(+i\) converted-SV coefficient from the solved surface displacement field. The literal Harms (2019) Eq. (90) expression with \(-i\) is retained in private test helper _harms2019_reflected_p_delta for verification.
+**1. Single upward plane P-wave** (Harms 2019 Eqs. 86–87, with prefactor \(C_1 = -\frac{\rho \xi_0^P}{i k_P}\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) =
+\begin{cases}
+2\pi C_1 e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}, & z > 0, \\
+2\pi C_1 \left( 2 e^{i k_z z} - e^{k_\rho z} \right) e^{i \mathbf k_\rho \cdot \mathbf x_\perp}, & z \le 0.
+\end{cases}
+$$
+
+**2. Single upward plane SV-wave** (Harms 2019 Eq. 88, with prefactor \(C_2 = \frac{\rho \xi_0^{SV}}{k_S}\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = 2\pi C_2 e^{-k_\rho |z|} e^{i \mathbf k_\rho \cdot \mathbf x_\perp} \qquad (\text{all } z).
+$$
+
+**3. Reflected-P composite wave** (incident P + reflected P + converted SV satisfying traction-free conditions):
+
+Above ground (\(z > 0\)), the composite potential is:
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = 2\pi C_1 \delta(\theta, k_\rho) e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}
+$$
+
+with dimensionless wavenumber ratios \(r_\rho = k_\rho / k_S\), \(r_{zP} = k_{zP} / k_S\), \(r_{zS} = k_{zS} / k_S\), and composite transfer coefficient:
+
+$$
+\delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}.
+$$
 
 ## Parameters and calculation paths
 
@@ -174,7 +199,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- Catalogue `output_contracts` are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
-**Geometry:** point_cloud
+**Geometry:** `point_cloud`
 
 Rotating discrete mass cloud
 
@@ -24,15 +24,32 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *Point-mass cloud rotating at constant angular velocity Ω about fixed rotation axis n̂.*
 
-- plot_shape supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
+- `plot_shape` supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For point masses \(m_i\) with reference positions \(\mathbf x_{i,0}\) revolving rigidly at constant angular velocity \(\omega\) around a fixed axis defined by rotation center \(\mathbf x_{\mathrm{orig}}\), unit axis vector \(\hat{\mathbf n}\), initial angle \(\theta_0\), and reference epoch \(t_{\mathrm{epoch}}\):
 
-- Source mass positions rotate rigidly around a fixed axis defined by origin \(\mathbf x_{\mathrm{orig}}\) and unit axis \(\hat{\mathbf n}\): \(\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R(\hat{\mathbf n}, \theta(t)) (\mathbf x_{\mathrm{body},i} - \mathbf x_{\mathrm{orig}})\), where \(\theta(t) = \theta_0 + \omega (t - t_{\mathrm{epoch}})\).
-- At target \(\mathbf x\) with offset \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\), each point mass contributes instantaneous Newtonian field: \(\Phi = -G \sum_i \frac{m_i}{r_i}\), \(\mathbf a = -G \sum_i \frac{m_i \mathbf r_i}{r_i^3}\), \(\mathbf\Gamma = G \sum_i m_i \left[ \frac{3 \mathbf r_i \otimes \mathbf r_i}{r_i^5} - \frac{\mathbf I}{r_i^3} \right]\).
-- Evaluated at discrete time series sampling points. Single-source target collisions (\(r_i = 0\)) are strictly rejected.
+$$
+\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R\left(\hat{\mathbf n}, \theta_0 + \omega(t - t_{\mathrm{epoch}})\right) (\mathbf x_{i,0} - \mathbf x_{\mathrm{orig}})
+$$
+
+where \(\mathbf R(\hat{\mathbf n}, \theta)\) is the Rodrigues rotation matrix about axis \(\hat{\mathbf n}\) by angle \(\theta\).
+
+With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the instantaneous gravitational potential and acceleration are:
+
+$$
+\Phi(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \qquad
+\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}.
+$$
+
+The instantaneous gravity-gradient tensor is:
+
+$$
+\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
+$$
+
+Target points lying on any source mass trajectory (\(r_i(t) = 0\)) are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 
@@ -156,7 +173,7 @@ An independent oracle-comparison test exists. It was not run for this update.
 
 ### Applicability and limitations
 
-- Requires PointMassCloud and TimeSampling. angle_epoch is independent of the sampling epoch.
+- Requires `PointMassCloud` and `TimeSampling`. `angle_epoch` is independent of the sampling epoch.
 
 **Scope note:** Point-mass clouds only; collisions are rejected during evaluation.
 

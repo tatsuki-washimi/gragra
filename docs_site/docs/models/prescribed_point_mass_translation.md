@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
-**Geometry:** point
+**Geometry:** `point`
 
 Constant-velocity mass; time-sampled field
 
@@ -22,17 +22,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Prescribed point-mass kinematics schematic](../assets/models/prescribed_point_mass_translation.svg)
 
-*Discrete point masses m_i moving with individual velocities v_i from initial positions x_{0,i} and their Newtonian field at target x.*
+*Discrete point masses \(m_i\) moving with individual velocities \(\mathbf v_i\) from initial positions \(\mathbf x_{0,i}\) and their Newtonian field at target \(\mathbf x\).*
 
 - Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For a collection of \(N\) point masses \(m_i\) moving along uniform linear trajectories \(\mathbf x_i(t) = \mathbf x_{i,0} + \mathbf v_i (t - t_0)\), let the relative displacement vector to evaluation target \(\mathbf x\) be:
 
-- For point masses \(m_i\) with positions \(\mathbf x_i(t) = \mathbf x_{i,0} + \mathbf v_i (t - t_0)\), the instantaneous Newtonian field at target \(\mathbf x\) has offset vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\).
-- Potential: \(\Phi(\mathbf x, t) = -G \sum_i \frac{m_i}{r_i(t)}\); acceleration: \(\mathbf a(\mathbf x, t) = -G \sum_i \frac{m_i \mathbf r_i(t)}{r_i(t)^3}\); gravity-gradient tensor: \(\mathbf\Gamma(\mathbf x, t) = G \sum_i m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I}{r_i(t)^3} \right]\).
-- Outputs are evaluated as discrete sampled time series. Source collision (\(r_i(t) = 0\)) is rejected.
+$$
+\mathbf r_i(t) = \mathbf x - \mathbf x_i(t), \qquad r_i(t) = \|\mathbf r_i(t)\| > 0.
+$$
+
+The instantaneous Newtonian gravitational field observables are:
+
+$$
+\begin{aligned}
+\Phi(\mathbf x, t) &= -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \\
+\mathbf a(\mathbf x, t) &= -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}, \\
+\mathbf\Gamma(\mathbf x, t) &= G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
+\end{aligned}
+$$
+
+These observables strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\) at all non-coincident evaluation targets. Coincident points (\(r_i(t) = 0\)) are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 
@@ -167,7 +179,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- Catalogue `output_contracts` are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

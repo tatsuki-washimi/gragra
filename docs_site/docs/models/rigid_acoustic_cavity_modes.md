@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
-**Geometry:** cavity
+**Geometry:** `cavity`
 
 Neumann modes in a sphere, cuboid or cylinder; geometry-dependent normalization and numerical limits
 
@@ -28,13 +28,62 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Acoustic eigenmodes in a rigid cavity filled with air of sound speed \(c_s\) satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition:
 
-- Modes satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition \(\partial_n \Psi = 0\) on the cavity boundary; frequency is derived as \(f = c_s k / (2\pi)\). The static zero mode (\(k=0\)) is excluded.
-- Cuboid modes: \(\Psi = N \prod_{j\in\{x,y,z\}} \cos\left(\frac{n_j \pi (x_j + L_j/2)}{L_j}\right)\) with \(k^2 = \sum_j (n_j \pi / L_j)^2\) and \(N = 2^{r/2}\) where \(r\) is the number of non-zero indices, giving unit spatial RMS.
-- Cylinder modes: \(\Psi \propto J_m(\alpha_{mn} r/R) A_m(\phi) \cos(q\pi (z+H/2)/H)\) with \(J'_m(\alpha_{mn}) = 0\) and \(k^2 = (\alpha_{mn}/R)^2 + (q\pi/H)^2\).
-- Sphere modes: \(\Psi_{lmn}(r,\theta,\phi) = j_l(k_{ln} r) Y_{lm}(\theta,\phi)\) where \(j'_l(k_{ln} R) = 0\). Evaluation uses exact closed-form radial solutions.
-- Density perturbation is \(\delta\rho = (P / c_s^2) \Psi\). Potential and fields vanish identically outside the cavity for non-radiating modes or use boundary multipole expansions. Targets on physical cavity walls, caps, and rims are rejected.
+$$
+\left. \frac{\partial \Psi}{\partial n} \right|_{\partial V} = 0.
+$$
+
+The modal eigenfrequency is \(f = c_s k / (2\pi)\) (the static zero mode \(k = 0\) is excluded).
+
+**1. Rectangular cuboid cavity** (\([-L_j/2, L_j/2]\) along each axis \(j \in \{x, y, z\}\)) with mode indices \((n_x, n_y, n_z)\):
+
+$$
+\Psi(\mathbf x) = N \prod_{j \in \{x,y,z\}} \cos\left[\frac{n_j \pi (x_j + L_j/2)}{L_j}\right], \qquad
+k = \pi \sqrt{\sum_{j=x,y,z} \left(\frac{n_j}{L_j}\right)^2}
+$$
+
+where the spatial RMS normalization factor is:
+
+$$
+N = 2^{r/2}
+$$
+
+and \(r\) is the number of non-zero mode indices (\(r = \sum_j \mathbf 1_{n_j > 0}\)).
+
+**2. Circular cylinder cavity** (radius \(R\), centered height \(z \in [-H/2, H/2]\)) with mode indices \((m, n, q)\):
+
+$$
+\Psi_{mnq}(r, \phi, z) = N_{mnq} J_m\left(\frac{\alpha_{mn} r}{R}\right) A_m(\phi) \cos\left[\frac{q \pi (z + H/2)}{H}\right], \qquad
+k = \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{q\pi}{H}\right)^2}
+$$
+
+where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of the Bessel function (\(J_m'(\alpha_{mn}) = 0\)), \(N_{mnq}\) is the spatial RMS normalization factor, and the azimuthal dependence is selected by `azimuth`:
+
+$$
+A_m(\phi) = \begin{cases}
+\cos(m\phi), & \text{for } \texttt{azimuth="cos"}, \\
+\sin(m\phi), & \text{for } \texttt{azimuth="sin"} \quad (m \ge 1).
+\end{cases}
+$$
+
+For \(m = 0\), the sine azimuthal branch vanishes and is disallowed by the API.
+
+**3. Spherical cavity** (radius \(R\)) with radial index \(n\) and angular index \(l\):
+
+$$
+\Psi(r, \theta, \phi) = j_l(k_{ln} r) Y_{lm}(\theta, \phi)
+$$
+
+where \(k_{ln}\) is determined by the boundary condition on the spherical Bessel derivative \(j_l'(k_{ln} R) = 0\).
+
+The acoustic density perturbation is \(\delta\rho = (P_0 / c_s^2) \Psi(\mathbf x)\), and the induced G-free gravitational potential solves the Poisson system:
+
+$$
+\nabla^2 \Phi^{(G\text{-free})} = 4\pi \frac{P_0}{c_s^2} \Psi(\mathbf x).
+$$
+
+Target points on physical cavity walls, caps, and rims are singular and raise a `ValueError`.
 
 ## Parameters and calculation paths
 
@@ -153,9 +202,9 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
-- Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
-- Cylinder: an unpublished design note (real-mode normalization, exact overlaps, gap-selected transforms); #cylinder-rigorous-tail-coefficients (outward omitted-integral bounds); G_SI applied once.
+- Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); `G_SI` applied once.
+- Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (`gen1_cavity_v1` runtime estimates and componentwise rigorous tails).
+- Cylinder: an unpublished design note (real-mode normalization, exact overlaps, gap-selected transforms); #cylinder-rigorous-tail-coefficients (outward omitted-integral bounds); `G_SI` applied once.
 - No external bibliographic DOI is recorded by these entries.
 
 ## Verification and applicability

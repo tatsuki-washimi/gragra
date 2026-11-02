@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
-**Geometry:** cylinder
+**Geometry:** `cylinder`
 
 Finite uniform-density cylinder with an on-axis closed form and separate general-position numerical and analytic paths
 
@@ -26,7 +26,7 @@ The finite solid cylinder has center \(\mathbf c\), radius \(R>0\), height \(H>0
 
 *Schematic geometry; dimensions are not to scale.*
 
-- Cylinder geometry in its frame; high-level evaluator transforms arbitrary target positions to geometry frame and calls general-point analytic cylinder triple. It is not on-axis-restricted. Low-level cylinder_axis_observables remains a distinct axis-only API; general numerical and analytic APIs have separate algorithm paths.
+- Cylinder geometry in its frame; high-level evaluator transforms arbitrary target positions to geometry frame and calls general-point analytic cylinder triple. It is not on-axis-restricted. Low-level `cylinder_axis_observables` remains a distinct axis-only API; general numerical and analytic APIs have separate algorithm paths.
 
 ### Equations
 
@@ -79,11 +79,32 @@ separate numerical-quadrature or elliptic/series paths.
 | `cylinder_axis_observables` | `targets_m` | array-like (M, 3) | required | Evaluation targets strictly on the symmetry axis |
 | `cylinder_observables` | `quadrature_order` | int | 32 | Gauss-Legendre numerical quadrature order for general points |
 | `cylinder_analytic_observables` | `rotation_matrix` | array-like (3, 3) \| None | None | Optional rotation matrix for analytic off-axis path |
+| `cylinder_acceleration_gradient_g_free` | `center_m` | array-like (3,) | required | Cylinder center coordinates in meters |
+| `cylinder_acceleration_gradient_g_free` | `radius_m` | float | required | Cylinder circular radius R > 0 in meters |
+| `cylinder_acceleration_gradient_g_free` | `height_m` | float | required | Cylinder full height H > 0 in meters |
+| `cylinder_acceleration_gradient_g_free` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
+| `cylinder_acceleration_gradient_g_free` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters (rejects material boundary) |
+| `cylinder_acceleration_gradient_g_free` | `rotation_matrix` | array-like (3, 3) \| None | None (kw-only) | Optional rotation matrix mapping local cylinder frame to world |
+| `cylinder_analytic_observables_g_free` | `center_m` | array-like (3,) | required | Cylinder center coordinates in meters |
+| `cylinder_analytic_observables_g_free` | `radius_m` | float | required | Cylinder circular radius R > 0 in meters |
+| `cylinder_analytic_observables_g_free` | `height_m` | float | required | Cylinder full height H > 0 in meters |
+| `cylinder_analytic_observables_g_free` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
+| `cylinder_analytic_observables_g_free` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters (rejects material boundary) |
+| `cylinder_analytic_observables_g_free` | `rotation_matrix` | array-like (3, 3) \| None | None (kw-only) | Optional rotation matrix mapping local cylinder frame to world |
+| `cylinder_acceleration_gradient` | `center_m` | array-like (3,) | required | Cylinder center coordinates in meters |
+| `cylinder_acceleration_gradient` | `radius_m` | float | required | Cylinder circular radius R > 0 in meters |
+| `cylinder_acceleration_gradient` | `height_m` | float | required | Cylinder full height H > 0 in meters |
+| `cylinder_acceleration_gradient` | `density_kg_m3` | float | required | Uniform mass density in kg/m³ |
+| `cylinder_acceleration_gradient` | `targets_m` | array-like (M, 3) | required | Evaluation target coordinates in meters (rejects material boundary) |
+| `cylinder_acceleration_gradient` | `rotation_matrix` | array-like (3, 3) \| None | None (kw-only) | Optional rotation matrix mapping local cylinder frame to world |
 
 #### API return values
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
+| `cylinder_acceleration_gradient_g_free` | tuple[FloatArray, FloatArray] | Static | a: kg/m², Γ: kg/m³ | (acceleration: (M, 3), gradient: (M, 3, 3)) | Analytic G-free acceleration vector and full gravity-gradient tensor via elliptic functions |
+| `cylinder_analytic_observables_g_free` | GFreeGravityValues | Static | Φ: kg/m, a: kg/m², Γ: kg/m³ | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Full G-free analytic observables container with infinity-zero potential convention |
+| `cylinder_acceleration_gradient` | tuple[np.ndarray, np.ndarray] | Static | a: m/s², Γ: s⁻² | (acceleration: (M, 3), gradient: (M, 3, 3)) | Analytic SI acceleration vector and full gravity-gradient tensor via elliptic functions |
 | `cylinder_analytic_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | Full-space analytic cylinder observables with infinity-zero potential convention |
 | `cylinder_axis_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | On-axis closed-form SI potential, axial acceleration, and diagonal gradient |
 | `cylinder_observables` | GravityObservables | Static | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (M,), acceleration: (M, 3), gradient: (M, 3, 3) | General-point finite cylinder SI observables via numerical quadrature / series |
@@ -204,7 +225,7 @@ Existing public documentation and original formulation context:
 
 Existing scientific test code and historical saved results are catalogued separately. Registered representative output-contract probes are run during catalogue validation; they confirm selected API outputs, not scientific accuracy.
 
-- [`tests/test_analytic_cylinder_potential.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_potential.py) and [`tests/test_analytic_cylinder_offaxis.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_offaxis.py) implement independent reference comparisons and boundaries. formula ledger names oracle metadata and acceptance for newer cylinder/SCA lines; do not treat these as current revision reruns. On-axis validation report gives boundary tolerances 1e-12 R and 1e-12 H. catalogue cylinder_axis_si is output contract only.
+- [`tests/test_analytic_cylinder_potential.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_potential.py) and [`tests/test_analytic_cylinder_offaxis.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_analytic_cylinder_offaxis.py) implement independent reference comparisons and boundaries. formula ledger names oracle metadata and acceptance for newer cylinder/SCA lines; do not treat these as current revision reruns. On-axis validation report gives boundary tolerances 1e-12 R and 1e-12 H. catalogue `cylinder_axis_si` is output contract only.
 
 #### Registered representative output probes
 

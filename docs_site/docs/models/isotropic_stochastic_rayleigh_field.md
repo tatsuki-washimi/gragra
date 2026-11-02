@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic seismic  
-**Geometry:** halfspace
+**Geometry:** `halfspace`
 
 Multiple test masses at depth; acceleration CSD
 
@@ -24,16 +24,31 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *Isotropic Rayleigh field at single target depth z yielding 3x3 diagonal acceleration CSD tensor diag(1/2, 1/2, 1).*
 
-Free-surface half-space geometry, test masses below surface; no arbitrary cavity/modal/mesh visualization. plot_shape only selected basic solids.
+Free-surface half-space geometry, test masses below surface; no arbitrary cavity/modal/mesh visualization. `plot_shape` only selected basic solids.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For an isotropic stochastic field of Rayleigh waves in an elastic halfspace at depth \(z \ge 0\) beneath a traction-free surface (\(z = 0\)):
 
-- Evaluated in the elastic ground half-space at depth \(z &gt; 0\) beneath a free surface at \(z = 0\). Rayleigh wavenumber is \(k_R = 2\pi f / v_R\) with \(q = k_R / k_P\), \(s = k_R / k_S\), and \(\zeta = \sqrt{q/s}\).
-- Depth coupling factor: \(\gamma = \frac{1 - \zeta}{q - \zeta}\), and amplitude factor \(A(z) = 2\pi \rho \gamma e^{-k_R z}\).
-- G-free acceleration CSD tensor: \(\mathbf S_a^{(G\text{-free})}(f) = A^2(z) S_\xi(f) \operatorname{diag}\left(\frac{1}{2}, \frac{1}{2}, 1\right)\), where \(S_\xi(f)\) is the one-sided surface vertical displacement PSD in \(\mathrm{m^2/Hz}\). Off-diagonal terms vanish under ideal isotropy.
-- The horizontal diagonal reproduces Harms (2019) Eq. (112). Physical SI CSD multiplies by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f)\) in \(\mathrm{(m/s^2)^2/Hz}\).
+With Rayleigh wavenumber \(k_R = 2\pi f / c_R\) and dimensionless decay parameters \(q = \sqrt{1 - (c_R/v_P)^2}\), \(s = \sqrt{1 - (c_R/v_S)^2}\), and \(\zeta = \sqrt{q/s}\), the depth-dependent coupling amplitude factor is:
+
+$$
+A(z) = 2\pi \rho \left(\frac{1 - \zeta}{q - \zeta}\right) e^{-k_R z}.
+$$
+
+The G-free acceleration cross-spectral density (CSD) tensor is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = A^2(z) S_\xi(f) \operatorname{diag}\left(\frac{1}{2}, \frac{1}{2}, 1\right)
+$$
+
+where \(S_\xi(f)\) is the one-sided surface vertical displacement PSD in \(\mathrm{m^2/Hz}\). All off-diagonal components vanish identically under ideal spatial isotropy.
+
+Physical SI acceleration CSD tensors in units of \(\mathrm{(m/s^2)^2/Hz}\) are obtained by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
+$$
 
 ## Parameters and calculation paths
 
@@ -46,7 +61,7 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 | `rayleigh_isotropic_acceleration_csd` | `targets_m` | ArrayLike (M, 3) | required | Observation target coordinates strictly in ground halfspace (z > 0) in meters |
 | `rayleigh_isotropic_acceleration_csd` | `density_kg_m3` | float | required (kw-only) | Subsurface ground mass density in kg/m³ (positive) |
 | `rayleigh_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
-| `rayleigh_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (v_P^2 > 4/3 v_S^2) |
+| `rayleigh_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (\(v_P^2 > \frac{4}{3} v_S^2\)) |
 | `rayleigh_isotropic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
 | `rayleigh_isotropic_acceleration_csd` | `surface_vertical_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided vertical surface displacement PSD in m²/Hz |
 
@@ -54,7 +69,7 @@ Free-surface half-space geometry, test masses below surface; no arbitrary cavity
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
-| `rayleigh_isotropic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | (N_targets, 3, 3) complex128 array | One-sided 3x3 acceleration cross-spectral density matrix for isotropic Rayleigh noise at depth z |
+| `rayleigh_isotropic_acceleration_csd` | ndarray | CSD | a: (m/s²)²/Hz | \((N_{\mathrm{targets}}, 3, 3)\) complex128 array | One-sided 3x3 acceleration cross-spectral density matrix for isotropic Rayleigh noise at depth z |
 
 #### Mathematical symbols and notation
 

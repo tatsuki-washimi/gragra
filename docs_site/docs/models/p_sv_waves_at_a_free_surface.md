@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
-**Geometry:** halfspace
+**Geometry:** `halfspace`
 
 Homogeneous elastic halfspace; incidence, reflection and mode conversion
 
@@ -210,7 +210,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- Catalogue `output_contracts` are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

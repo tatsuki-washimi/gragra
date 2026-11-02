@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
-**Geometry:** cuboid
+**Geometry:** `cuboid`
 
 Rotated finite prism and target-frame response
 
@@ -29,11 +29,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For an arbitrarily oriented cuboid centered at \(\mathbf c\) with rotation matrix \(\mathbf Q \in \mathrm{SO}(3)\) mapping coordinates from the cuboid body frame to the world frame:
 
-- Applies an explicit proper rotation matrix \(\mathbf Q \in \mathrm{SO}(3)\) mapping local cuboid frame coordinates to world coordinates.
-- Potential is invariant: \(\Phi(\mathbf x) = \Phi_{\mathrm{loc}}(\mathbf Q^T(\mathbf x - \mathbf c))\). Acceleration and gravity-gradient tensor transform covariantly: \(\mathbf a = \mathbf Q \mathbf a_{\mathrm{loc}}\), \(\mathbf\Gamma = \mathbf Q \mathbf\Gamma_{\mathrm{loc}} \mathbf Q^T\).
-- Interior and exterior Poisson/Laplace trace conditions and boundary rejection behavior match the aligned cuboid.
+The target coordinates in the body frame are:
+
+$$
+\mathbf x_{\mathrm{body}} = \mathbf Q^T (\mathbf x - \mathbf c)
+$$
+
+The gravitational observables transform covariantly from the body-frame field:
+
+$$
+\begin{aligned}
+\Phi(\mathbf x) &= \Phi_{\mathrm{body}}(\mathbf x_{\mathrm{body}}), \\
+\mathbf a(\mathbf x) &= \mathbf Q \mathbf a_{\mathrm{body}}(\mathbf x_{\mathrm{body}}), \\
+\mathbf\Gamma(\mathbf x) &= \mathbf Q \mathbf\Gamma_{\mathrm{body}}(\mathbf x_{\mathrm{body}}) \mathbf Q^T.
+\end{aligned}
+$$
+
+Exterior targets satisfy the Laplace trace condition \(\mathrm{tr}(\mathbf\Gamma) = 0\), while interior targets satisfy the Poisson equation \(\mathrm{tr}(\mathbf\Gamma) = -4\pi G\rho\). Boundary points on cuboid faces, edges, or vertices are strictly rejected.
 
 ## Parameters and calculation paths
 

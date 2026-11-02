@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
-**Geometry:** cavity, shell
+**Geometry:** `cavity`, `shell`
 
 Elastic displacement response, cavity wall and finite-shell boundary contributions
 
@@ -28,11 +28,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For a finite spherical shell of inner radius \(a\), outer radius \(R\), and uniform mass density \(\rho\) under an incident plane harmonic compressional P-wave displacement \(\mathbf u(\mathbf x, t) = \mathbf\xi e^{i(\mathbf k\cdot\mathbf x - \omega t)}\), the center acceleration decomposes into bulk and boundary contributions (ANNA v4, arXiv:2603.15157v4, Section 4.1):
 
-- For a finite spherical shell (inner radius \(a\), outer radius \(R\), density \(\rho\)) under a plane harmonic P-wave displacement \(\mathbf\xi e^{i(\mathbf k\cdot\mathbf x - \omega t)}\), center acceleration decomposes as: \(\mathbf a_{\mathrm{bulk}} = 4\pi G \rho [j_0(ka) - j_0(kR)] \mathbf\xi\); \(\mathbf a_{\mathrm{inner\_wall}} = 4\pi G \rho \left[\frac{2 j_1(ka)}{ka} - j_0(ka)\right] \mathbf\xi\); \(\mathbf a_{\mathrm{outer\_boundary}} = 4\pi G \rho \left[j_0(kR) - \frac{2 j_1(kR)}{kR}\right] \mathbf\xi\); total \(\mathbf a_{\mathrm{total}} = 8\pi G \rho \left[\frac{j_1(ka)}{ka} - \frac{j_1(kR)}{kR}\right] \mathbf\xi\) (ANNA v4, arXiv:2603.15157v4, Section 4.1).
-- Difference with infinite medium: \(\Delta\mathbf a = 8\pi G \rho \left[\frac{j_1(kR)}{kR}\right] \mathbf\xi\) for \(k &gt; 0\).
-- Broader high-level cavity and shell models evaluate potential, acceleration, and gradient (\(\Phi, \mathbf a, \mathbf\Gamma\)) at general observation targets using spherical Bessel and Legendre series.
+$$
+\begin{aligned}
+\mathbf a_{\mathrm{bulk}} &= 4\pi G\rho \left[ j_0(ka) - j_0(kR) \right] \mathbf\xi, \\
+\mathbf a_{\mathrm{inner\_wall}} &= 4\pi G\rho \left[ \frac{2 j_1(ka)}{ka} - j_0(ka) \right] \mathbf\xi, \\
+\mathbf a_{\mathrm{outer\_boundary}} &= 4\pi G\rho \left[ j_0(kR) - \frac{2 j_1(kR)}{kR} \right] \mathbf\xi.
+\end{aligned}
+$$
+
+The total center acceleration is:
+
+$$
+\mathbf a_{\mathrm{total}} = \mathbf a_{\mathrm{bulk}} + \mathbf a_{\mathrm{inner\_wall}} + \mathbf a_{\mathrm{outer\_boundary}} = 8\pi G\rho \left[ \frac{j_1(ka)}{ka} - \frac{j_1(kR)}{kR} \right] \mathbf\xi
+$$
+
+where \(j_0(x) = \sin(x)/x\) and \(j_1(x) = \sin(x)/x^2 - \cos(x)/x\) are spherical Bessel functions of the first kind.
+
+The difference relative to an infinite homogeneous medium is:
+
+$$
+\Delta\mathbf a = \mathbf a_{\mathrm{infinite}} - \mathbf a_{\mathrm{total}} = 8\pi G\rho \left[ \frac{j_1(kR)}{kR} \right] \mathbf\xi \qquad (k > 0).
+$$
 
 ## Parameters and calculation paths
 
@@ -62,7 +80,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 |---|---|---|---|---|---|
 | `spherical_cavity` | SphericalCavityModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level seismic spherical cavity model evaluated via .at(targets).run() |
 | `spherical_shell` | SphericalShellModel | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with complex Astropy Quantities | High-level finite spherical shell model evaluated via .at(targets).run() |
-| `spherical_shell_p_acceleration_components` | SphericalShellPComponents | Phasor | a: m/s² | total: (1, 3), bulk: (1, 3), inner_wall: (1, 3), outer_boundary: (1, 3) | Component decomposition of P-wave cavity acceleration (bulk, inner wall, outer boundary) |
+| `spherical_shell_p_acceleration_components` | SphericalShellPComponents | Phasor | a: m/s² | `total`: (1, 3), `bulk`: (1, 3), `inner_wall`: (1, 3), `outer_boundary`: (1, 3) | Component decomposition of P-wave cavity acceleration (bulk, inner wall, outer boundary) |
 
 #### Mathematical symbols and notation
 
@@ -162,7 +180,7 @@ Existing public documentation and original formulation context:
 
 Existing tests/docs/results are evidence records only; none rerun. Shell validation records a fixed 24-case matrix and tolerances, but those runs were before candidate and raw artifacts external to repo.
 
-- U10 cases: b=10m, a/b=.2,.8,.99,.9999; kb=.01,.8,5; P/S; rho=2300 kg/m³; ξ=1e-9(1+.4i)m; center/offaxis/inner/material/external targets. Acceptance=1e-12 Q_scale+r_Q norm(reference), r_Q=(1e-10,1e-10,1e-9); ratios recorded, reference &lt;=0.1. No elastic scattering comparison. P center formula test implementation [`tests/test_u10_spherical_shell_general.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_u10_spherical_shell_general.py). Separate legacy P helper documented ANNA formula. Historical numerical artifacts are stored outside the public repository and were not reproduced or inspected for this catalogue update.
+- U10 cases: b=10m, a/b=.2,.8,.99,.9999; kb=.01,.8,5; P/S; rho=2300 kg/m³; ξ=1e-9(1+.4i)m; center/offaxis/inner/material/external targets. Acceptance=1e-12 \(Q_{\mathrm{scale}} + r_Q\) norm(reference), \(r_Q\)=(1e-10,1e-10,1e-9); ratios recorded, reference &lt;=0.1. No elastic scattering comparison. P center formula test implementation [`tests/test_u10_spherical_shell_general.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_u10_spherical_shell_general.py). Separate legacy P helper documented ANNA formula. Historical numerical artifacts are stored outside the public repository and were not reproduced or inspected for this catalogue update.
 
 ### Applicability and limitations
 
@@ -178,7 +196,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- catalogue output_contracts empty; no runnable representative probe specified in ledger.
+- catalogue `output_contracts` empty; no runnable representative probe specified in ledger.
 - Saved artifact root external and historical; not re-run or inspected here.
 - No ANNA execution or elastically scattered field comparison claimed.
 
