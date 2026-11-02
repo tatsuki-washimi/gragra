@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
-**Geometry:** channel
+**Geometry:** `channel`
 
 Deterministic transient Fourier amplitude, **not** a stationary ASD
 
@@ -22,18 +22,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Water-channel edge step volume perturbation schematic](../assets/models/water_channel_inflow_step.svg)
 
-*Single Heaviside step displacement of water volume ΔV at coordinate x_0 inducing transient acceleration at perpendicular distance D.*
+*Single Heaviside step displacement of water volume \(\Delta V\) at coordinate \(x_0\) inducing transient acceleration at perpendicular distance \(D\).*
 
 An endpoint step in a linear channel. No dedicated plotting or reuse mapping was identified; the general shape helper targets basic static shapes.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For a transient deterministic volume inflow step event \(\Delta V\) occurring at inflow coordinate \(x_0\) in an open water channel at perpendicular horizontal distance \(D > 0\):
 
-- Models the transient gravitational perturbation produced by a single deterministic Heaviside volume step event \(\Delta V\) at channel inflow coordinate \(x_0\) at perpendicular distance \(D &gt; 0\).
-- Single-event acceleration Fourier amplitude: \(|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}\) with physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\).
-- Single-event strain Fourier spectral amplitude: \(|h(f)| = \frac{|\Delta a_x(f)|}{(2\pi f)^2 L_{\mathrm{arm}}}\), where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text{ m}\)).
-- Distinction: This is a single deterministic transient event spectrum, NOT a stationary noise ASD (units \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\)).
+The single-event acceleration Fourier amplitude in physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\) is:
+
+$$
+|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}.
+$$
+
+The single-event differential gravitational strain Fourier amplitude is:
+
+$$
+|h(f)| = \frac{|\Delta a_x(f)|}{(2\pi f)^2 L_{\mathrm{arm}}}
+$$
+
+where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text{ m}\)).
+
+*Note: This formulation represents the Fourier transform of a single deterministic transient Heaviside event, not a stationary stochastic ASD.*
 
 ## Parameters and calculation paths
 
@@ -53,7 +64,7 @@ An endpoint step in a linear channel. No dedicated plotting or reuse mapping was
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
-| `water_edge_step_fourier_amplitude` | ndarray | Fourier | a: (m/s²)·s | (N_freq,) complex128 array | Fourier spectral amplitude of single transient acceleration step during water channel inflow |
+| `water_edge_step_fourier_amplitude` | ndarray | Fourier | a: (m/s²)·s | \((N_{\mathrm{freq}},)\) complex128 array | Fourier spectral amplitude of single transient acceleration step during water channel inflow |
 
 #### Mathematical symbols and notation
 
@@ -127,7 +138,7 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-test_analytic_water.py has equation comparison rtol=1e-15; test code only, not run here; no committed executed result located.
+`test_analytic_water.py` has equation comparison rtol=1e-15; test code only, not run here; no committed executed result located.
 
 
 ### Applicability and limitations

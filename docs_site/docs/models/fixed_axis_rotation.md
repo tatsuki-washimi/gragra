@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
-**Geometry:** point_cloud
+**Geometry:** `point_cloud`
 
 Rotating discrete mass cloud
 
@@ -24,15 +24,30 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *Point-mass cloud rotating at constant angular velocity Ω about fixed rotation axis n̂.*
 
-- plot_shape supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
+- `plot_shape` supports a limited set of geometry primitives; arbitrary point-cloud trajectories were not confirmed.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For point masses \(m_i\) revolving at constant angular velocity \(\omega\) about an axis through origin with unit direction vector \(\hat{\mathbf n}_{\mathrm{axis}}\), the position of mass \(i\) at time \(t\) with initial angle \(\theta_{0,i}\) is:
 
-- Source mass positions rotate rigidly around a fixed axis defined by origin \(\mathbf x_{\mathrm{orig}}\) and unit axis \(\hat{\mathbf n}\): \(\mathbf x_i(t) = \mathbf x_{\mathrm{orig}} + \mathbf R(\hat{\mathbf n}, \theta(t)) (\mathbf x_{\mathrm{body},i} - \mathbf x_{\mathrm{orig}})\), where \(\theta(t) = \theta_0 + \omega (t - t_{\mathrm{epoch}})\).
-- At target \(\mathbf x\) with offset \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\|\), each point mass contributes instantaneous Newtonian field: \(\Phi = -G \sum_i \frac{m_i}{r_i}\), \(\mathbf a = -G \sum_i \frac{m_i \mathbf r_i}{r_i^3}\), \(\mathbf\Gamma = G \sum_i m_i \left[ \frac{3 \mathbf r_i \otimes \mathbf r_i}{r_i^5} - \frac{\mathbf I}{r_i^3} \right]\).
-- Evaluated at discrete time series sampling points. Single-source target collisions (\(r_i = 0\)) are strictly rejected.
+$$
+\mathbf x_i(t) = \mathbf R(\hat{\mathbf n}_{\mathrm{axis}}, \omega t + \theta_{0,i}) \, \mathbf x_{i,0}.
+$$
+
+Let \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) with \(r_i(t) = \|\mathbf r_i(t)\| > 0\). The instantaneous gravitational potential and acceleration are:
+
+$$
+\Phi(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \qquad
+\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}.
+$$
+
+The instantaneous gravity-gradient tensor is:
+
+$$
+\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
+$$
+
+Fourier-series decomposition yields harmonic components at integer multiples \(k\omega\) of the rotational frequency.
 
 ## Parameters and calculation paths
 
@@ -156,7 +171,7 @@ An independent oracle-comparison test exists. It was not run for this update.
 
 ### Applicability and limitations
 
-- Requires PointMassCloud and TimeSampling. angle_epoch is independent of the sampling epoch.
+- Requires `PointMassCloud` and `TimeSampling`. `angle_epoch` is independent of the sampling epoch.
 
 **Scope note:** Point-mass clouds only; collisions are rejected during evaluation.
 

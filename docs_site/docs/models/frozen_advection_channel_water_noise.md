@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
-**Geometry:** channel
+**Geometry:** `channel`
 
 Narrow water channel; transfer functions, acceleration/strain ASD
 
@@ -92,7 +92,7 @@ $$
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
 | `water_channel_advection_observables` | GravityObservables | Phasor | Φ: m²/s², a: m/s², Γ: s⁻² | potential: (1,), acceleration: (1, 3), gradient: (1, 3, 3) | Direct SI gravity observables for advected sinusoidal water channel wave |
-| `water_channel_advection_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Acceleration amplitude spectral density at sensor distance D across specified frequencies |
+| `water_channel_advection_asd` | ndarray | ASD | a: (m/s²)/√Hz | \((N_{\mathrm{freq}},)\) float64 array | Acceleration amplitude spectral density at sensor distance D across specified frequencies |
 
 #### Mathematical symbols and notation
 
@@ -175,7 +175,7 @@ Existing public documentation and original formulation context:
 - Atsushi Nishizawa (2021-03-31), 'Water Newtonian noise for KAGRA' (JGW-T1706440-v2).
 - Atsushi Nishizawa (2021-09-03), 'Edge contribution of a water channel to a Newtonian noise' (JGW-T2214308-v1).
 - Kentaro Somiya et al. (2019), TAUP2019 (JGW-T1910792); Somiya & Nishizawa (2017), KAGRA f2f.
-- Guide marks historical Chen 2016 notes / Somiya TAUP 2019 slide formulas ORIGINAL_SOURCE_UNVERIFIED; it does not claim identity with unverified external notebooks. The narrow-channel uncorrelated-cell derivation is explicitly INDEPENDENT_DERIVATION.
+- Guide marks historical Chen 2016 notes / Somiya TAUP 2019 slide formulas `ORIGINAL_SOURCE_UNVERIFIED`; it does not claim identity with unverified external notebooks. The narrow-channel uncorrelated-cell derivation is explicitly `INDEPENDENT_DERIVATION`.
 
 ## Verification and applicability
 

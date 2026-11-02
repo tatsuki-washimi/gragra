@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
-**Geometry:** cavity
+**Geometry:** `cavity`
 
 Neumann modes in a sphere, cuboid or cylinder; geometry-dependent normalization and numerical limits
 
@@ -28,13 +28,42 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For standing acoustic modes inside a rigid cavity filled with air of sound speed \(c_s\) and ambient density \(\rho_0\), rigid wall boundary conditions require the normal gradient of acoustic pressure to vanish:
 
-- Modes satisfy the Helmholtz equation \((\nabla^2 + k^2)\Psi = 0\) with rigid Neumann boundary condition \(\partial_n \Psi = 0\) on the cavity boundary; frequency is derived as \(f = c_s k / (2\pi)\). The static zero mode (\(k=0\)) is excluded.
-- Cuboid modes: \(\Psi = N \prod_{j\in\{x,y,z\}} \cos\left(\frac{n_j \pi (x_j + L_j/2)}{L_j}\right)\) with \(k^2 = \sum_j (n_j \pi / L_j)^2\) and \(N = 2^{r/2}\) where \(r\) is the number of non-zero indices, giving unit spatial RMS.
-- Cylinder modes: \(\Psi \propto J_m(\alpha_{mn} r/R) A_m(\phi) \cos(q\pi (z+H/2)/H)\) with \(J'_m(\alpha_{mn}) = 0\) and \(k^2 = (\alpha_{mn}/R)^2 + (q\pi/H)^2\).
-- Sphere modes: \(\Psi_{lmn}(r,\theta,\phi) = j_l(k_{ln} r) Y_{lm}(\theta,\phi)\) where \(j'_l(k_{ln} R) = 0\). Evaluation uses exact closed-form radial solutions.
-- Density perturbation is \(\delta\rho = (P / c_s^2) \Psi\). Potential and fields vanish identically outside the cavity for non-radiating modes or use boundary multipole expansions. Targets on physical cavity walls, caps, and rims are rejected.
+$$
+\left. \frac{\partial P}{\partial n} \right|_{\partial V} = 0.
+$$
+
+**1. Rectangular cuboid cavity** (\(L_x \times L_y \times L_z\)) with mode numbers \((n_x, n_y, n_z)\):
+
+$$
+P(\mathbf x) = P_0 \cos\left(\frac{n_x \pi x}{L_x}\right) \cos\left(\frac{n_y \pi y}{L_y}\right) \cos\left(\frac{n_z \pi z}{L_z}\right), \qquad
+\omega = c_s \pi \sqrt{\sum_{j=x,y,z} \left(\frac{n_j}{L_j}\right)^2}.
+$$
+
+**2. Circular cylinder cavity** (radius \(R\), height \(H\)) with mode indices \((m, n, l)\):
+
+$$
+P(r, \theta, z) = P_0 J_m\left(\frac{\alpha_{mn} r}{R}\right) \cos(m\theta) \cos\left(\frac{l \pi z}{H}\right), \qquad
+\omega = c_s \sqrt{\left(\frac{\alpha_{mn}}{R}\right)^2 + \left(\frac{l\pi}{H}\right)^2}
+$$
+
+where \(\alpha_{mn}\) is the \(n\)-th zero of the derivative of Bessel function \(J_m'(x) = 0\).
+
+**3. Spherical cavity** (radius \(R\)) with radial index \(n\) and angular index \(l\):
+
+$$
+P(r, \theta, \phi) = P_0 j_l\left(\frac{\beta_{ln} r}{R}\right) Y_{lm}(\theta, \phi), \qquad
+\omega = c_s \frac{\beta_{ln}}{R}
+$$
+
+where \(\beta_{ln}\) is the \(n\)-th zero of spherical Bessel derivative \(j_l'(x) = 0\).
+
+The induced G-free gravitational potential solves the inhomogeneous Helmholtz/Poisson system:
+
+$$
+\nabla^2 \Phi^{(G\text{-free})} = 4\pi \frac{P(\mathbf x)}{c_s^2}.
+$$
 
 ## Parameters and calculation paths
 
@@ -153,9 +182,9 @@ Existing public documentation and original formulation context:
 
 **Bibliographic inventory:** located.
 
-- Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); G_SI applied once.
-- Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (gen1_cavity_v1 runtime estimates and componentwise rigorous tails).
-- Cylinder: an unpublished design note (real-mode normalization, exact overlaps, gap-selected transforms); #cylinder-rigorous-tail-coefficients (outward omitted-integral bounds); G_SI applied once.
+- Sphere: an unpublished design note (approved eigenmode, RMS normalization, potential and Cartesian derivatives); `G_SI` applied once.
+- Cuboid: an unpublished design note (separable source-volume Gaussian transform, interval derivatives, integrated-by-parts tails); an unpublished design note (`gen1_cavity_v1` runtime estimates and componentwise rigorous tails).
+- Cylinder: an unpublished design note (real-mode normalization, exact overlaps, gap-selected transforms); #cylinder-rigorous-tail-coefficients (outward omitted-integral bounds); `G_SI` applied once.
 - No external bibliographic DOI is recorded by these entries.
 
 ## Verification and applicability

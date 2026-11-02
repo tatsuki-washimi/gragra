@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic atmospheric  
-**Geometry:** halfspace, cavity
+**Geometry:** `halfspace`, `cavity`
 
 Surface, underground and centered-cavern idealizations; acceleration CSD
 
@@ -84,7 +84,7 @@ $$
 
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
-| `surface_isotropic_acoustic_acceleration_csd` | `sound_speed_m_s` | float | required (kw-only) | Speed of sound in air c_s in m/s (positive) |
+| `surface_isotropic_acoustic_acceleration_csd` | `sound_speed_m_s` | float | required (kw-only) | Speed of sound in air \(c_s\) in m/s (positive) |
 | `surface_isotropic_acoustic_acceleration_csd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
 | `surface_isotropic_acoustic_acceleration_csd` | `surface_pressure_psd_pa2_hz` | float \| ArrayLike | required (kw-only) | One-sided surface pressure PSD in Pa²/Hz |
 | `underground_isotropic_acoustic_acceleration_csd` | `depth_m` | float | required (kw-only) | Detector depth below surface h in meters (h >= 0) |
@@ -192,7 +192,7 @@ Existing public documentation and original formulation context:
 
 Test implementation records explicit A1/A2/A3 checks; tests were not run in this editorial review. No committed executed-result artifact for these exact test functions was identified.
 
-- [`tests/test_stochastic_acoustic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_acoustic.py) A1: c_s=343 m/s, pressure PSD=4e-4 Pa²/Hz, f=2 Hz; closed tensor equality rtol=0, atol=0; doubled-frequency 1/f² scaling rtol=2e-15.
+- [`tests/test_stochastic_acoustic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_acoustic.py) A1: \(c_s\)=343 m/s, pressure PSD=4e-4 Pa²/Hz, \(f\)=2 Hz; closed tensor equality rtol=0, atol=0; doubled-frequency 1/f² scaling rtol=2e-15.
 - A2 depth factor independent angular quadrature uses x={0,0.1,0.7,1,5,10,20,50}, scipy quad epsabs=epsrel=2e-14, limit=200; comparison rtol=2e-4, atol=2e-14. Test comment says implementation-conditioning, not final science acceptance.
 
 ### Applicability and limitations

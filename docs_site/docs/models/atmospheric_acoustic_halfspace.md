@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric acoustic  
-**Geometry:** halfspace
+**Geometry:** `halfspace`
 
 Plane acoustic wave and rigid-ground reflection
 
@@ -28,13 +28,35 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For acoustic pressure waves propagating in an atmospheric halfspace (\(z > 0\)) bounded by a rigid planar ground surface (\(z = 0\)), let \(c_s\) denote the atmospheric sound speed, \(f\) the acoustic frequency, and \(\omega = 2\pi f\).
 
-- The acoustic plane wave has frequency \(f\), sound speed \(c_s\), horizontal wavenumber \(q = k \sin\theta\), and vertical wavenumber \(k_z = k \cos\theta\), where \(k = 2\pi f / c_s\) and \(\theta \in (0, \pi/2]\) is the angle of incidence from zenith (normal incidence \(\theta=0\) is excluded; grazing incidence \(\theta=\pi/2\) is valid).
-- With horizontal wavevector \(\mathbf q = (q\cos\phi_0, q\sin\phi_0)\) and phase factor \(e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})}\), the surface pressure amplitude is \(P_0\). The G-free potential coefficient is \(C = \frac{4\pi P_0}{c_s^2 k^2}\).
-- In the atmospheric layer (\(z &gt; 0\)), \(\Phi^{(G\text{-free})} = C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} \left[\frac{1}{2} e^{-q z} - \cos(k_z z)\right]\), satisfying \(\nabla^2 \Phi^{(G\text{-free})} = 4\pi \delta\rho = -4\pi (P_0/c_s^2) e^{i \mathbf q \cdot \mathbf x_\perp} \cos(k_z z)\).
-- In the underground halfspace (\(z &lt; 0\)), density perturbation is zero and \(\Phi^{(G\text{-free})} = -\frac{1}{2} C e^{i \mathbf q \cdot (\mathbf x_\perp - \mathbf x_{0,\perp})} e^{q z}\), satisfying Laplace\'s equation \(\nabla^2 \Phi = 0\).
-- Acceleration and gradient are \(\mathbf a^{(G\text{-free})} = -\nabla \Phi^{(G\text{-free})}\) and \(\mathbf\Gamma^{(G\text{-free})} = -\nabla\nabla \Phi^{(G\text{-free})}\). SI observables multiply by \(G\).
+With horizontal wavenumber \(k_\rho = (\omega / c_s) \sin\theta\) and vertical wavenumber \(k_z = (\omega / c_s) \cos\theta\) (for angle of incidence \(0 \le \theta < \pi/2\)), the acoustic density perturbation is:
+
+$$
+\delta\rho(\mathbf x, t) = \frac{P_0}{c_s^2} \cos(k_z z) e^{i (\mathbf k_\rho \cdot \mathbf x_\perp - \omega t)}.
+$$
+
+The G-free gravitational potential in units of \(\mathrm{kg/m}\) evaluates as:
+
+Above ground (\(z > 0\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x, t) = \frac{2\pi P_0}{c_s^2 (k_\rho^2 + k_z^2)} \left[ e^{-k_\rho z} - 2 \cos(k_z z) \right] e^{i (\mathbf k_\rho \cdot \mathbf x_\perp - \omega t)}.
+$$
+
+Underground (\(z \le 0\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x, t) = -\frac{2\pi P_0}{c_s^2 (k_\rho^2 + k_z^2)} e^{k_\rho z} e^{i (\mathbf k_\rho \cdot \mathbf x_\perp - \omega t)}.
+$$
+
+Physical SI observables are obtained by multiplying by \(G\):
+
+$$
+\Phi^{(\mathrm{SI})} = G \Phi^{(G\text{-free})}, \qquad
+\mathbf a^{(\mathrm{SI})} = G \mathbf a^{(G\text{-free})}, \qquad
+\mathbf\Gamma^{(\mathrm{SI})} = G \mathbf\Gamma^{(G\text{-free})}.
+$$
 
 ## Parameters and calculation paths
 
@@ -46,7 +68,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 |---|---|---|---|---|
 | `acoustic_halfspace` | `halfspace` | HalfSpace | required | HalfSpace geometry representing atmospheric interface (z >= 0) |
 | `acoustic_halfspace` | `surface_pressure` | u.Quantity (pressure) | required | Acoustic surface pressure perturbation amplitude |
-| `acoustic_halfspace` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound in air c_s |
+| `acoustic_halfspace` | `sound_speed` | u.Quantity (speed) | required (kw-only) | Speed of sound in air \(c_s\) |
 | `acoustic_halfspace` | `frequency` | u.Quantity (frequency) | required (kw-only) | Acoustic wave frequency f in Hz |
 | `acoustic_halfspace` | `incidence_angle` | u.Quantity (angle) | required (kw-only) | Incidence angle theta from normal in (0, pi/2] (0 < theta <= pi/2) |
 | `acoustic_halfspace` | `azimuth` | u.Quantity (angle) | required (kw-only) | Horizontal propagation azimuth angle phi |
@@ -150,7 +172,7 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - The G-free air and ground solutions and interface conditions are specified in a non-public design note, which is not reproduced here.
-- source=gragra.constants.G_SI; detail=applied exactly once by the shared analytic bridge.
+- source=`gragra.constants.G_SI`; detail=applied exactly once by the shared analytic bridge.
 
 ## Verification and applicability
 

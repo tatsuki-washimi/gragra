@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
-**Geometry:** cuboid
+**Geometry:** `cuboid`
 
 Finite rectangular prism; static Newton field
 

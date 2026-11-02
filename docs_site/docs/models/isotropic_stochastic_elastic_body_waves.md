@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic seismic  
-**Geometry:** fullspace, cavity
+**Geometry:** `fullspace`, `cavity`
 
 Infinite-medium P field and idealized P/S cavity-center CSD
 
@@ -28,11 +28,38 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 
 ### Equations
 
-**Analytical formulation and field equations:**
+**1. Full-space isotropic P-waves (B1)** (Harms 2019 Eqs. 55, 60):
 
-- Full-space isotropic P-waves (B1): \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 S_{\xi,P}(f) \mathbf I_3\), where \(S_{\xi,P}(f)\) is the one-sided per-component P-displacement PSD (Harms 2019 Eqs. 55, 60).
-- Spherical cavity P/S-waves (B2): Evaluated at center of spherical cavity of radius \(R &gt; 0\) with wavenumbers \(k_P = 2\pi f / v_P\) and \(k_S = 2\pi f / v_S\). With spherical Bessel factors \(f_P = \frac{j_1(k_P R)}{k_P R}\) and \(f_S = \frac{j_1(k_S R)}{k_S R}\), the isotropic CSD is \(\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 [4 f_P^2 S_{\xi,P}(f) + f_S^2 S_{\xi,S}(f)] \mathbf I_3\) (Harms 2019 Eq. 65).
-- Physical SI CSD: Multiplies G-free CSD by \(G^2\): \(\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f)\) in \(\mathrm{(m/s^2)^2/Hz}\).
+$$
+\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 S_{\xi,P}(f) \, \mathbf I_3
+$$
+
+where \(S_{\xi,P}(f)\) is the one-sided per-component P-wave displacement PSD.
+
+**2. Spherical cavity isotropic P/S-waves (B2)** (Harms 2019 Eq. 65):
+
+Evaluated at the center of a spherical cavity of radius \(R > 0\) in an elastic medium with wavenumbers \(k_P = 2\pi f / v_P\) and \(k_S = 2\pi f / v_S\):
+
+Define the spherical Bessel suppression factors:
+
+$$
+f_P = \frac{j_1(k_P R)}{k_P R}, \qquad
+f_S = \frac{j_1(k_S R)}{k_S R}.
+$$
+
+The isotropic G-free acceleration CSD tensor is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 \left[ 4 f_P^2 S_{\xi,P}(f) + f_S^2 S_{\xi,S}(f) \right] \mathbf I_3
+$$
+
+where \(j_1(x) = \sin(x)/x^2 - \cos(x)/x\).
+
+Physical SI acceleration CSD tensors are obtained by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
+$$
 
 ## Parameters and calculation paths
 
@@ -47,7 +74,7 @@ B2 centered spherical cavity only, scattering neglected; arbitrary cavity geomet
 | `fullspace_p_isotropic_acceleration_csd` | `p_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided per-component P-wave displacement PSD in m²/Hz |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `radius_m` | float | required (kw-only) | Cavity radius R in meters (R > 0) |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `v_p_m_s` | float | required (kw-only) | Compressional P-wave speed in m/s |
-| `spherical_cavity_ps_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (0 < v_S < v_P) |
+| `spherical_cavity_ps_isotropic_acceleration_csd` | `v_s_m_s` | float | required (kw-only) | Shear S-wave speed in m/s (\(0 < v_S < v_P\)) |
 | `spherical_cavity_ps_isotropic_acceleration_csd` | `s_displacement_psd_m2_hz` | float \| ArrayLike | required (kw-only) | One-sided per-component S-wave displacement PSD in m²/Hz |
 
 #### API return values

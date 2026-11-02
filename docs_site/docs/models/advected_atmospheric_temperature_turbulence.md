@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** stochastic atmospheric  
-**Geometry:** atmosphere
+**Geometry:** `atmosphere`
 
 Frozen-flow hypothesis; acceleration PSD
 
@@ -22,7 +22,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Advected atmospheric temperature turbulence schematic](../assets/models/advected_temperature_turbulence.svg)
 
-*Turbulent temperature eddies advected by horizontal wind v past interferometer line-of-sight with closest approach r_min.*
+*Turbulent temperature eddies advected by horizontal wind \(v\) past interferometer line-of-sight with closest approach \(r_{\min}\).*
 
 Line-of-sight/minimum-approach geometry and wind angle are scalar model parameters; no scene/mesh/cavern geometry. Plot shape reuse not material.
 
@@ -68,10 +68,10 @@ $$
 |---|---|---|---|---|
 | `uniform_advection_temperature_acceleration_psd` | `density_kg_m3` | float | required (kw-only) | Ambient air mass density in kg/m³ (positive) |
 | `uniform_advection_temperature_acceleration_psd` | `temperature_k` | float | required (kw-only) | Ambient absolute temperature in Kelvin (T0 > 0) |
-| `uniform_advection_temperature_acceleration_psd` | `structure_coefficient_k_m_neg_p_over_2` | float | required (kw-only) | Temperature structure parameter c_T in K·m^(-p/2) |
+| `uniform_advection_temperature_acceleration_psd` | `structure_coefficient_k_m_neg_p_over_2` | float | required (kw-only) | Temperature structure parameter \(c_T\) in K·m^(-p/2) |
 | `uniform_advection_temperature_acceleration_psd` | `structure_exponent` | float | required (kw-only) | Power-law structure scaling exponent p in (0, 2) (p = 2/3 for Kolmogorov) |
 | `uniform_advection_temperature_acceleration_psd` | `wind_speed_m_s` | float | required (kw-only) | Advection wind speed v in m/s (v > 0) |
-| `uniform_advection_temperature_acceleration_psd` | `minimum_approach_m` | float | required (kw-only) | Closest approach distance from wind path to sensor r_min in meters |
+| `uniform_advection_temperature_acceleration_psd` | `minimum_approach_m` | float | required (kw-only) | Closest approach distance from wind path to sensor \(r_{\min}\) in meters |
 | `uniform_advection_temperature_acceleration_psd` | `wind_axis_angle_rad` | float | required (kw-only) | Angle theta between wind velocity and sensor projection axis in radians |
 | `uniform_advection_temperature_acceleration_psd` | `frequency_hz` | float \| ArrayLike | required (kw-only) | Evaluation frequency in Hz (f > 0) |
 
@@ -79,7 +79,7 @@ $$
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
-| `uniform_advection_temperature_acceleration_psd` | ndarray \| float | PSD | a: (m/s²)²/Hz | (N_freq,) float64 array or scalar | One-sided projected acceleration power spectral density along detector axis (T1) |
+| `uniform_advection_temperature_acceleration_psd` | ndarray \| float | PSD | a: (m/s²)²/Hz | \((N_{\mathrm{freq}},)\) float64 array or scalar | One-sided projected acceleration power spectral density along detector axis (T1) |
 
 #### Mathematical symbols and notation
 
@@ -164,13 +164,13 @@ Existing public documentation and original formulation context:
 
 Local unit and oracle test code exists; tests were not run in this editorial review. Formal execution protocols remain pending completion, so candidate test suites do not by themselves establish formal science acceptance.
 
-- [`tests/test_stochastic_temperature.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_temperature.py) BASE inputs rho=1.2 kg/m³, T=293 K, c_T=0.1 K m^(-p/2), p=2/3, wind=10 m/s, r_min=5 m, theta=0; geometry factor comparison at x={0.1,0.5,1,3,10} uses scipy quad epsabs=1e-13, epsrel=2e-12, limit=300, comparison rtol=3e-11, atol=1e-14. Large-x x=50 comparison uses rtol 0.02 parallel and 0.04 transverse.
+- [`tests/test_stochastic_temperature.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_stochastic_temperature.py) BASE inputs \(\rho\)=1.2 kg/m³, \(T\)=293 K, \(c_T\)=0.1 K m^(-p/2), \(p\)=2/3, wind=10 m/s, \(r_{\min}\)=5 m, \(\theta\)=0; geometry factor comparison at x={0.1,0.5,1,3,10} uses scipy quad epsabs=1e-13, epsrel=2e-12, limit=300, comparison rtol=3e-11, atol=1e-14. Large-x x=50 comparison uses rtol 0.02 parallel and 0.04 transverse.
 - Separate independent oracle test code uses mpmath 35/45 decimal precision at p={0.4, 2/3, 1.3}, x={0.07,1.7,13}; checks integral identity residual &lt;1e-28 and positive-tail bound. This is test code, not execution evidence.
 
 ### Applicability and limitations
 
 
-**Scope note:** Strict 0&lt;p&lt;2, positive T, wind, minimum approach, positive frequencies; density and c_T nonnegative. Taylor frozen flow, uniform straight advection, homogeneous isotropic structure-function assumptions.
+**Scope note:** Strict 0&lt;p&lt;2, positive T, wind, minimum approach, positive frequencies; density and \(c_T\) nonnegative. Taylor frozen flow, uniform straight advection, homogeneous isotropic structure-function assumptions.
 
 See the public verification and limitations guidance for test-specific conditions and interpretation:
 

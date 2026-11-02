@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
-**Geometry:** point
+**Geometry:** `point`
 
 Linearized point-mass or cloud phasor
 
@@ -28,11 +28,25 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For point masses \(m_i\) undergoing small harmonic translational oscillations \(\mathbf u_i(t) = \mathbf u_{0,i} e^{-i\omega t}\) about unperturbed positions \(\mathbf x_{0,i}\), let the unperturbed separation vector to target \(\mathbf x\) be:
 
-- For point masses \(m_i\) at equilibrium positions \(\mathbf x_{0,i}\) with offset \(\mathbf r_i = \mathbf x - \mathbf x_{0,i}\) (\(r_i = \|\mathbf r_i\|\)), subject to harmonic displacement \(\mathbf u_i(t) = \operatorname{Re}[\mathbf u_i e^{-2\pi i f (t - t_{\mathrm{ref}})}]\) (\(\|\mathbf u_i\| \ll r_i\)).
-- Potential phasor: \(\delta\Phi = -G \sum_i \frac{m_i (\mathbf r_i \cdot \mathbf u_i)}{r_i^3}\); acceleration phasor: \(\delta\mathbf a = G \sum_i m_i \left[ \frac{\mathbf u_i}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i}{r_i^5} \right]\).
-- Gravity-gradient phasor: \(\delta\mathbf\Gamma = G \sum_i m_i \left[ -\frac{3 (\mathbf u_i \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i + (\mathbf r_i \cdot \mathbf u_i)\mathbf I)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right]\). Uses peak phasor convention (no factor of 1/2).
+$$
+\mathbf r_i = \mathbf x - \mathbf x_{0,i}, \qquad r_i = \|\mathbf r_i\| > 0.
+$$
+
+The first-order perturbation in gravitational acceleration is:
+
+$$
+\delta\mathbf a(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{\mathbf u_i(t)}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf r_i}{r_i^5} \right].
+$$
+
+The first-order perturbation in the gravity-gradient tensor is:
+
+$$
+\delta\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ -\frac{3 \left( \mathbf u_i(t) \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i(t) + (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf I_3 \right)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i(t)) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right].
+$$
+
+The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \delta\mathbf\Gamma^T\) and \(\mathrm{tr}(\delta\mathbf\Gamma) = 0\).
 
 ## Parameters and calculation paths
 
@@ -43,7 +57,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | Function / Path | Parameter | Type / Format | Default | Description |
 |---|---|---|---|---|
 | `translational_oscillation` | `point_mass` | PointMass | required | Point mass object with mass and equilibrium coordinates |
-| `translational_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector xi_0 |
+| `translational_oscillation` | `amplitude` | u.Quantity (length 3-vector) | required | Displacement amplitude vector \(\boldsymbol\xi_0\) |
 | `translational_oscillation` | `frequency` | u.Quantity (frequency) | required | Oscillation frequency f in Hz |
 | `translational_oscillation` | `phase` | u.Quantity (angle) | required (kw-only) | Initial oscillation phase angle |
 | `translational_oscillation` | `frame` | Frame | required (kw-only) | Reference coordinate frame instance |
@@ -172,7 +186,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- Catalogue output_contracts are empty; this is a missing representative probe, not evidence of absent science.
+- Catalogue `output_contracts` are empty; this is a missing representative probe, not evidence of absent science.
 - No additional committed plot asset identified in these assigned API sources.
 
 *Publication scope: narrative summaries and links, not private derivation records, internal test artifacts or inventory JSON.*

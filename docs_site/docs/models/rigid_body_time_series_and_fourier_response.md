@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** rigid motion  
-**Geometry:** point_cloud
+**Geometry:** `point_cloud`
 
 Prescribed positions/rotations; periodic or finite-window Fourier evaluation
 
@@ -26,15 +26,29 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *Rigid-body time-domain motion (translation c(t) and rotation R(t)) and corresponding Fourier series harmonic response.*
 
-- plot_shape is not a Fourier trajectory renderer.
+- `plot_shape` is not a Fourier trajectory renderer.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+For a general rigid body represented as a cloud of point masses \(m_i\) at fixed body-frame coordinates \(\mathbf x_{\mathrm{body},i}\), undergoing prescribed center-of-mass translation \(\mathbf c(t)\) and rotation matrix \(\mathbf R(t) \in \mathrm{SO}(3)\):
 
-- Body kinematics follow general pose transformation \(\mathbf x(t) = \mathbf R(t) \mathbf x_{\mathrm{body}} + \mathbf c(t)\) with proper rotation \(\mathbf R(t) \in \mathrm{SO}(3)\) and translation \(\mathbf c(t)\).
-- Sampled time-series path evaluates instantaneous Newtonian field (\(\Phi, \mathbf a, \mathbf\Gamma\)) at discrete time sampling steps via rigid_motion_observable.
-- Continuous Fourier path integrates callable pose over time using Fourier convention \(\exp[-2\pi i f (t - t_{\mathrm{ref}})]\). For periodic motion, one-sided Fourier series amplitude coefficients satisfy \(A_0 = C_0, A_n = 2 C_n\) (\(n \ge 1\)). For finite-window Fourier transforms, windowed integral coefficients are retained directly without doubling.
+The instantaneous world coordinates of mass \(i\) are:
+
+$$
+\mathbf x_i(t) = \mathbf c(t) + \mathbf R(t) \mathbf x_{\mathrm{body},i}.
+$$
+
+With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the time-domain acceleration is:
+
+$$
+\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}.
+$$
+
+For periodic motion with fundamental frequency \(\omega_0 = 2\pi / T\), the acceleration decomposes into a Fourier series:
+
+$$
+\mathbf a(\mathbf x, t) = \mathbf a_0(\mathbf x) + \sum_{k=1}^{K} \left[ \mathbf a_{k,c}(\mathbf x) \cos(k \omega_0 t) + \mathbf a_{k,s}(\mathbf x) \sin(k \omega_0 t) \right].
+$$
 
 ## Parameters and calculation paths
 
@@ -56,7 +70,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
 | `rigid_motion` | _ContinuousRigidMotionModel | TimeSeries / Fourier | Φ: m²/s², a: m/s², Γ: s⁻² | EvaluationResult with continuous/discrete time or Fourier payloads | Continuous or sampled rigid-body motion model evaluated via .at(targets).run() |
-| `rigid_motion_observable` | ndarray | TimeSeries / Fourier | Φ: m²/s², a: m/s², Γ: s⁻² | (N_frames, N_targets, ...) float64 array | Assembled dense SI observables across time frames and targets for requested observable |
+| `rigid_motion_observable` | ndarray | TimeSeries / Fourier | Φ: m²/s², a: m/s², Γ: s⁻² | \((N_{\mathrm{frames}}, N_{\mathrm{targets}}, \dots)\) float64 array | Assembled dense SI observables across time frames and targets for requested observable |
 
 #### Mathematical symbols and notation
 
@@ -154,7 +168,7 @@ Existing public documentation and original formulation context:
 
 Tests cover observables/Fourier/oracle comparisons; not run here.
 
-- test-code-only; rigid_motion_science oracle comparisons rtol=3e-14; no committed executed-result path located.
+- test-code-only; `rigid_motion_science` oracle comparisons rtol=3e-14; no committed executed-result path located.
 
 ### Applicability and limitations
 

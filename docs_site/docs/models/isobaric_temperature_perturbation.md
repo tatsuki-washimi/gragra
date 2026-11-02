@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** atmospheric temperature  
-**Geometry:** sphere, cuboid, cylinder
+**Geometry:** `sphere`, `cuboid`, `cylinder`
 
 Fourier, Gaussian and bounded temperature anomalies; density-to-gravity coupling
 
@@ -23,18 +23,51 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Isobaric temperature perturbation schematic](../assets/models/isobaric_temperature_perturbation.svg)
 
-*Thermal parcel with temperature fluctuation δT inducing isobaric density fluctuation δρ/ρ_0 = - δT/T_0.*
+*Thermal parcel with temperature fluctuation \(\delta T\) inducing isobaric density fluctuation \(\delta\rho/\rho_0 = -\delta T / T_0\).*
 
 - The API supports these profile objects; geometry dimensions are profile inputs. No dedicated temperature anomaly map asset was located.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+Under isobaric thermodynamic conditions, small temperature variations \(\delta T\) couple linearly to mass density perturbations:
 
-- Under isobaric thermodynamic conditions, small temperature variations \(\delta T\) couple linearly to density as \(\delta\rho = -\rho_0 \frac{\delta T}{T_0}\), where \(\rho_0 &gt; 0\) is ambient background density and \(T_0 &gt; 0\) is background temperature in Kelvin.
-- Fourier mode: \(\delta T = \Delta T \cos(\mathbf k \cdot (\mathbf x - \mathbf x_0))\) (static) or \(\widetilde{\delta T} = \widetilde{\Delta T} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) (phasor). The G-free potential is \(\Phi^{(G\text{-free})} = -\frac{4\pi \rho_c}{k^2} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)}\) with zero-mean gauge (\(k \ne 0\)), and \(\mathbf a^{(G\text{-free})} = -i \mathbf k \Phi^{(G\text{-free})}\).
-- Gaussian profile: \(\delta T(\mathbf x) = \Delta T e^{-\|\mathbf x - \mathbf c\|^2 / (2\sigma^2)}\). At center \(\mathbf x = \mathbf c\), \(\Phi^{(G\text{-free})}(0) = -4\pi \rho_c \sigma^2\), \(\mathbf a(0) = \mathbf 0\), and \(\mathbf\Gamma^{(G\text{-free})}(0) = -\frac{4\pi \rho_c}{3} \mathbf I_3\) where \(\rho_c = -\rho_0 \Delta T / T_0\). Far from center, fields approach a point monopole of mass \(M = (2\pi)^{3/2} \rho_c \sigma^3\).
-- Targets on material boundaries of finite geometric bodies (Sphere, Cuboid, Cylinder) are rejected for potential, acceleration, and gradient.
+$$
+\delta\rho(\mathbf x) = -\rho_0 \frac{\delta T(\mathbf x)}{T_0}
+$$
+
+where \(\rho_0 > 0\) is ambient background density and \(T_0 > 0\) is background temperature in Kelvin.
+
+**1. Harmonic Fourier temperature mode**:
+
+For temperature perturbation \(\delta T(\mathbf x) = \Delta T \cos(\mathbf k \cdot (\mathbf x - \mathbf x_0))\) with central density amplitude \(\rho_c = -\rho_0 \Delta T / T_0\), the G-free gravitational potential is:
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = -\frac{4\pi \rho_c}{k^2} e^{i \mathbf k \cdot (\mathbf x - \mathbf x_0)} \qquad (k = \|\mathbf k\| > 0)
+$$
+
+with gravitational acceleration vector:
+
+$$
+\mathbf a^{(G\text{-free})}(\mathbf x) = -i \mathbf k \Phi^{(G\text{-free})}(\mathbf x).
+$$
+
+**2. Gaussian temperature plume**:
+
+For Gaussian temperature distribution \(\delta T(\mathbf x) = \Delta T e^{-\|\mathbf x - \mathbf c\|^2 / (2\sigma^2)}\):
+
+At the plume center (\(\mathbf x = \mathbf c\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf c) = -4\pi \rho_c \sigma^2, \qquad
+\mathbf a(\mathbf c) = \mathbf 0, \qquad
+\mathbf\Gamma^{(G\text{-free})}(\mathbf c) = -\frac{4\pi \rho_c}{3} \mathbf I_3.
+$$
+
+In the far field (\(\|\mathbf x - \mathbf c\| \gg \sigma\)), the gravitational field approaches a point mass with effective monopole mass:
+
+$$
+M_{\mathrm{eff}} = (2\pi)^{3/2} \rho_c \sigma^3.
+$$
 
 ## Parameters and calculation paths
 
@@ -157,8 +190,8 @@ Existing public documentation and original formulation context:
 **Bibliographic inventory:** located.
 
 - an unpublished design note: approved isobaric, plane-wave, Gaussian and finite-body formulas.
-- gragra.fields.thermodynamic.isobaric_temperature_density_perturbation: signed δρ=−ρ0δT/T0 linearization.
-- gragra.constants.G_SI: applied exactly once by shared analytic bridge.
+- `gragra.fields.thermodynamic.isobaric_temperature_density_perturbation`: signed \(\delta\rho=-\rho_0\delta T/T_0\) linearization.
+- `gragra.constants.G_SI`: applied exactly once by shared analytic bridge.
 
 ## Verification and applicability
 

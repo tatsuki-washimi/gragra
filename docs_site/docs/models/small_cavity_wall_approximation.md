@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** seismic elastic  
-**Geometry:** cavity
+**Geometry:** `cavity`
 
 Sphere, cuboid or cylinder; selected linearized wall contribution only
 
@@ -25,7 +25,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 *Planar wall boundary with normal displacement ξ_n inducing effective surface mass sheet σ = ρ ξ_n at distance d.*
 
-- The model accepts Sphere, Cuboid, Cylinder, but plot_shape helper supports only Cuboid, Cylinder, SphericalShell and explicitly rejects Cavity types; high-level small_cavity_wall model is cavity-named and is not automatically plot-able. A standalone Sphere geometry is not among the supported classes.
+- The model accepts Sphere, Cuboid, Cylinder, but `plot_shape` helper supports only Cuboid, Cylinder, SphericalShell and explicitly rejects Cavity types; high-level `small_cavity_wall` model is cavity-named and is not automatically plot-able. A standalone Sphere geometry is not among the supported classes.
 - Harms scalar table supports five discrete shape/location rows; tensor paths have separate geometric coverage.
 
 ### Equations
@@ -74,8 +74,8 @@ The approximation applies when the cavity dimensions are small compared to the s
 | `small_cavity_wall` | `geometry` | Sphere \| Cuboid \| Cylinder | required | Cavity boundary geometry instance |
 | `small_cavity_wall` | `displacement` | u.Quantity (length 3-vector) | required | Rigid cavity wall displacement vector |
 | `small_cavity_wall` | `density` | u.Quantity (density) | required (kw-only) | Surrounding rock mass density |
-| `sca_wall_coupling_factor` | `cavern_shape` | Literal | required | 'sphere', 'cube', 'half_sphere', or 'elongated_cuboid_2to1to1' |
-| `sca_wall_coupling_factor` | `test_mass_location` | Literal | required | 'arbitrary', 'center_3d', or 'floor_center_2d' |
+| `sca_wall_coupling_factor` | `cavern_shape` | Literal | required | `sphere`, `cube`, `half_sphere`, or `elongated_cuboid_2to1to1` |
+| `sca_wall_coupling_factor` | `test_mass_location` | Literal | required | `arbitrary`, `center_3d`, or `floor_center_2d` |
 | `sca_wall_acceleration` | `density_kg_m3` | float | required | Surrounding rock mass density in kg/m³ |
 | `sca_wall_acceleration` | `displacement_m` | float | required | Wall displacement amplitude in meters |
 
@@ -84,7 +84,7 @@ The approximation applies when the cavity dimensions are small compared to the s
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
 | `small_cavity_wall` | SmallCavityWallModel | Phasor | a: m/s² | EvaluationResult with acceleration Quantity | High-level small-cavity wall model evaluated via .at(targets).run() |
-| `sca_wall_coupling_factor` | float | Coupling factor | dimensionless | scalar float | Dimensionless cavity wall coupling factor C_sca (Harms et al. 2022 Table 1) |
+| `sca_wall_coupling_factor` | float | Coupling factor | dimensionless | scalar float | Dimensionless cavity wall coupling factor \(C_{\mathrm{sca}}\) (Harms et al. 2022 Table 1) |
 | `sca_wall_acceleration` | float | Phasor | a: m/s² | scalar float | Small-cavity limit cavern wall acceleration amplitude (G-free / SI) |
 
 #### Mathematical symbols and notation
@@ -107,7 +107,7 @@ The approximation applies when the cavity dimensions are small compared to the s
 
 ### Calculation paths
 
-#### geometry-aware small_cavity_wall model
+#### geometry-aware `small_cavity_wall` model
 
 - `gragra.analytic.seismic.small_cavity_wall`
 
@@ -203,7 +203,7 @@ See the public verification and limitations guidance for test-specific condition
 
 ## Information not yet confirmed
 
-- No output_contracts in catalog group; no runnable representative catalogue probe defined.
+- No `output_contracts` in catalog group; no runnable representative catalogue probe defined.
 - Exact all five scalar coefficient values omitted from this record.
 - No new science run or artifact inspection; prose historical claims remain un-reproduced.
 

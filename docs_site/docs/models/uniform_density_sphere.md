@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** static gravity  
-**Geometry:** sphere
+**Geometry:** `sphere`
 
 Finite sphere; static potential, acceleration and gravity gradient, inside or outside
 
@@ -178,7 +178,7 @@ Existing public documentation and original formulation context:
 
 Test implementations, documentary verification claims, and saved run records are separate evidence. No scientific accuracy tests were run for this update.
 
-- [`tests/test_geometry_vs_analytic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_geometry_vs_analytic.py) implements interior and exterior sphere comparisons for potential and acceleration, including complex density. [`tests/test_convergence_suite.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_convergence_suite.py) implements selected potential, acceleration, and gradient checks at exterior targets. The documentation specifies one bounded sphere-convergence case and requires a finest-resolution relative-error bound plus overall potential improvement from coarse to fine; it does not claim a fitted slope or monotonic improvement at every level. The saved results are general verification records for an older SHA cited by the formula ledger, not a reproduction of sphere-specific results for this revision. The catalogue probe named sphere_si is a representative output-contract probe.
+- [`tests/test_geometry_vs_analytic.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_geometry_vs_analytic.py) implements interior and exterior sphere comparisons for potential and acceleration, including complex density. [`tests/test_convergence_suite.py`](https://github.com/tatsuki-washimi/gragra/blob/main/tests/test_convergence_suite.py) implements selected potential, acceleration, and gradient checks at exterior targets. The documentation specifies one bounded sphere-convergence case and requires a finest-resolution relative-error bound plus overall potential improvement from coarse to fine; it does not claim a fitted slope or monotonic improvement at every level. The saved results are general verification records for an older SHA cited by the formula ledger, not a reproduction of sphere-specific results for this revision. The catalogue probe named `sphere_si` is a representative output-contract probe.
 
 #### Existing discretization acceptance conditions
 

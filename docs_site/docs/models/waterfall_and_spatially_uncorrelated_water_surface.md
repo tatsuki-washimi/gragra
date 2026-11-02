@@ -6,7 +6,7 @@
 **Level:** — (definition and assignment pending).
 
 **Physical domain:** water  
-**Geometry:** channel, waterfall
+**Geometry:** `channel`, `waterfall`
 
 Idealized falling stream or incoherent channel cells
 
@@ -22,17 +22,38 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 ![Waterfall and uncorrelated water surface schematic](../assets/models/waterfall_uncorrelated_surface.svg)
 
-*Vertical waterfall column with fluctuating cross-sectional area and uncorrelated surface cells of area A_cell.*
+*Vertical waterfall column with fluctuating cross-sectional area and uncorrelated surface cells of area \(A_{\mathrm{cell}}\).*
 
-- plot_shape targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
+- `plot_shape` targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
 
 ### Equations
 
-**Analytical formulation and field equations:**
+**1. Waterfall model** (vertical water stream of velocity \(v\) at horizontal standoff distance \(D > 0\) with periodic area fluctuation \(A(z,t) = A_0 e^{-i \Omega (t - z/v)}\)):
 
-- Waterfall model: Vertical water stream with velocity \(v\) at horizontal distance \(D &gt; 0\) with cross-sectional area perturbation \(A(z,t) = A_0 e^{-i \Omega (t - z/v)}\). G-free transfer functions are \(T_{a_x, A}^{(G\text{-free})} = -2 \rho_w \frac{|\Omega|}{|v|} K_1(|\Omega| D / |v|)\) and \(T_{a_z, A}^{(G\text{-free})} = 2i \rho_w \frac{\Omega}{v} K_0(|\Omega| D / |v|)\).
-- Uncorrelated channel surface model: Narrow water channel with independent surface displacement fluctuations of correlation cell area \(A_{\mathrm{cell}}\). The integrated geometric coupling evaluates as \(\int_{-\infty}^\infty \frac{x^2}{(H^2 + x^2)^3} dx = \frac{\pi}{8 H^3}\).
-- Acceleration ASD: \(\mathrm{ASD}_a(f) = G \rho_w \sqrt{A_{\mathrm{cell}} w} \sqrt{\frac{\pi}{8 H^3}} \mathrm{ASD}_\eta(f)\) in \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\).
+The G-free potential and acceleration transfer functions are:
+
+$$
+\begin{aligned}
+T_{a_x, A}^{(G\text{-free})} &= -2 \rho_w \frac{|\Omega|}{|v|} K_1\left(\frac{|\Omega| D}{|v|}\right), \\
+T_{a_z, A}^{(G\text{-free})} &= 2i \rho_w \frac{\Omega}{v} K_0\left(\frac{|\Omega| D}{|v|}\right)
+\end{aligned}
+$$
+
+where \(K_0, K_1\) are modified Bessel functions of the second kind.
+
+**2. Spatially uncorrelated water surface model** (narrow channel with uncorrelated surface elevation cells of area \(A_{\mathrm{cell}}\)):
+
+The geometric integral along the channel axis evaluates as:
+
+$$
+\int_{-\infty}^\infty \frac{x^2}{(H^2 + x^2)^3} \, dx = \frac{\pi}{8 H^3}.
+$$
+
+The resulting one-sided gravitational acceleration amplitude spectral density (ASD) in SI units \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\) is:
+
+$$
+\mathrm{ASD}_a(f) = G \rho_w \sqrt{A_{\mathrm{cell}} w} \sqrt{\frac{\pi}{8 H^3}} \, \mathrm{ASD}_\eta(f).
+$$
 
 ## Parameters and calculation paths
 
@@ -48,7 +69,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 | `water_waterfall_asd` | `area_asd_m2_per_rt_hz` | float \| array-like | required | Stream cross-sectional area ASD in m²/sqrt(Hz) |
 | `water_channel_uncorrelated_asd` | `distance_m` | float | required | Perpendicular distance to uncorrelated channel H in meters |
 | `water_channel_uncorrelated_asd` | `width_m` | float | required | Channel surface width w in meters |
-| `water_channel_uncorrelated_asd` | `correlation_area_m2` | float | required | Incoherent surface patch correlation area A_cell in m² |
+| `water_channel_uncorrelated_asd` | `correlation_area_m2` | float | required | Incoherent surface patch correlation area \(A_{\mathrm{cell}}\) in m² |
 | `water_channel_uncorrelated_asd` | `surface_asd_m_per_rt_hz` | float \| array-like | required | Surface elevation ASD in m/sqrt(Hz) |
 | `water_waterfall_asd` | `density_kg_m3` | float | 1000.0 | Fluid mass density in kg/m³ |
 
@@ -56,8 +77,8 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 | Function / Path | Return type | Representation | Quantity & Unit | Shape / Structure | Description |
 |---|---|---|---|---|---|
-| `water_waterfall_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Horizontal gravity acceleration ASD from plunging waterfall jet at distance D |
-| `water_channel_uncorrelated_asd` | ndarray | ASD | a: (m/s²)/√Hz | (N_freq,) float64 array | Gravity acceleration ASD from spatially incoherent surface displacement fluctuations |
+| `water_waterfall_asd` | ndarray | ASD | a: (m/s²)/√Hz | \((N_{\mathrm{freq}},)\) float64 array | Horizontal gravity acceleration ASD from plunging waterfall jet at distance D |
+| `water_channel_uncorrelated_asd` | ndarray | ASD | a: (m/s²)/√Hz | \((N_{\mathrm{freq}},)\) float64 array | Gravity acceleration ASD from spatially incoherent surface displacement fluctuations |
 
 #### Mathematical symbols and notation
 
@@ -149,7 +170,7 @@ Existing public documentation and original formulation context:
 
 **Existing verification inventory:**
 
-test_analytic_water.py contains assertions against closed forms, quadrature, shape/units and SI conversion; these are test code, not newly executed. Example rtol 1e-14 closed form, 1e-9 quadrature, 1e-4 selected product quadrature.
+`test_analytic_water.py` contains assertions against closed forms, quadrature, shape/units and SI conversion; these are test code, not newly executed. Example rtol 1e-14 closed form, 1e-9 quadrature, 1e-4 selected product quadrature.
 
 - No committed executed-result artifact located for these assigned models.
 
