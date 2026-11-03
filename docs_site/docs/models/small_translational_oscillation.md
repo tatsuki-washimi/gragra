@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Small translational oscillation schematic](../assets/models/small_translational_oscillation.svg)
 
 *Harmonic translational oscillation δx(t) = A cos(ωt) (|A| ≪ r) generating a dipole gravitational perturbation.*
 
 - Small first-order translation approximation, phasor not exact finite motion.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -56,7 +58,164 @@ $$
 
 The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \delta\mathbf\Gamma^T\) and \(\mathrm{tr}(\delta\mathbf\Gamma) = 0\). Targets coincident with equilibrium positions (\(r_i = 0\)) are singular and raise a `ValueError`.
 
-## Parameters and calculation paths
+### Derivation
+
+Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic models](../guide/gen1-analytic-models.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+Applicability limits recorded.
+
+- Small first-order translation approximation, phasor not exact finite motion.
+## STEP 1 — Setup
+
+Primary path: `translational_oscillation(...).at(...).run()`
+
+Primary path: `translational_oscillation(...).at(...).run()`
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import translational_oscillation
+
+frame = Frame('world')
+pm = PointMass(1000.0, [0.0, 0.0, 0.0])
+model = translational_oscillation(
+    pm, [0.01, 0.0, 0.0] * u.m, frame=frame, frequency=5.0 * u.Hz,
+    reference_time=(100, 0),
+)
+targets = TargetPoints([[0.0, 0.0, 10.0]] * u.m, ('t1',), frame)
+request = model.at(targets)
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For point masses \(m_i\) at equilibrium positions \(\mathbf x_{0,i}\) undergoing small harmonic translational oscillations \(\mathbf u_i(t) = \operatorname{Re}\left[\mathbf u_i e^{-2\pi i f (t - t_{\mathrm{ref}})}\right]\) (\(\|\mathbf u_i\| \ll r_i\)) with oscillation frequency \(f\) and reference epoch \(t_{\mathrm{ref}}\):
+
+Let the unperturbed separation vector to target \(\mathbf x\) be:
+
+$$
+\mathbf r_i = \mathbf x - \mathbf x_{0,i}, \qquad r_i = \|\mathbf r_i\| > 0.
+$$
+
+Under the peak phasor convention (representing physical amplitude without an extra factor of \(1/2\)), the first-order perturbation in gravitational potential is:
+
+$$
+\delta\Phi(\mathbf x) = -G \sum_{i=1}^N \frac{m_i (\mathbf r_i \cdot \mathbf u_i)}{r_i^3}.
+$$
+
+The first-order perturbation in gravitational acceleration is:
+
+$$
+\delta\mathbf a(\mathbf x) = G \sum_{i=1}^N m_i \left[ \frac{\mathbf u_i}{r_i^3} - \frac{3 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i}{r_i^5} \right].
+$$
+
+The first-order perturbation in the gravity-gradient tensor is:
+
+$$
+\delta\mathbf\Gamma(\mathbf x) = G \sum_{i=1}^N m_i \left[ -\frac{3 \left( \mathbf u_i \otimes \mathbf r_i + \mathbf r_i \otimes \mathbf u_i + (\mathbf r_i \cdot \mathbf u_i) \mathbf I_3 \right)}{r_i^5} + \frac{15 (\mathbf r_i \cdot \mathbf u_i) \mathbf r_i \otimes \mathbf r_i}{r_i^7} \right].
+$$
+
+The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \delta\mathbf\Gamma^T\) and \(\mathrm{tr}(\delta\mathbf\Gamma) = 0\). Targets coincident with equilibrium positions (\(r_i = 0\)) are singular and raise a `ValueError`.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+Inspect and validate the evaluation request (`api`):
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+if hasattr(request, 'parameters'):
+    display(request.parameters)
+if hasattr(request, 'formulas'):
+    display(request.formulas)
+if hasattr(request, 'references'):
+    display(request.references)
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+res = request.run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+print('gradient:', res.gradient.value, res.gradient.units)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import translational_oscillation
+
+frame = Frame('world')
+pm = PointMass(1000.0, [0.0, 0.0, 0.0])
+freqs = np.array([2.0, 3.0, 5.0, 7.0, 9.0])
+mags = []
+for f_hz in freqs:
+    model = translational_oscillation(
+        pm, [0.01, 0.0, 0.0] * u.m, frame=frame, frequency=float(f_hz) * u.Hz,
+        reference_time=(100, 0),
+    )
+    res = model.at(TargetPoints([[0.0, 0.0, 10.0]] * u.m, ('t1',), frame)).run()
+    mags.append(float(abs(res.acceleration.value[0, 0, 0])))
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(freqs, mags, "o-", color="#316aa5", label=r"$|a_x|$")
+ax.set_xlabel(r"Oscillation frequency $f$ [Hz]")
+ax.set_ylabel(r"$|a_x|$ [m/s$^2$]")
+ax.set_title(r"Small translational oscillation ($d=10\,\mathrm{m}$, $\Delta x=0.01\,\mathrm{m}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_small_translational_oscillation_step4_comparison.svg_)](../assets/models/tutorials/small_translational_oscillation_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -102,68 +261,11 @@ The perturbation tensor is symmetric and traceless: \(\delta\mathbf\Gamma = \del
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import astropy.units as u
-from gragra.geometry import Frame
-from gragra.gravity_sources import PointMass
-from gragra.targets import TargetPoints
-from gragra.analytic.objects import translational_oscillation
-
-frame = Frame('world')
-pm = PointMass(1000.0, [0.0, 0.0, 0.0])
-model = translational_oscillation(
-    pm, [0.01, 0.0, 0.0]*u.m, frame=frame, frequency=5.0*u.Hz,
-    reference_time=(100, 0)
-)
-res = model.at(TargetPoints([[0.0, 0.0, 10.0]]*u.m, ('t1',), frame)).run()
-print('potential:', res.potential.value, res.potential.units)
-print('acceleration:', res.acceleration.value, res.acceleration.units)
-print('gradient:', res.gradient.value, res.gradient.units)
-```
-
-Representative output:
-
-```text
-potential: [[[0.-0.j]]] [[Unit("m2 / s2")]]
-acceleration: [[[6.6743e-13+0.j]
-  [0.0000e+00+0.j]
-  [0.0000e+00+0.j]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
-gradient: [[[ 0.00000e+00+0.j]
-  [ 0.00000e+00+0.j]
-  [-2.00229e-13+0.j]
-  [ 0.00000e+00+0.j]
-  [ 0.00000e+00+0.j]
-  [ 0.00000e+00+0.j]
-  [-2.00229e-13+0.j]
-  [ 0.00000e+00+0.j]
-  [ 0.00000e+00+0.j]]] [[Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
-  Unit("1 / s2") Unit("1 / s2") Unit("1 / s2") Unit("1 / s2")
-  Unit("1 / s2")]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+### Derivation and source notes
 
 - No separate derivation is asserted from the formula declaration alone.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic models](../guide/gen1-analytic-models.md)
-
-**Bibliographic inventory:** partial.
-
 - Shared motion reference metadata; formulas recorded in source.
-
-## Verification and applicability
 
 ### Verification
 

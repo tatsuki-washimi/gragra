@@ -20,13 +20,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Rigid-body kinematics and Fourier response schematic](../assets/models/rigid_body_fourier_response.svg)
 
 *Rigid-body time-domain motion (translation c(t) and rotation R(t)) and corresponding Fourier series harmonic response.*
 
 - `plot_shape` is not a Fourier trajectory renderer.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -62,7 +64,199 @@ $$
 \tilde{\mathbf a}(f) = \int_{T_{\mathrm{start}}}^{T_{\mathrm{end}}} \mathbf a(t) e^{-2\pi i f (t - t_{\mathrm{ref}})} \, dt.
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+Newton oracle is code; Fourier numerical integration prose is not a local derivation.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Rigid-motion Fourier guide](../guide/rigid-motion-fourier.md)
+- [results API](../api/results.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+sampled/continuous argument combinations exclusive; finite window has aliasing/phase caveats.
+
+- return type provisional; G applied once at observable layer; memory budget per-lane.
+## STEP 1 — Setup
+
+Prescribed rigid translation of a point-mass cloud on a uniform time grid (`api` sampled `rigid_motion` path).
+
+```python
+import numpy as np
+import astropy.units as u
+from gwpy.time import LIGOTimeGPS
+from gragra.geometry import Frame
+from gragra.gravity_sources import (
+    PointMassCloud,
+    PrescribedRigidTransform,
+    rigid_motion,
+)
+from gragra.results import TimeSampling
+from gragra.results._time_grid import build_uniform_time_s
+from gragra.targets import TargetPoints
+
+world = Frame('world')
+source = PointMassCloud([1000.0], [[0.0, 0.0, 0.0]])
+epoch = (0, 0)
+m, dt = 256, 1.0 / 256
+sampling = TimeSampling(epoch=LIGOTimeGPS(*epoch), dt=dt * u.s, count=m)
+time_s = build_uniform_time_s(epoch, dt, m)
+translations = np.zeros((m, 3))
+translations[:, 0] = 0.5 * np.sin(2 * np.pi * 10.0 * time_s)
+transform = PrescribedRigidTransform(
+    time_s, translations, np.repeat(np.eye(3)[None], m, axis=0),
+)
+targets = TargetPoints(
+    [[5.0, 0.0, 0.0], [5.0, 5.0, 0.0], [8.0, 0.0, 0.0]] * u.m,
+    ('near_x', 'offset_y', 'far_x'),
+    world,
+)
+model = rigid_motion(source, transform, frame=world, sampling=sampling)
+request = model.at(targets, observables=('acceleration',))
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a general rigid body represented as a cloud of point masses \(m_i\) at fixed body-frame coordinates \(\mathbf x_{\mathrm{body},i}\), undergoing prescribed center-of-mass translation \(\mathbf c(t)\) and rotation matrix \(\mathbf R(t) \in \mathrm{SO}(3)\):
+
+The instantaneous world coordinates of mass \(i\) are:
+
+$$
+\mathbf x_i(t) = \mathbf c(t) + \mathbf R(t) \mathbf x_{\mathrm{body},i}.
+$$
+
+With separation vector \(\mathbf r_i(t) = \mathbf x - \mathbf x_i(t)\) and distance \(r_i(t) = \|\mathbf r_i(t)\| > 0\), the instantaneous Newtonian field observables evaluate as:
+
+$$
+\Phi(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \qquad
+\mathbf a(\mathbf x, t) = -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}, \qquad
+\mathbf\Gamma(\mathbf x, t) = G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
+$$
+
+**Continuous Fourier series and Fourier transform paths:**
+
+The continuous Fourier path integrates callable pose over time using Fourier kernel convention \(\exp[-2\pi i f (t - t_{\mathrm{ref}})]\), where \(t_{\mathrm{ref}}\) is the reference epoch.
+
+1. **Periodic Fourier series**: For strictly periodic motion of fundamental period \(T = 1/f_0\), one-sided Fourier series amplitude coefficients \(A_n\) relate to complex two-sided coefficients \(C_n\) by:
+
+$$
+A_0 = C_0, \qquad A_n = 2 C_n \quad (n \ge 1).
+$$
+
+2. **Finite-window Fourier transform**: For motion evaluated over a finite observation window \([T_{\mathrm{start}}, T_{\mathrm{end}}]\), windowed Fourier integral coefficients are retained directly without doubling:
+
+$$
+\tilde{\mathbf a}(f) = \int_{T_{\mathrm{start}}}^{T_{\mathrm{end}}} \mathbf a(t) e^{-2\pi i f (t - t_{\mathrm{ref}})} \, dt.
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+display(request.parameters)
+```
+
+## STEP 3 — Calculate
+
+```python
+ts_result = request.run()
+print('times:', ts_result.acceleration.times)
+waveform = ts_result.acceleration.loc['near_x', 'x']
+print('near_x ax sample:', waveform.value[:4], '...')
+```
+
+
+Legacy two-sample linear motion (CI registry sample):
+
+```python
+import numpy as np
+from gragra.gravity_sources import PointMassCloud, PrescribedRigidTransform
+from gragra.observables import rigid_motion_observable
+
+cloud = PointMassCloud([1000.0], [[0.0, 0.0, 0.0]])
+transform = PrescribedRigidTransform(
+    time_s=[0.0, 1.0],
+    translations_m=[[0.0, 0.0, 0.0], [0.1, 0.0, 0.0]],
+    rotation_matrices=[np.eye(3), np.eye(3)]
+)
+acc = rigid_motion_observable(cloud, transform, [[0.0, 0.0, 5.0]], observable='acceleration')
+print('acceleration:', acc)
+```
+
+## STEP 4 — Results / Comparison
+
+**Time domain (`api-output`):** three targets, \(a_x(t)\) from `.run()`.
+
+**Frequency domain — gragra `EvaluationResult` paths (do not conflate):**
+
+1. **`.fft(tref=epoch)`** — one-sided Fourier transform coefficients \(\tilde a_k\) with units **m/s** (`FourierTransformRepresentation`).
+2. **`.spectrum('transient', tref=epoch)`** — one-sided complex amplitude spectrum \(A_k\) with units **m/s²** (`AmplitudeSpectrumRepresentation`).
+
+With uniform spacing \(\Delta t\), sample count \(N\), and observation time \(T=N\Delta t\), interior bins satisfy **\(|A_k|/|\tilde a_k| = 2/T\)** with dimensions **\(\mathrm{s^{-1}}\)** (see `gragra._spectral_from_timeseries`; here \(T=1\,\mathrm{s}\) so \(2/T = 2\,\mathrm{s^{-1}}\)).
+
+**GWexpy** `TimeSeries.fft()` on `ts_result.acceleration.loc[...]` uses **GWpy/GWexpy normalisation**, distinct from gragra `EvaluationResult.fft()`. STEP 4 plots both GWexpy series and the gragra transform side by side.
+
+Direct **Fourier coefficients** without time simulation use the **continuous** `rigid_motion(callable_pose, epoch=...)` branch (see `rigid_motion` docstring).
+
+```python
+import matplotlib.pyplot as plt
+
+ts_result = request.run()
+epoch = (0, 0)
+T = m * dt
+fig, (ax_time, ax_gw) = plt.subplots(2, 1, figsize=(8.0, 5.0), sharex=False)
+for target_id in ('near_x', 'offset_y', 'far_x'):
+    waveform = ts_result.acceleration.loc[target_id, 'x']
+    ax_time.plot(waveform, label=target_id)
+    ax_gw.plot(abs(waveform.fft()), label=f'|FFT(a_x)| {target_id}')
+ax_time.set_xlabel('Time [s]')
+ax_time.set_ylabel('a_x [m/s^2]')
+ax_gw.set_xlabel('Frequency [Hz]')
+ax_gw.set_ylabel('|FFT(a_x)| [m/s^2]')
+ax_time.legend()
+ax_gw.legend()
+fig.tight_layout()
+plt.show()
+
+ft = ts_result.fft(tref=epoch)
+sp = ts_result.spectrum('transient', tref=epoch)
+f_hz = 10.0
+freqs = ft.acceleration.frequencies.to_value(u.Hz)
+k = int(round(f_hz / (freqs[1] - freqs[0])))
+ratio = abs(sp.acceleration.value[0, 0, k]) / abs(ft.acceleration.value[0, 0, k])
+print(f'T={T} s, |A_k|/|ã_k| at 10 Hz =', ratio, 's^-1 (expect 2/T =', 2.0 / T, 's^-1)')
+```
+
+![GWexpy time series and $|FFT|$](../assets/models/tutorials/rigid_body_time_series_and_fourier_response_step4_gwexpy_fft.svg)
+
+![Rigid motion $|\tilde a_x(f)|$ from `EvaluationResult.fft`](../assets/models/tutorials/rigid_body_time_series_and_fourier_response_step4_spectrum.svg)
+
+*Figures generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -119,53 +313,11 @@ $$
 
 **Path-level source-declared output union:** Φ a Γ — Fourier transform
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import numpy as np
-from gragra.gravity_sources import PointMassCloud, PrescribedRigidTransform
-from gragra.observables import rigid_motion_observable
-
-cloud = PointMassCloud([1000.0], [[0.0, 0.0, 0.0]])
-transform = PrescribedRigidTransform(
-    time_s=[0.0, 1.0],
-    translations_m=[[0.0, 0.0, 0.0], [0.1, 0.0, 0.0]],
-    rotation_matrices=[np.eye(3), np.eye(3)]
-)
-acc = rigid_motion_observable(cloud, transform, [[0.0, 0.0, 5.0]], observable='acceleration')
-print('acceleration:', acc)
-```
-
-Representative output:
-
-```text
-acceleration: [[[ 0.00000000e+00  0.00000000e+00 -2.66972000e-09]]
-
- [[ 5.33623794e-11  0.00000000e+00 -2.66811897e-09]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Newton oracle is code; Fourier numerical integration prose is not a local derivation.
+### Derivation and source notes
 
 - 80-digit independent mpmath oracle; no proof of periodic quadrature found.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Rigid-motion Fourier guide](../guide/rigid-motion-fourier.md)
-- [results API](../api/results.md)
-
-**Bibliographic inventory:** located.
-
 - RigidMotionModelSpec.references returns an empty DataFrame. Continuous Fourier model and its series/transform specs likewise return empty DataFrames.
-
-## Verification and applicability
 
 ### Verification
 

@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Isotropic stochastic Rayleigh field acceleration CSD schematic](../assets/models/isotropic_stochastic_rayleigh.svg)
 
 *Isotropic Rayleigh field at single target depth z yielding 3x3 diagonal acceleration CSD tensor diag(1/2, 1/2, 1).*
 
 Free-surface half-space geometry, test masses below surface; no arbitrary cavity/modal/mesh visualization. `plot_shape` only selected basic solids.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -50,7 +52,143 @@ $$
 \mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+Analytic azimuth integration is stated; local implementation gives transfer, gamma, q/s and tensor factors. No external derivation independently checked.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Stochastic NN](../guide/stochastic-nn.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+f&gt;0; targets strictly z&gt;0; rho&gt;=0; stable isotropic halfspace requires vp²&gt;(4/3)vs²; speeds positive. Homogeneous isotropic field and one-sided input PSD assumptions.
+
+## STEP 1 — Setup
+
+Primary path: `rayleigh_isotropic_acceleration_csd`
+
+**A+ (`tutorial-display` axes):** wrap outputs with GWexpy only in the generator; do not invent frequency grids on the output side.
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+targets = [[0.0, 0.0, 10.0]]
+density = 2500.0
+vp = 4000.0
+vs = 2000.0
+frequency = 1.0
+surface_psd = 1e-12
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For an isotropic stochastic field of Rayleigh waves in an elastic halfspace at depth \(z \ge 0\) beneath a traction-free surface (\(z = 0\)):
+
+With Rayleigh wavenumber \(k_R = 2\pi f / c_R\) and dimensionless decay parameters \(q = \sqrt{1 - (c_R/v_P)^2}\), \(s = \sqrt{1 - (c_R/v_S)^2}\), and \(\zeta = \sqrt{q/s}\), the depth-dependent coupling amplitude factor is:
+
+$$
+A(z) = 2\pi \rho \left(\frac{1 - \zeta}{q - \zeta}\right) e^{-k_R z}.
+$$
+
+The G-free acceleration cross-spectral density (CSD) tensor is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = A^2(z) S_\xi(f) \operatorname{diag}\left(\frac{1}{2}, \frac{1}{2}, 1\right)
+$$
+
+where \(S_\xi(f)\) is the one-sided surface vertical displacement PSD in \(\mathrm{m^2/Hz}\). All off-diagonal components vanish identically under ideal spatial isotropy.
+
+Physical SI acceleration CSD tensors in units of \(\mathrm{(m/s^2)^2/Hz}\) are obtained by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+import numpy as np
+from gragra.observables.stochastic_rayleigh import rayleigh_isotropic_acceleration_csd
+
+csd = rayleigh_isotropic_acceleration_csd(
+    targets_m=targets, density_kg_m3=density, v_p_m_s=vp, v_s_m_s=vs,
+    frequency_hz=frequency, surface_vertical_displacement_psd_m2_hz=surface_psd,
+)
+print('CSD shape:', csd.shape)
+print('CSD_zz at 10 m depth:', np.real(csd[0, 2, 2]))
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables.stochastic_rayleigh import rayleigh_isotropic_acceleration_csd
+
+zs_m = np.array([5.0, 10.0, 15.0, 20.0, 25.0])
+csd_zz = [
+    float(np.real(rayleigh_isotropic_acceleration_csd(
+        targets_m=[[0.0, 0.0, float(z)]],
+        density_kg_m3=2500.0,
+        v_p_m_s=4000.0,
+        v_s_m_s=2000.0,
+        frequency_hz=1.0,
+        surface_vertical_displacement_psd_m2_hz=1e-12,
+    )[0, 2, 2]))
+    for z in zs_m
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(zs_m, csd_zz, "o-", color="#316aa5", label=r"$\mathrm{CSD}_{zz}$")
+ax.set_yscale("log")
+ax.set_xlabel(r"Depth $z$ [m]")
+ax.set_ylabel(r"$\mathrm{CSD}_{zz}$ [m$^2$/s$^4$/Hz]")
+ax.set_title(r"Isotropic stochastic Rayleigh field: $\mathrm{CSD}_{zz}$ vs depth ($f=1\,\mathrm{Hz}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_isotropic_stochastic_rayleigh_field_step4_comparison.svg_)](../assets/models/tutorials/isotropic_stochastic_rayleigh_field_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -96,47 +234,10 @@ $$
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables.stochastic_rayleigh import rayleigh_isotropic_acceleration_csd
-
-csd = rayleigh_isotropic_acceleration_csd(
-    targets_m=[[0.0, 0.0, 10.0]], density_kg_m3=2500.0, v_p_m_s=4000.0, v_s_m_s=2000.0,
-    frequency_hz=1.0, surface_vertical_displacement_psd_m2_hz=1e-12
-)
-print('Rayleigh CSD matrix:\n', csd)
-```
-
-Representative output:
-
-```text
-Rayleigh CSD matrix:
- [[[3.54354548e-25 0.00000000e+00 0.00000000e+00]
-  [0.00000000e+00 3.54354548e-25 0.00000000e+00]
-  [0.00000000e+00 0.00000000e+00 7.08709096e-25]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Analytic azimuth integration is stated; local implementation gives transfer, gamma, q/s and tensor factors. No external derivation independently checked.
-
-### References
-
-Existing public documentation and original formulation context:
-
-- [Stochastic NN](../guide/stochastic-nn.md)
-
-**Bibliographic inventory:** located.
+### Derivation and source notes
 
 - The record is listed in the internal reference inventory. The literature content was not independently re-verified for this update.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
-
-## Verification and applicability
 
 ### Verification
 

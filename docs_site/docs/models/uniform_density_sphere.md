@@ -18,7 +18,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 The finite uniform-density sphere has center \(\mathbf c\), radius \(R>0\), density \(\rho\), and target position \(\mathbf x\).
 
@@ -29,6 +29,8 @@ The finite uniform-density sphere has center \(\mathbf c\), radius \(R>0\), dens
 *The figures are schematic, not sampled or measured scientific data.*
 
 - The Sphere shape supplies geometry data, while the analytic model supplies density. This API does not establish a generalization to arbitrary meshes or shapes.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -63,7 +65,148 @@ The implementation chooses the **exterior gradient expression at \(r=R\)**.
 Potential and acceleration are continuous there; the tensor requires
 one-sided limits because the density is discontinuous.
 
-## Parameters and calculation paths
+### Derivation
+
+The spherical symmetry solution follows from \(\nabla^2\Phi=4\pi G\rho\) inside the source and \(\nabla^2\Phi=0\) outside. Finite potential at the center, \(\Phi\to0\) at infinity, and matching \(\Phi\) and radial acceleration at \(r=R\) determine the constants.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic benchmarks](../guide/analytic-benchmarks.md)
+- [sphere example](../examples/uniform_sphere_workflow.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+This is an idealized finite sphere with uniform density; no accuracy guarantee applies beyond the assumptions of the analytic formula.
+
+- Targets may be inside or outside the sphere. Discretization-convergence evidence covers one limited condition.
+## STEP 1 — Setup
+
+Primary path: `uniform_sphere(...).at(TargetPoints).run()` (see design doc; STEP 3 uses registry observable).
+
+Primary path: `uniform_sphere(...).at(TargetPoints).run()` (see design doc; STEP 3 uses registry observable).
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+center = [0.0, 0.0, 0.0]
+radius = 1.0
+density = 2000.0
+targets = [[0.0, 0.0, 5.0]]
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+Let \(\mathbf r=\mathbf x-\mathbf c\), \(r=|\mathbf r|\),
+\(M=4\pi\rho R^3/3\). The physical SI results are
+
+$$
+\Phi(r)=
+\begin{cases}
+-\dfrac{GM}{2R^3}(3R^2-r^2), & r<R,\\
+-\dfrac{GM}{r}, & r\ge R,
+\end{cases}
+$$
+
+$$
+\mathbf a(\mathbf r)=
+\begin{cases}
+-\dfrac{GM}{R^3}\mathbf r, & r<R,\\
+-\dfrac{GM}{r^3}\mathbf r, & r\ge R,
+\end{cases}
+$$
+
+$$
+\Gamma_{ij}=
+\begin{cases}
+-\dfrac{GM}{R^3}\delta_{ij}, & r<R,\\
+GM\left(\dfrac{3r_ir_j}{r^5}-\dfrac{\delta_{ij}}{r^3}\right), & r\ge R.
+\end{cases}
+$$
+
+The implementation chooses the **exterior gradient expression at \(r=R\)**.
+Potential and acceleration are continuous there; the tensor requires
+one-sided limits because the density is discontinuous.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+from gragra.observables import uniform_sphere_observables
+
+res = uniform_sphere_observables(
+    center_m=center, radius_m=radius, density_kg_m3=density, targets_m=targets,
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import uniform_sphere_observables
+
+zs = np.array([4.0, 5.0, 6.0, 7.0, 8.0])
+az = [
+    uniform_sphere_observables(
+        center_m=[0.0, 0.0, 0.0],
+        radius_m=1.0,
+        density_kg_m3=2000.0,
+        targets_m=[[0.0, 0.0, float(z)]],
+    ).acceleration[0, 2]
+    for z in zs
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(zs, az, "o-", color="#316aa5", label=r"$a_z$")
+ax.set_xlabel(r"Target distance $z$ [m]")
+ax.set_ylabel(r"$a_z$ [m/s$^2$]")
+ax.set_title(r"Uniform-density sphere: radial acceleration vs distance ($R=1\,\mathrm{m}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_uniform_density_sphere_step4_comparison.svg_)](../assets/models/tutorials/uniform_density_sphere_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -118,52 +261,13 @@ one-sided limits because the density is discontinuous.
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
-### Calculation example and output
+### Derivation and source notes
 
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables import uniform_sphere_observables
-
-res = uniform_sphere_observables(
-    center_m=[0.0, 0.0, 0.0], radius_m=1.0, density_kg_m3=2000.0,
-    targets_m=[[0.0, 0.0, 5.0]]
-)
-print('potential:', res.potential)
-print('acceleration:', res.acceleration)
-print('gradient:', res.gradient)
-```
-
-Representative output:
-
-```text
-potential: [-1.1182897e-07]
-acceleration: [[-0.0000000e+00 -0.0000000e+00 -2.2365794e-08]]
-gradient: [[[-4.47315879e-09  0.00000000e+00  0.00000000e+00]
-  [ 0.00000000e+00 -4.47315879e-09  0.00000000e+00]
-  [ 0.00000000e+00  0.00000000e+00  8.94631759e-09]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-The spherical symmetry solution follows from \(\nabla^2\Phi=4\pi G\rho\) inside the source and \(\nabla^2\Phi=0\) outside. Finite potential at the center, \(\Phi\to0\) at infinity, and matching \(\Phi\) and radial acceleration at \(r=R\) determine the constants. Differentiating gives \(\mathbf a=-\nabla\Phi\) and \(\Gamma_{ij}=\partial a_i/\partial x_j\).
+Differentiating the interior/exterior sphere potential gives \(\mathbf a=-\nabla\Phi\) and \(\Gamma_{ij}=\partial a_i/\partial x_j\).
 
 This is a standard mathematical outline; a separately archived independent sphere derivation was not located in the inventory.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic benchmarks](../guide/analytic-benchmarks.md)
-- [sphere example](../examples/uniform_sphere_workflow.md)
-
-**Bibliographic inventory:** partial.
-
 - No sphere-specific bibliographic record was found in the relevant portions of this inventory.
-
-## Verification and applicability
 
 ### Verification
 

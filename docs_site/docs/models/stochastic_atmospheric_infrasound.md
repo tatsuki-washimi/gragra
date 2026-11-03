@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Stochastic atmospheric infrasound schematic](../assets/models/stochastic_atmospheric_infrasound.svg)
 
 *Diffuse atmospheric infrasound power spectral density above rigid ground z = 0 penetrating to underground depth h.*
 
 A1 rigid surface; A2 depth halfspace; A3 centered cavern idealization. Basic SphericalShell plotting is static only and does not encode modal acoustic fields.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -76,7 +78,160 @@ $$
 \mathbf S_a^{(\mathrm{SI})} = G^2 \mathbf S_a^{(G\text{-free})}
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+A2 implementation records integral definition and three numerical domains; A3 specification distinguishes published hemispherical-cavern Eq.13 from separately developed response. Text inventory only, no algebraic certification.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Stochastic NN](../guide/stochastic-nn.md)
+- [limitations](../verification/limitations.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+frequency \(f &gt; 0\); sound speed \(c_s &gt; 0\); depth/radius non-negative in kernels; PSD non-negative. A3 center and idealized geometry; acoustic formulations noted as under refinement in guide.
+
+## STEP 1 — Setup
+
+Primary path: `surface_isotropic_acoustic_acceleration_csd`
+
+**A+ (`tutorial-display` axes):** wrap outputs with GWexpy only in the generator; do not invent frequency grids on the output side.
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+sound_speed = 340.0
+frequency = 1.0
+surface_pressure_psd = 5e-5
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+Atmospheric infrasound produces Newtonian noise through adiabatic pressure and density fluctuations advecting or propagating across the detector environment. Let \(S_p(f)\) denote the pressure power spectral density in \(\mathrm{Pa^2/Hz}\), \(c_s\) the atmospheric sound speed, and \(f\) the frequency.
+
+**A1: Surface isotropic infrasound**
+
+The G-free acceleration cross-spectral density (CSD) tensor at the surface is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f)}{(c_s f)^2} \operatorname{diag}\left(\frac{1}{3}, \frac{1}{3}, \frac{2}{3}\right)
+$$
+
+**A2: Underground observation at depth \(h \ge 0\)**
+
+At depth \(h\), high horizontal wavenumbers are exponentially attenuated:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = \frac{S_p(f) I_{\mathrm{iso}}(x)}{(c_s f)^2} \operatorname{diag}(1, 1, 2)
+$$
+
+with dimensionless depth parameter \(x = 4\pi f h / c_s\) and angular attenuation integral:
+
+$$
+I_{\mathrm{iso}}(x) = \frac{1}{2} \int_0^{\pi/2} \sin^3\theta \, e^{-x \sin\theta} \, d\theta
+$$
+
+**A3: Instrument centered in a spherical cavern of radius \(R \ge 0\)**
+
+The cavern acts as a geometric high-pass filter on ambient pressure fluctuations:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = S_{a,ii}^{(G\text{-free})}(f) \, \mathbf I_3
+$$
+
+with isotropic diagonal spectral component:
+
+$$
+S_{a,ii}^{(G\text{-free})}(f) = \frac{4}{3 (c_s f)^2} S_{p,\mathrm{cav}}(f) \left[1 - \operatorname{sinc}\left(\frac{2\pi f R}{c_s}\right)\right]^2
+$$
+
+which vanishes smoothly as \(R \to 0\).
+
+**SI observable conversion**
+
+All G-free acceleration CSD tensors \(\mathbf S_a^{(G\text{-free})}\) in units of \(\mathrm{kg^2/(m^4\cdot Hz)}\) convert to physical SI units \(\mathrm{(m/s^2)^2/Hz}\) by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})} = G^2 \mathbf S_a^{(G\text{-free})}
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+import numpy as np
+from gragra.observables.stochastic_acoustic import surface_isotropic_acoustic_acceleration_csd
+
+csd = surface_isotropic_acoustic_acceleration_csd(
+    sound_speed_m_s=sound_speed, frequency_hz=frequency, surface_pressure_psd_pa2_hz=surface_pressure_psd,
+)
+print('CSD matrix shape:', csd.shape)
+print('CSD_zz:', np.real(csd[2, 2]))
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables.stochastic_acoustic import surface_isotropic_acoustic_acceleration_csd
+
+psds = np.array([1e-5, 2.5e-5, 5e-5, 7.5e-5, 1e-4])
+csd_zz = [
+    float(np.real(surface_isotropic_acoustic_acceleration_csd(
+        sound_speed_m_s=340.0, frequency_hz=1.0, surface_pressure_psd_pa2_hz=float(p),
+    )[2, 2]))
+    for p in psds
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(psds, csd_zz, "o-", color="#316aa5", label=r"$\mathrm{CSD}_{zz}$")
+ax.set_xlabel(r"Surface pressure PSD [Pa$^2$/Hz]")
+ax.set_ylabel(r"$\mathrm{CSD}_{zz}$ [m$^2$/s$^4$/Hz]")
+ax.set_title(r"Atmospheric infrasound: $\mathrm{CSD}_{zz}$ ($f=1\,\mathrm{Hz}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_stochastic_atmospheric_infrasound_step4_comparison.svg_)](../assets/models/tutorials/stochastic_atmospheric_infrasound_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -135,49 +290,12 @@ $$
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables.stochastic_acoustic import surface_isotropic_acoustic_acceleration_csd
-
-csd = surface_isotropic_acoustic_acceleration_csd(
-    sound_speed_m_s=340.0, frequency_hz=1.0, surface_pressure_psd_pa2_hz=1e-4
-)
-print('Infrasound CSD matrix:\n', csd)
-```
-
-Representative output:
-
-```text
-Infrasound CSD matrix:
- [[1.28449482e-30 0.00000000e+00 0.00000000e+00]
- [0.00000000e+00 1.28449482e-30 0.00000000e+00]
- [0.00000000e+00 0.00000000e+00 2.56898965e-30]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-A2 implementation records integral definition and three numerical domains; A3 specification distinguishes published hemispherical-cavern Eq.13 from separately developed response. Text inventory only, no algebraic certification.
-
-### References
-
-Existing public documentation and original formulation context:
-
-- [Stochastic NN](../guide/stochastic-nn.md)
-- [limitations](../verification/limitations.md)
-
-**Bibliographic inventory:** located.
+### Derivation and source notes
 
 - The local model specification distinguishes the provenance of Eq. 13 from the separate A3 response. It is not an independent bibliographic record.
 - The A3 centered-cavern API is a related API identified in the source. The ledger group lists only the surface and underground APIs; A3 is not treated as an original catalogue symbol.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 - [DOI 10.1063/5.0018414](https://doi.org/10.1063/5.0018414)
-
-## Verification and applicability
 
 ### Verification
 

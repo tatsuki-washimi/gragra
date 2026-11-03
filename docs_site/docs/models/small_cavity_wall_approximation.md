@@ -19,7 +19,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Small-cavity wall approximation schematic](../assets/models/small_cavity_wall.svg)
 
@@ -27,6 +27,8 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 - The model accepts Sphere, Cuboid, Cylinder, but `plot_shape` helper supports only Cuboid, Cylinder, SphericalShell and explicitly rejects Cavity types; high-level `small_cavity_wall` model is cavity-named and is not automatically plot-able. A standalone Sphere geometry is not among the supported classes.
 - Harms scalar table supports five discrete shape/location rows; tensor paths have separate geometric coverage.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -63,7 +65,156 @@ $$
 
 The approximation applies when the cavity dimensions are small compared to the seismic wavelength and source-to-target distance, ensuring linear first-order perturbation theory holds.
 
-## Parameters and calculation paths
+### Derivation
+
+Scalar Harms coefficients are literal table entries; general tensors are local derivation/numerical surface paths with recorded convention mapping.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic models](../guide/gen1-analytic-models.md)
+- [physics API](../api/physics.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+Wall-only first-order SCA; small cavity relative to source-target distance; no bulk or scattering term. Scalar lookup only five combos; tensor APIs own separate boundaries and geometry scopes.
+
+- Harms floor-center table row does not specify boundary condition/tensor direction/one-sided limit. Scalar lookup does not carry k. high-level model excludes physical wall. No arbitrary model-wide formula/plot capability.
+## STEP 1 — Setup
+
+Primary path: `small_cavity_wall(...).at(...).run()`
+
+Primary path: `small_cavity_wall(...).at(...).run()`
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame, Sphere
+from gragra.targets import TargetPoints
+from gragra.analytic.seismic import small_cavity_wall
+
+frame = Frame('world')
+geometry = Sphere([0.0, 0.0, 0.0] * u.m, 1.0 * u.m, frame)
+displacement = [0.0, 0.0, 1e-6] * u.m
+density = 2500.0 * u.kg / u.m**3
+targets = TargetPoints([[0.0, 0.0, 10.0]] * u.m, ('t1',), frame)
+model = small_cavity_wall(geometry, displacement, density=density)
+request = model.at(targets)
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+The small-cavity wall approximation evaluates gravitational perturbations caused by the displacement of a cavern boundary enclosing an underground test mass or sensor.
+
+For high-level cavity geometry instances (Sphere, Cuboid, or Cylinder) subject to wall displacement \(\mathbf u\), the boundary-induced perturbations to the potential, acceleration, and gradient are:
+
+$$
+\Phi_{\mathrm{wall}} = -\mathbf u \cdot \mathbf a_{\mathrm{body}}, \qquad
+\mathbf a_{\mathrm{wall}} = \mathbf\Gamma_{\mathrm{body}} \mathbf u, \qquad
+\mathbf\Gamma_{\mathrm{wall}} = \mathbf\Xi_{\mathrm{body}} \mathbf u
+$$
+
+where \(\mathbf a_{\mathrm{body}}\), \(\mathbf\Gamma_{\mathrm{body}}\), and \(\mathbf\Xi_{\mathrm{body}}\) are the field, gradient, and third-rank gradient tensor of the notionally filled body at the instrument position.
+
+For homogeneous host media using the Harms (2022) scalar lookup model, the scalar wall coupling factor \(C_{\mathrm{sca}}\) is a dimensionless geometric quantity. The resulting scalar acceleration amplitudes in G-free and SI units are:
+
+$$
+a_{\mathrm{G-free}} = -C_{\mathrm{sca}} \rho \xi,
+\qquad
+a_{\mathrm{SI}} = -G C_{\mathrm{sca}} \rho \xi
+$$
+
+where \(\rho\) is host medium mass density and \(\xi\) is scalar ground displacement amplitude.
+
+In tensor notation, vector acceleration perturbations evaluate as:
+
+$$
+\begin{aligned}
+\text{G-free:}\quad \frac{\Delta\mathbf a}{G} &= -\rho \mathbf C_g \mathbf u, \\
+\text{SI:}\quad \Delta\mathbf a &= -G \rho \mathbf C_g \mathbf u.
+\end{aligned}
+$$
+
+The approximation applies when the cavity dimensions are small compared to the seismic wavelength and source-to-target distance, ensuring linear first-order perturbation theory holds.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+Inspect and validate the evaluation request (`api`):
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+if hasattr(request, 'parameters'):
+    display(request.parameters)
+if hasattr(request, 'formulas'):
+    display(request.formulas)
+if hasattr(request, 'references'):
+    display(request.references)
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+result = request.run()
+print('wall acceleration:', result.acceleration)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.analytic import sca_wall_acceleration
+
+disps_m = np.array([5e-7, 7.5e-7, 1e-6, 1.25e-6, 1.5e-6])
+a_gfree = [
+    sca_wall_acceleration('sphere', 'arbitrary', density_kg_m3=2500.0, displacement_m=float(d))
+    for d in disps_m
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(disps_m * 1e6, np.abs(a_gfree), "o-", color="#316aa5", label=r"$|\mathbf{a}|/G$")
+ax.set_xlabel(r"Displacement amplitude [µm]")
+ax.set_ylabel(r"G-free acceleration $|\mathbf{a}|/G$ [kg/m$^2$]")
+ax.set_title(r"Small cavity wall approximation (sphere, arbitrary direction)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_small_cavity_wall_approximation_step4_comparison.svg_)](../assets/models/tutorials/small_cavity_wall_approximation_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -132,47 +283,12 @@ This path provides a related coefficient, coupling quantity, or helper rather th
 
 This path provides a related coefficient, coupling quantity, or helper rather than a direct Φ/a/Γ output.
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.analytic import sca_wall_coupling_factor, sca_wall_acceleration
-
-c_sca = sca_wall_coupling_factor('sphere', 'arbitrary')
-a_si = sca_wall_acceleration('sphere', 'arbitrary', density_kg_m3=2500.0, displacement_m=1e-6)
-print('coupling factor C_sca:', c_sca)
-print('wall acceleration a_SI:', a_si)
-```
-
-Representative output:
-
-```text
-coupling factor C_sca: 4.1887902047863905
-wall acceleration a_SI: -0.010471975511965976
-```
-
-## Derivation and sources
-
-### Derivation
-
-Scalar Harms coefficients are literal table entries; general tensors are local derivation/numerical surface paths with recorded convention mapping.
+### Derivation and source notes
 
 - Do not generalize table scalar into all-geometry analytic tensor. Tensor source-map explicitly restricts interpretation and physical-boundary handling.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic models](../guide/gen1-analytic-models.md)
-- [physics API](../api/physics.md)
-
-**Bibliographic inventory:** located.
-
 - Harms et al., ‘A lower limit for Newtonian-noise models of the Einstein Telescope’ (2022), EPJ Plus 137:687, DOI 10.1140/epjp/s13360-022-02851-z; Eqs 1–4,7, Table 1. Tempel et al. 2025 pp. 9–12,42–46 recorded for tensor convention. This inventory records repository citations, not independent paper inspection.
 - [DOI 10.1140/epjp/s13360-022-02851-z](https://doi.org/10.1140/epjp/s13360-022-02851-z)
-
-## Verification and applicability
 
 ### Verification
 
