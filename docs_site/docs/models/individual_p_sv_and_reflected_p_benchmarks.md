@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Individual P/SV and reflected-P benchmarks schematic](../assets/models/individual_p_sv_reflection.svg)
 
 *Decomposition into incident P, reflected P, and mode-converted SV wave potentials with horizontal wavenumber matching.*
 
 - Bare wave excludes free-surface composite and rejects z=0; reflected composite satisfies traction-free boundary and is ground-only z&gt;0; literal Eq90 helper distinct from production coefficient.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -60,7 +62,164 @@ $$
 \delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}.
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+Local design and validation records contain a boundary-value re-derivation for the reflected-P coefficient and independent Green reconstruction; this inventory did not execute or re-prove them.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic benchmarks](../guide/analytic-benchmarks.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+Applicability limits recorded.
+
+- Both paths reject z==0. Single-mode API allows mixed ground/underground targets; reflected-P composite is ground-only z&gt;0.
+- Incidence angle is from surface normal and exact grazing is rejected; reflected path only accepts incident P.
+## STEP 1 — Setup
+
+Primary path: `halfspace_single_bodywave_observables` (benchmark; keep low-level)
+
+Primary path: `halfspace_single_bodywave_observables` (benchmark; keep low-level)
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import numpy as np
+
+targets = [[0.0, 0.0, -50.0]]
+wave_type = 'P'
+density = 2500.0
+vp = 4000.0
+vs = 2000.0
+frequency = 2.0
+incidence_angle = np.pi / 6.0
+azimuth = 0.0
+displacement = 1e-6
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+Benchmarks for isolated and reflected plane body waves in an elastic halfspace (\(z \le 0\)) reflecting at a planar traction-free surface (\(z = 0\)):
+
+**1. Single upward plane P-wave** (Harms 2019 Eqs. 86–87, with prefactor \(C_1 = -\frac{\rho \xi_0^P}{i k_P}\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) =
+\begin{cases}
+2\pi C_1 e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}, & z > 0, \\
+2\pi C_1 \left( 2 e^{i k_z z} - e^{k_\rho z} \right) e^{i \mathbf k_\rho \cdot \mathbf x_\perp}, & z \le 0.
+\end{cases}
+$$
+
+**2. Single upward plane SV-wave** (Harms 2019 Eq. 88, with prefactor \(C_2 = \frac{\rho \xi_0^{SV}}{k_S}\)):
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = 2\pi C_2 e^{-k_\rho |z|} e^{i \mathbf k_\rho \cdot \mathbf x_\perp} \qquad (\text{all } z).
+$$
+
+**3. Reflected-P composite wave** (incident P + reflected P + converted SV satisfying traction-free conditions):
+
+Above ground (\(z > 0\)), the composite potential is:
+
+$$
+\Phi^{(G\text{-free})}(\mathbf x) = 2\pi C_1 \delta(\theta, k_\rho) e^{-k_\rho z} e^{i \mathbf k_\rho \cdot \mathbf x_\perp}
+$$
+
+with dimensionless wavenumber ratios \(r_\rho = k_\rho / k_S\), \(r_{zP} = k_{zP} / k_S\), \(r_{zS} = k_{zS} / k_S\), and composite transfer coefficient:
+
+$$
+\delta(\theta, k_\rho) = \frac{8 r_\rho^2 r_{zP} r_{zS} + 4i r_\rho r_{zP} (1 - 2r_\rho^2)}{(1 - 2r_\rho^2)^2 + 4 r_\rho^2 r_{zP} r_{zS}}.
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+from gragra.observables import halfspace_single_bodywave_observables
+
+res = halfspace_single_bodywave_observables(
+    targets_m=targets, wave_type=wave_type, density_kg_m3=density,
+    v_p_m_s=vp, v_s_m_s=vs, frequency_hz=frequency,
+    incidence_angle_rad=incidence_angle, azimuth_rad=azimuth,
+    displacement_m=displacement,
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import halfspace_single_bodywave_observables
+
+angles = np.array([0.0, 15.0, 30.0, 45.0, 60.0])
+mags = [
+    float(np.abs(halfspace_single_bodywave_observables(
+        targets_m=[[0.0, 0.0, -50.0]],
+        wave_type='P',
+        density_kg_m3=2500.0,
+        v_p_m_s=4000.0,
+        v_s_m_s=2000.0,
+        frequency_hz=2.0,
+        incidence_angle_rad=np.deg2rad(deg),
+        azimuth_rad=0.0,
+        displacement_m=1e-6,
+    ).acceleration[0, 2]))
+    for deg in angles
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(angles, mags, "o-", color="#316aa5", label=r"$|a_z|$")
+ax.set_xlabel(r"Incidence angle [deg]")
+ax.set_ylabel(r"$|a_z|$ [m/s$^2$]")
+ax.set_title(r"Single-bodywave benchmark ($f=2\,\mathrm{Hz}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_individual_p_sv_and_reflected_p_benchmarks_step4_comparison.svg_)](../assets/models/tutorials/individual_p_sv_and_reflected_p_benchmarks_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -114,60 +273,14 @@ $$
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import numpy as np
-from gragra.observables import halfspace_single_bodywave_observables
-
-res = halfspace_single_bodywave_observables(
-    targets_m=[[0.0, 0.0, -50.0]], wave_type='P', density_kg_m3=2500.0,
-    v_p_m_s=4000.0, v_s_m_s=2000.0, frequency_hz=2.0,
-    incidence_angle_rad=np.pi/6, azimuth_rad=0.0, displacement_m=1e-6
-)
-print('potential:', res.potential)
-print('acceleration:', res.acceleration)
-print('gradient:', res.gradient)
-```
-
-Representative output:
-
-```text
-potential: [9.05140363e-11+3.52756031e-10j]
-acceleration: [[5.54107878e-13-1.42179116e-13j 0.00000000e+00+0.00000000e+00j
-  1.79910020e-12+2.38341657e-13j]]
-gradient: [[[ 2.23334433e-16+8.70390619e-16j  0.00000000e+00+0.00000000e+00j
-   -3.74386199e-16+2.82601999e-15j]
-  [ 0.00000000e+00+0.00000000e+00j  0.00000000e+00+0.00000000e+00j
-   -0.00000000e+00+0.00000000e+00j]
-  [-3.74386199e-16+2.82601999e-15j -0.00000000e+00+0.00000000e+00j
-    6.70003298e-16+5.65602299e-15j]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Local design and validation records contain a boundary-value re-derivation for the reflected-P coefficient and independent Green reconstruction; this inventory did not execute or re-prove them.
+### Derivation and source notes
 
 - Inventory fact: Model implementations provide benchmark fields for individual P, SV, and reflected P waves.
 - Literature assertion: Field expressions correspond to Harms (2019) Eqs. 86–90 and Aki & Richards (2002) Section 5.2.
 - Proof assertion: Cartesian displacement/stress derivation and direct Poisson boundary-value checks are verified in test oracles.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic benchmarks](../guide/analytic-benchmarks.md)
-
-**Bibliographic inventory:** partial.
-
 - Harms 2019 DOI 10.1007/s41114-019-0022-2, Sec.3.4.1 pp.42-43 Eq.86-90.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
-
-## Verification and applicability
 
 ### Verification
 

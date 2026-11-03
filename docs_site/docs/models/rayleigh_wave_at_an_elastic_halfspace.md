@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Rayleigh wave at an elastic halfspace schematic](../assets/models/rayleigh_wave_halfspace.svg)
 
 *Free surface \(z = 0\) and subsurface \(z < 0\) with horizontal wavenumber \(k_R\), elliptical retrograde orbit, and exponential depth decay.*
 
 - High-level HalfSpace phasor APIs and separate all-space literature wrapper; coefficient response differs from amplitude-bearing field.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -60,7 +62,229 @@ $$
 
 At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \zeta) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\), strictly satisfying potential continuity across the boundary. Across \(z = 0\), the normal derivative jump satisfies the surface mass-sheet condition \(\left. (\partial_z \Phi_+ - \partial_z \Phi_-) \right|_{z=0} = 4\pi G \rho \xi_z(0) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\). Evaluation targets on the surface boundary (\(z = 0\)) are rejected with a `ValueError`.
 
-## Parameters and calculation paths
+### Derivation
+
+Committed design and validation records describe the local independent derivation/verification approach; they remain documentary evidence and were not rerun here.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Waves](../guide/waves.md)
+- [analytic benchmarks](../guide/analytic-benchmarks.md)
+- [Rayleigh workflow](../examples/rayleigh_phasor_workflow.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+Applicability limits recorded.
+
+- Literature API uses z-up and free surface z=0; z==0 targets rejected. Underground formula z&lt;0; ground formula z&gt;0. Potential continuous at interface, normal acceleration jumps, gradient generally discontinuous.
+- Model APIs require HalfSpace geometry and explicit frame/phase origin; response coefficients omit amplitude/reference time.
+## STEP 1 — Setup
+
+Build the elastic half-space, surface phasor input, and targets in the **world** frame (`api`). The `HalfSpace` surface is at local \(z=0\); material occupies **local \(z<0\)**. Tutorial targets below the free surface use **negative world \(z\)** (same sign convention as the catalogue low-level sample `targets_m=[[0,0,-10]]`).
+
+```python
+import astropy.units as u
+import numpy as np
+from gwexpy.frequencyseries import FrequencySeries
+from gragra.analytic.seismic import rayleigh_halfspace
+from gragra.geometry import Frame, HalfSpace
+from gragra.results import PhasorRepresentation
+from gragra.targets import TargetPoints
+
+world = Frame('world')
+surface = Frame('surface', parent=world)
+frequency_hz = 1.0
+model = rayleigh_halfspace(
+    HalfSpace(surface),
+    2500.0 * u.kg / u.m**3,
+    4000.0 * u.m / u.s,
+    2000.0 * u.m / u.s,
+    FrequencySeries(
+        np.array([1e-6 + 0.0j]),
+        frequencies=[frequency_hz] * u.Hz,
+        unit=u.m,
+    ),
+    PhasorRepresentation(),
+    (1_000_000_000, 0),
+    [0.0, 0.0, 0.0] * u.m,
+    (1.0, 0.0, 0.0),
+)
+depth_m = -16.0
+targets = TargetPoints(
+    [[0.0, 0.0, depth_m], [5.0, 0.0, depth_m], [0.0, 5.0, depth_m]] * u.m,
+    ('on_axis', 'offset_x', 'offset_y'),
+    world,
+)
+request = model.at(targets)
+```
+
+
+Setup figure from `request.plot_setup(view='xz')` (`api` on the Rayleigh setup):
+
+![Rayleigh half-space setup](../assets/models/tutorials/rayleigh_wave_at_an_elastic_halfspace_setup_xz.svg)
+
+*Figure from `plot_setup` on the unresolved evaluation (geometry only).*
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a harmonic Rayleigh wave propagating along the planar traction-free surface (\(z = 0\)) of a homogeneous isotropic elastic halfspace (\(z \le 0\)) with Rayleigh speed \(c_R\), angular frequency \(\omega = 2\pi f\), and horizontal wavenumber \(k_R = \omega / c_R\):
+
+With medium P-wave speed \(v_P\) and S-wave speed \(v_S\), the dimensionless vertical wave decay parameters are:
+
+$$
+q = \sqrt{1 - \left(\frac{c_R}{v_P}\right)^2}, \qquad
+s = \sqrt{1 - \left(\frac{c_R}{v_S}\right)^2}, \qquad
+\zeta = \sqrt{\frac{q}{s}} = \sqrt{\frac{q_P}{q_S}}
+$$
+
+where \(q_P = k_R q = \sqrt{k_R^2 - \omega^2 / v_P^2}\) and \(q_S = k_R s = \sqrt{k_R^2 - \omega^2 / v_S^2}\).
+
+For surface vertical displacement amplitude \(\xi_z(0)\) at reference origin \(\mathbf x_0\), the modal amplitude constant is (Harms 2019 Eq. 98):
+
+$$
+A = \frac{\xi_z(0)}{q_P - k_R \zeta}.
+$$
+
+Above ground (\(z > 0\)), the combined surface-mass and bulk-dilatation gravitational potential evaluates as (Harms 2019 Eq. 96):
+
+$$
+\Phi_+(\mathbf x, t) = -2\pi G \rho A (1 - \zeta) e^{-k_R z} e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}.
+$$
+
+Below ground (\(z < 0\)), the gravitational potential combines the bulk compressional dilatation perturbation with surface mass displacement (Harms 2019 Eq. 97):
+
+$$
+\Phi_-(\mathbf x, t) = 2\pi G \rho A \left[ -2 e^{q_P z} + (1 + \zeta) e^{k_R z} \right] e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}.
+$$
+
+At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \zeta) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\), strictly satisfying potential continuity across the boundary. Across \(z = 0\), the normal derivative jump satisfies the surface mass-sheet condition \(\left. (\partial_z \Phi_+ - \partial_z \Phi_-) \right|_{z=0} = 4\pi G \rho \xi_z(0) e^{i(\mathbf k_R \cdot (\mathbf x_\perp - \mathbf x_{0,\perp}) - \omega t)}\). Evaluation targets on the surface boundary (\(z = 0\)) are rejected with a `ValueError`.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+display(request.parameters)
+display(request.formulas)
+display(request.references)
+```
+
+## STEP 3 — Calculate
+
+```python
+import numpy as np
+
+result = request.run()
+acc = result.acceleration
+print('acceleration shape:', acc.shape)
+print('frequencies:', acc.frequencies)
+print('az phasor:', np.asarray(acc)[:, 2, 0])
+```
+
+
+Plot **\(|a_z|\)** or **\(\arg(a_z)\)** (`part='magnitude'` / `'phase'` via `gragra.plot_result`); do not pass raw complex arrays to `plot` as reals.
+
+Low-level cross-check (`api` SI observable used in CI samples):
+
+```python
+from gragra.observables import rayleigh_halfspace_allspace_observables
+
+res = rayleigh_halfspace_allspace_observables(
+    targets_m=[[0.0, 0.0, -10.0]], density_kg_m3=2500.0, v_p_m_s=4000.0, v_s_m_s=2000.0,
+    frequency_hz=1.0, vertical_surface_amplitude_m=1e-6
+)
+print('potential:', res.potential)
+print('acceleration:', res.acceleration)
+print('gradient:', res.gradient)
+```
+
+## STEP 4 — Results / Comparison
+
+Five burial depths at fixed material and \(f=1\,\mathrm{Hz}\): for each depth, three targets share the same world \(z\) with horizontal offsets (`on_axis`, `offset_x`, `offset_y`). Each plotted curve is **one depth**; the abscissa is **target id** (not depth). Overlay **\(|a_z|\)** (primary) and optionally **\(\arg(a_z)\)**.
+
+Optional routing check at one depth (same kernel as `rayleigh_halfspace_allspace_observables`; not an independent physics oracle):
+
+```python
+import numpy as np
+from gragra.observables.rayleigh_literature import (
+    rayleigh_halfspace_allspace_observables,
+)
+z_check = -16.0
+hl = np.asarray(model.at(targets).run().acceleration)[:, 2, 0]
+low = rayleigh_halfspace_allspace_observables(
+    targets_m=[[0, 0, z_check], [5, 0, z_check], [0, 5, z_check]],
+    density_kg_m3=2500, v_p_m_s=4000, v_s_m_s=2000,
+    frequency_hz=1.0, vertical_surface_amplitude_m=1e-6,
+).acceleration[:, 2]
+print('max |hl-low|', np.max(np.abs(hl - low)))
+```
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+depths_m = (-8.0, -12.0, -16.0, -20.0, -24.0)
+mags = []
+phases = []
+for d in depths_m:
+    case_targets = TargetPoints(
+        [[0.0, 0.0, d], [5.0, 0.0, d], [0.0, 5.0, d]] * u.m,
+        ('on_axis', 'offset_x', 'offset_y'),
+        world,
+    )
+    acc = np.asarray(model.at(case_targets).run().acceleration)[:, :, 0]
+    az = acc[:, 2]
+    mags.append(np.abs(az))
+    phases.append(np.angle(az))
+
+fig, (ax_m, ax_p) = plt.subplots(1, 2, figsize=(9.5, 4.5))
+colors = ('#316aa5', '#27864b', '#b97132', '#7a5fa8', '#c44e52')
+for d, mag, ph, c in zip(depths_m, mags, phases, colors, strict=True):
+    ax_m.plot(range(3), mag, 'o-', color=c, label=f'z={d} m')
+    ax_p.plot(range(3), ph, 's--', color=c, label=f'z={d} m')
+for ax in (ax_m, ax_p):
+    ax.set_xticks(range(3))
+    ax.set_xticklabels(['on_axis', 'offset_x', 'offset_y'])
+    ax.set_xlabel('Target ID')
+    ax.grid(True, linestyle='--', alpha=0.5)
+ax_m.set_ylabel('|a_z| [m/s^2]')
+ax_m.set_title('Rayleigh magnitude vs depth')
+ax_m.legend(fontsize=7)
+ax_p.set_ylabel('arg(a_z) [rad]')
+ax_p.set_title('Rayleigh phase overlay')
+ax_p.legend(fontsize=7)
+fig.tight_layout()
+plt.show()
+```
+
+![Rayleigh $|a_z|$ depth sweep](../assets/models/tutorials/rayleigh_wave_at_an_elastic_halfspace_step4_az_magnitude.svg)
+
+![Rayleigh $\arg(a_z)$ depth sweep](../assets/models/tutorials/rayleigh_wave_at_an_elastic_halfspace_step4_az_phase.svg)
+
+*Figures generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -136,60 +360,14 @@ At the free surface (\(z = 0\)), \(\Phi_+(0) = \Phi_-(0) = -2\pi G \rho A (1 - \
 
 **Path-level source-declared output union:** Φ a Γ — Phasor
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables import rayleigh_halfspace_allspace_observables
-
-res = rayleigh_halfspace_allspace_observables(
-    targets_m=[[0.0, 0.0, -10.0]], density_kg_m3=2500.0, v_p_m_s=4000.0, v_s_m_s=2000.0,
-    frequency_hz=1.0, vertical_surface_amplitude_m=1e-6
-)
-print('potential:', res.potential)
-print('acceleration:', res.acceleration)
-print('gradient:', res.gradient)
-```
-
-Representative output:
-
-```text
-potential: [-2.46444768e-10+0.j]
-acceleration: [[ 0.00000000e+00+8.302494e-13j -0.00000000e+00+0.000000e+00j
-   1.17522099e-12+0.000000e+00j]]
-gradient: [[[-2.79703266e-15+0.00000000e+00j -0.00000000e+00+0.00000000e+00j
-    0.00000000e+00+3.95920972e-15j]
-  [-0.00000000e+00+0.00000000e+00j -0.00000000e+00+0.00000000e+00j
-   -0.00000000e+00+0.00000000e+00j]
-  [ 0.00000000e+00+3.95920972e-15j -0.00000000e+00+0.00000000e+00j
-    4.98732521e-15+0.00000000e+00j]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Committed design and validation records describe the local independent derivation/verification approach; they remain documentary evidence and were not rerun here.
+### Derivation and source notes
 
 - Inventory fact: Internal design records map Harms (2019) Eqs. 96/97 to potential and acceleration observables and verify Eq. 92 algebraic cross-checks.
 - Literature assertion: Surface and underground Rayleigh wave gravitational fields correspond to Harms (2019) Eqs. 96–99.
 - Proof assertion: Independent Poisson and Green-function numerical checks confirm potential continuity and normal acceleration jump across the free surface.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Waves](../guide/waves.md)
-- [analytic benchmarks](../guide/analytic-benchmarks.md)
-- [Rayleigh workflow](../examples/rayleigh_phasor_workflow.md)
-
-**Bibliographic inventory:** partial.
-
 - Harms, Living Reviews Relativity 22, 6 (2019), DOI 10.1007/s41114-019-0022-2, Eq.96-98.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
-
-## Verification and applicability
 
 ### Verification
 

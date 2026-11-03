@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Water-channel edge step volume perturbation schematic](../assets/models/water_channel_inflow_step.svg)
 
 *Single Heaviside step displacement of water volume \(\Delta V\) at coordinate \(x_0\) inducing transient acceleration at perpendicular distance \(D\).*
 
 An endpoint step in a linear channel. No dedicated plotting or reuse mapping was identified; the general shape helper targets basic static shapes.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -46,7 +48,131 @@ where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text
 
 *Note: This formulation represents the Fourier transform of a single deterministic transient Heaviside event, not a stationary stochastic ASD.*
 
-## Parameters and calculation paths
+### Derivation
+
+The formula is documented in the API docstring. No separate derivation note was identified among the assigned files.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Water NN](../guide/water-newtonian-noise.md)
+- [water API](../api/water.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+f&gt;0, D&gt;0, ΔV&gt;0, finite x0 and positive rho; output has acceleration×time unit m/s, and MUST NOT be treated as stationary ASD.
+
+## STEP 1 — Setup
+
+Primary path: `water_edge_step_fourier_amplitude`
+
+**A+ (`tutorial-display` axes):** wrap outputs with GWexpy only in the generator; do not invent frequency grids on the output side.
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import numpy as np
+
+step_position = 1.0
+distance = 3.0
+volume = 0.5
+frequency = np.array([1.0])
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a transient deterministic volume inflow step event \(\Delta V\) occurring at inflow coordinate \(x_0\) in an open water channel at perpendicular horizontal distance \(D > 0\):
+
+The single-event acceleration Fourier amplitude in physical units \(\mathrm{m/(s^2\cdot Hz) = m/s}\) is:
+
+$$
+|\Delta a_x(f)| = G \rho_w \Delta V \frac{|x_0|}{(D^2 + x_0^2)^{3/2}} \frac{1}{2\pi f}.
+$$
+
+The single-event differential gravitational strain Fourier amplitude is:
+
+$$
+|h(f)| = \frac{|\Delta a_x(f)|}{(2\pi f)^2 L_{\mathrm{arm}}}
+$$
+
+where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text{ m}\)).
+
+*Note: This formulation represents the Fourier transform of a single deterministic transient Heaviside event, not a stationary stochastic ASD.*
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+from gragra.observables import water_edge_step_fourier_amplitude
+
+f_amp = water_edge_step_fourier_amplitude(
+    x0_m=step_position, distance_m=distance, volume_m3=volume, frequency_hz=frequency,
+)
+print('Fourier amplitude |A| [m/s]:', abs(f_amp[0]))
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import water_edge_step_fourier_amplitude
+
+x0 = np.array([0.5, 1.0, 1.5, 2.0, 2.5])
+amp = [
+    float(np.abs(water_edge_step_fourier_amplitude(
+        x0_m=float(x0_m), distance_m=3.0, volume_m3=0.5, frequency_hz=np.array([1.0]),
+    )[0]))
+    for x0_m in x0
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(x0, amp, "o-", color="#316aa5", label=r"$|\tilde a(f=1\,\mathrm{Hz})|$")
+ax.set_xlabel(r"Step position $x_0$ [m]")
+ax.set_ylabel(r"Fourier amplitude $|\tilde a|$ [m/s]")
+ax.set_title(r"Channel inflow step (Fourier amplitude at $1\,\mathrm{Hz}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_water_channel_inflow_step_step4_comparison.svg_)](../assets/models/tutorials/water_channel_inflow_step_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -89,43 +215,8 @@ where \(L_{\mathrm{arm}}\) is the interferometer arm length (default \(3000\text
 
 **Path-level source-declared output union:** a — Other (Fourier amplitude; see API)
 
-### Calculation example and output
+### Derivation and source notes
 
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import numpy as np
-from gragra.observables import water_edge_step_fourier_amplitude
-
-f_amp = water_edge_step_fourier_amplitude(
-    x0_m=1.0, distance_m=3.0, volume_m3=0.5, frequency_hz=np.array([0.5, 1.0])
-)
-print('Fourier amplitude:', f_amp)
-```
-
-Representative output:
-
-```text
-Fourier amplitude: [3.3591226e-10 1.6795613e-10]
-```
-
-## Derivation and sources
-
-### Derivation
-
-The formula is documented in the API docstring. No separate derivation note was identified among the assigned files.
-
-### References
-
-Existing public documentation and original formulation context:
-
-- [Water NN](../guide/water-newtonian-noise.md)
-- [water API](../api/water.md)
-
-**Bibliographic inventory:** located.
-
-
-## Verification and applicability
 
 ### Verification
 

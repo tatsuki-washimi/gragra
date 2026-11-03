@@ -18,7 +18,7 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 The finite solid cylinder has center \(\mathbf c\), radius \(R>0\), height \(H>0\), and local symmetry axis \(z\). Density is supplied to the model separately from its geometry.
 
@@ -27,6 +27,8 @@ The finite solid cylinder has center \(\mathbf c\), radius \(R>0\), height \(H>0
 *Schematic geometry; dimensions are not to scale.*
 
 - Cylinder geometry in its frame; high-level evaluator transforms arbitrary target positions to geometry frame and calls general-point analytic cylinder triple. It is not on-axis-restricted. Low-level `cylinder_axis_observables` remains a distinct axis-only API; general numerical and analytic APIs have separate algorithm paths.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -62,7 +64,162 @@ axis API because the gradient is undefined or discontinuous there. These
 closed forms apply to targets on the cylinder axis. General-point APIs use
 separate numerical-quadrature or elliptic/series paths.
 
-## Parameters and calculation paths
+### Derivation
+
+An independent derivation exists for the on-axis closed forms, but its detailed contents are not published. References for the general-position elliptic/series derivation were not located.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic benchmarks](../guide/analytic-benchmarks.md)
+- [physics API](../api/physics.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+Axis closed form is strictly axial; off-axis targets rejected. General numerical and analytic variants have separate methods and physical boundary exclusion.
+
+- Axis API does not offer general off-axis closed form. Numerical quadrature is exploratory/reference; analytic general-point path is a separate API; not Conway claimed solution.
+## STEP 1 — Setup
+
+Primary path: `uniform_cylinder(...).at(...).run()`
+
+Primary path: `uniform_cylinder(...).at(...).run()`
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame, Cylinder
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import uniform_cylinder
+
+frame = Frame('lab')
+geometry = Cylinder([0.0, 0.0, 0.0] * u.m, 1.0 * u.m, 4.0 * u.m, frame)
+density = 2700.0 * u.kg / u.m**3
+targets = TargetPoints([[0.0, 0.0, 5.0]] * u.m, ('on_axis',), frame)
+model = uniform_cylinder(geometry, density)
+request = model.at(targets)
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a uniform cylinder centered at \(\mathbf c\), let
+\(z=x_z-c_z\), \(u_1=-H/2-z\), and \(u_2=H/2-z\). Define
+
+$$
+P(u)=\frac{1}{2}\left[u\left(\sqrt{R^2+u^2}-|u|\right)
++R^2\operatorname{asinh}\left(\frac{u}{R}\right)\right],
+\qquad
+F(u)=|u|-\sqrt{R^2+u^2}.
+$$
+
+The on-axis potential and acceleration in SI units are
+
+$$
+\Phi(z)=-2\pi G\rho\left[P(u_2)-P(u_1)\right],
+\qquad
+a_z(z)=2\pi G\rho\left[F(u_2)-F(u_1)\right].
+$$
+
+By axial symmetry, the on-axis gravity-gradient tensor is diagonal, with
+
+$$
+\Gamma_{zz}=\frac{\partial a_z}{\partial z},
+\qquad
+\Gamma_{xx}=\Gamma_{yy}=\frac{-4\pi G\rho_{\mathrm{local}}-\Gamma_{zz}}{2}.
+$$
+
+Here \(\rho_{\mathrm{local}}=\rho\) for \(|z|<H/2\) and is zero outside
+the cylinder. End-face targets \(z=\pm H/2\) are rejected by the bundled
+axis API because the gradient is undefined or discontinuous there. These
+closed forms apply to targets on the cylinder axis. General-point APIs use
+separate numerical-quadrature or elliptic/series paths.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+Inspect and validate the evaluation request (`api`):
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+if hasattr(request, 'parameters'):
+    display(request.parameters)
+if hasattr(request, 'formulas'):
+    display(request.formulas)
+if hasattr(request, 'references'):
+    display(request.references)
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+result = request.run()
+print('potential:', result.potential)
+print('acceleration:', result.acceleration)
+print('gradient:', result.gradient)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import cylinder_axis_observables
+
+radii = np.array([0.5, 0.75, 1.0, 1.25, 1.5])
+az = [
+    cylinder_axis_observables(
+        center_m=[0.0, 0.0, 0.0],
+        radius_m=float(r),
+        height_m=4.0,
+        density_kg_m3=2700.0,
+        targets_m=[[0.0, 0.0, 5.0]],
+    ).acceleration[0, 2]
+    for r in radii
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(radii, az, "o-", color="#316aa5", label=r"$a_z$")
+ax.set_xlabel(r"Cylinder radius $R$ [m]")
+ax.set_ylabel(r"$a_z$ [m/s$^2$]")
+ax.set_title(r"Uniform cylinder: on-axis acceleration ($H=4\,\mathrm{m}$, $z=5\,\mathrm{m}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_uniform_density_cylinder_step4_comparison.svg_)](../assets/models/tutorials/uniform_density_cylinder_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -165,52 +322,11 @@ separate numerical-quadrature or elliptic/series paths.
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables import cylinder_axis_observables
-
-res = cylinder_axis_observables(
-    center_m=[0.0, 0.0, 0.0], radius_m=1.0, height_m=4.0, density_kg_m3=2700.0,
-    targets_m=[[0.0, 0.0, 5.0]]
-)
-print('potential:', res.potential)
-print('acceleration:', res.acceleration)
-print('gradient:', res.gradient)
-```
-
-Representative output:
-
-```text
-potential: [-4.73467059e-07]
-acceleration: [[ 0.00000000e+00  0.00000000e+00 -1.03274022e-07]]
-gradient: [[[-2.3362203e-08  0.0000000e+00  0.0000000e+00]
-  [ 0.0000000e+00 -2.3362203e-08  0.0000000e+00]
-  [ 0.0000000e+00  0.0000000e+00  4.6724406e-08]]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-An independent derivation exists for the on-axis closed forms, but its detailed contents are not published. References for the general-position elliptic/series derivation were not located.
+### Derivation and source notes
 
 - The unpublished derivation covers only the on-axis closed forms; references for the general-position elliptic/series derivation were not assembled.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic benchmarks](../guide/analytic-benchmarks.md)
-- [physics API](../api/physics.md)
-
-**Bibliographic inventory:** partial.
-
 - Analytic benchmark names Conway formula only to distinguish it from the numerical path; axis closed-form source derivation path is cited. No claim that a paper was inspected here.
-
-## Verification and applicability
 
 ### Verification
 

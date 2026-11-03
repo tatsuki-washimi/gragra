@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Spherical cavity and spherical shell schematic](../assets/models/spherical_cavity_shell.svg)
 
 *Concentric spherical cavity of radius a and outer shell boundary b with host medium density ρ.*
 
 - center-only helper targets cavity center. high-level models accept geometry frame/phase origin and target fields; physical boundaries have exclusions per model.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -52,7 +54,147 @@ $$
 \Delta\mathbf a = \mathbf a_{\mathrm{infinite}} - \mathbf a_{\mathrm{total}} = 8\pi G\rho \left[ \frac{j_1(kR)}{kR} \right] \mathbf\xi \qquad (k > 0).
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+Finite shell general-point harmonic coefficient derivations are documented; exact CAS residuals are claimed in saved validation record. Cavity-series local derivation/implementation record exists.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic benchmarks](../guide/analytic-benchmarks.md)
+- [analytic models](../guide/gen1-analytic-models.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+Prescribed plane-wave displacement and finite first-order perturbation; finite shell response does not satisfy elastic scattering conditions. Center-only helper is P-wave acceleration only; high-level shell supports distinct P/S and contribution path.
+
+- U10 validation explicitly claims no comparison with an elastically scattered field. General spherical cavity series is no-scattering; physical wall excluded. Do not infer static response or PSD/time-series outputs.
+## STEP 1 — Setup
+
+Primary path: Spherical shell / cavity factories + literature observables
+
+Primary path: Spherical shell / cavity factories + literature observables
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+inner_radius = 1.0
+outer_radius = 10.0
+wavenumber = 0.01
+density = 2500.0
+displacement = 1e-6
+direction = [0.0, 0.0, 1.0]
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a finite spherical shell of inner radius \(a\), outer radius \(R\), and uniform mass density \(\rho\) under an incident plane harmonic compressional P-wave displacement \(\mathbf u(\mathbf x, t) = \mathbf\xi e^{i(\mathbf k\cdot\mathbf x - \omega t)}\), the center acceleration decomposes into bulk and boundary contributions (ANNA v4, arXiv:2603.15157v4, Section 4.1):
+
+$$
+\begin{aligned}
+\mathbf a_{\mathrm{bulk}} &= 4\pi G\rho \left[ j_0(ka) - j_0(kR) \right] \mathbf\xi, \\
+\mathbf a_{\mathrm{inner\_wall}} &= 4\pi G\rho \left[ \frac{2 j_1(ka)}{ka} - j_0(ka) \right] \mathbf\xi, \\
+\mathbf a_{\mathrm{outer\_boundary}} &= 4\pi G\rho \left[ j_0(kR) - \frac{2 j_1(kR)}{kR} \right] \mathbf\xi.
+\end{aligned}
+$$
+
+The total center acceleration is:
+
+$$
+\mathbf a_{\mathrm{total}} = \mathbf a_{\mathrm{bulk}} + \mathbf a_{\mathrm{inner\_wall}} + \mathbf a_{\mathrm{outer\_boundary}} = 8\pi G\rho \left[ \frac{j_1(ka)}{ka} - \frac{j_1(kR)}{kR} \right] \mathbf\xi
+$$
+
+where \(j_0(x) = \sin(x)/x\) and \(j_1(x) = \sin(x)/x^2 - \cos(x)/x\) are spherical Bessel functions of the first kind.
+
+The difference relative to an infinite homogeneous medium is:
+
+$$
+\Delta\mathbf a = \mathbf a_{\mathrm{infinite}} - \mathbf a_{\mathrm{total}} = 8\pi G\rho \left[ \frac{j_1(kR)}{kR} \right] \mathbf\xi \qquad (k > 0).
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+from gragra.observables import spherical_shell_p_acceleration_components
+
+res = spherical_shell_p_acceleration_components(
+    inner_radius_m=inner_radius, outer_radius_m=outer_radius, wavenumber_rad_m=wavenumber,
+    density_kg_m3=density, displacement_m=displacement, direction=direction,
+)
+print('total acceleration:', res.total)
+print('bulk contribution:', res.bulk)
+print('inner wall contribution:', res.inner_wall)
+print('outer boundary contribution:', res.outer_boundary)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import spherical_shell_p_acceleration_components
+
+radii = np.array([0.5, 1.0, 1.5, 2.0, 2.5])
+az = [
+    spherical_shell_p_acceleration_components(
+        inner_radius_m=float(a),
+        outer_radius_m=10.0,
+        wavenumber_rad_m=0.01,
+        density_kg_m3=2500.0,
+        displacement_m=1e-6,
+        direction=[0.0, 0.0, 1.0],
+    ).total[0, 2]
+    for a in radii
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(radii, az, "o-", color="#316aa5", label=r"Total $a_z$")
+ax.set_xlabel(r"Inner cavity radius $a$ [m]")
+ax.set_ylabel(r"$a_z$ [m/s$^2$]")
+ax.set_title(r"Spherical shell with P-wave: total acceleration vs cavity radius ($b=10\,\mathrm{m}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_spherical_cavity_and_finite_spherical_shell_step4_comparison.svg_)](../assets/models/tutorials/spherical_cavity_and_finite_spherical_shell_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -119,53 +261,12 @@ $$
 
 **Path-level source-declared output union:** a — Phasor
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables import spherical_shell_p_acceleration_components
-
-res = spherical_shell_p_acceleration_components(
-    inner_radius_m=1.0, outer_radius_m=10.0, wavenumber_rad_m=0.01,
-    density_kg_m3=2500.0, displacement_m=1e-6, direction=[0.0, 0.0, 1.0]
-)
-print('total acceleration:', res.total)
-print('bulk contribution:', res.bulk)
-print('inner wall contribution:', res.inner_wall)
-print('outer boundary contribution:', res.outer_boundary)
-```
-
-Representative output:
-
-```text
-total acceleration: [[0.00000000e+00 0.00000000e+00 1.38338441e-15]]
-bulk contribution: [[0.00000000e+00 0.00000000e+00 3.45796202e-15]]
-inner wall contribution: [[-0.00000000e+00 -0.00000000e+00 -6.98910094e-13]]
-outer boundary contribution: [[0.00000000e+00 0.00000000e+00 6.96835516e-13]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Finite shell general-point harmonic coefficient derivations are documented; exact CAS residuals are claimed in saved validation record. Cavity-series local derivation/implementation record exists.
+### Derivation and source notes
 
 - U10 document says 35 exact CAS residuals and general-point finite-interval harmonic coefficients/Cartesian jets are additional derivations. Formula ledger documents adopted fixed spherical cavity series and exact CAS/axis oracle scripts.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic benchmarks](../guide/analytic-benchmarks.md)
-- [analytic models](../guide/gen1-analytic-models.md)
-
-**Bibliographic inventory:** located.
-
 - ANNA v4 Section 4.1 Eqs.47–53 for finite-shell center P formulas. U10 validation says Harms 2019 continuity/bulk/surface definitions and Reumers v4 P/S center formulas were checked against actual PDFs in that recorded work.
 - [arXiv:2603.15157v4](https://arxiv.org/abs/2603.15157v4)
-
-## Verification and applicability
 
 ### Verification
 

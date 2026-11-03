@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Prescribed point-mass kinematics schematic](../assets/models/prescribed_point_mass_translation.svg)
 
 *Discrete point masses \(m_i\) moving with individual velocities \(\mathbf v_i\) from initial positions \(\mathbf x_{0,i}\) and their Newtonian field at target \(\mathbf x\).*
 
 - Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -46,7 +48,177 @@ $$
 
 These observables strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\) at all non-coincident evaluation targets. Coincident points (\(r_i(t) = 0\)) are singular and raise a `ValueError`.
 
-## Parameters and calculation paths
+### Derivation
+
+Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Analytic models](../guide/gen1-analytic-models.md)
+
+**Bibliographic inventory:** partial.
+
+### Applicability and scope
+
+Applicability limits recorded.
+
+- Exact prescribed trajectory, not a dynamical motion solver; distinct from linearized phasor model.
+## STEP 1 — Setup
+
+Primary path: `constant_velocity(...).at(...).run()`
+
+Primary path: `constant_velocity(...).at(...).run()`
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.results import TimeSampling
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import constant_velocity
+
+frame = Frame('world')
+pm = PointMass(1000.0, [-25.0, 0.0, 0.0])
+sampling = TimeSampling(epoch=(100, 0), dt=0.05 * u.s, count=100)
+model = constant_velocity(
+    pm, [10.0, 0.0, 0.0] * u.m / u.s, frame=frame, motion_epoch=(100, 0), sampling=sampling
+)
+targets = TargetPoints([[0.0, 50.0, 0.0]] * u.m, ('t1',), frame)
+request = model.at(targets)
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+For a collection of \(N\) point masses \(m_i\) moving along uniform linear trajectories \(\mathbf x_i(t) = \mathbf x_{i,0} + \mathbf v_i (t - t_0)\), let the relative displacement vector to evaluation target \(\mathbf x\) be:
+
+$$
+\mathbf r_i(t) = \mathbf x - \mathbf x_i(t), \qquad r_i(t) = \|\mathbf r_i(t)\| > 0.
+$$
+
+The instantaneous Newtonian gravitational field observables are:
+
+$$
+\begin{aligned}
+\Phi(\mathbf x, t) &= -G \sum_{i=1}^N \frac{m_i}{r_i(t)}, \\
+\mathbf a(\mathbf x, t) &= -G \sum_{i=1}^N \frac{m_i \mathbf r_i(t)}{r_i(t)^3}, \\
+\mathbf\Gamma(\mathbf x, t) &= G \sum_{i=1}^N m_i \left[ \frac{3 \mathbf r_i(t) \otimes \mathbf r_i(t)}{r_i(t)^5} - \frac{\mathbf I_3}{r_i(t)^3} \right].
+\end{aligned}
+$$
+
+These observables strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\) at all non-coincident evaluation targets. Coincident points (\(r_i(t) = 0\)) are singular and raise a `ValueError`.
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+Inspect and validate the evaluation request (`api`):
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+report = request.validate()
+if report is not None:
+    print(report)
+else:
+    print('Configuration valid.')
+if hasattr(request, 'parameters'):
+    display(request.parameters)
+if hasattr(request, 'formulas'):
+    display(request.formulas)
+if hasattr(request, 'references'):
+    display(request.references)
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+res = request.run()
+print('potential:', res.potential.value, res.potential.units)
+print('acceleration:', res.acceleration.value, res.acceleration.units)
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import astropy.units as u
+from gragra.geometry import Frame
+from gragra.gravity_sources import PointMass
+from gragra.results import TimeSampling
+from gragra.targets import TargetPoints
+from gragra.analytic.objects import constant_velocity
+
+frame = Frame('world')
+pm = PointMass(1000.0, [-25.0, 0.0, 0.0])
+sampling = TimeSampling(epoch=(100, 0), dt=0.05 * u.s, count=100)
+model = constant_velocity(
+    pm, [10.0, 0.0, 0.0] * u.m / u.s, frame=frame, motion_epoch=(100, 0), sampling=sampling,
+)
+ys = (30.0, 40.0, 50.0, 60.0, 70.0)
+traces = []
+last_ax = []
+for y_m in ys:
+    res = model.at(TargetPoints([[0.0, y_m, 0.0]] * u.m, ('t1',), frame)).run()
+    wave = res.acceleration.loc['t1', 'x']
+    traces.append((wave, f"y={y_m:.0f} m"))
+    last_ax.append(float(res.acceleration.value[0, 0, -1]))
+
+fig_gw, (ax_t, ax_f) = plt.subplots(2, 1, figsize=(8.5, 6.2))
+for wave, label in traces:
+    ax_t.plot(wave, label=label)
+    ax_f.plot(abs(wave.fft()), label=f"|FFT| {label}")
+ax_t.set_xlabel("Time [s]")
+ax_t.set_ylabel(r"$a_x$ [m/s$^2$]")
+ax_t.set_title("Prescribed translation (GWexpy acceleration.loc)")
+ax_t.legend(fontsize=7)
+ax_t.grid(True, linestyle="--", alpha=0.4)
+ax_f.set_xlabel("Frequency [Hz]")
+ax_f.set_ylabel(r"$|\mathrm{FFT}(a_x)|$ [m/s$^2$]")
+ax_f.legend(fontsize=7)
+ax_f.grid(True, linestyle="--", alpha=0.4)
+fig_gw.tight_layout()
+
+fig_cmp, ax_cmp = plt.subplots(figsize=(8.0, 4.8))
+ax_cmp.plot(ys, last_ax, "o-", color="#316aa5", label=r"$a_x(t_\mathrm{last})$")
+ax_cmp.set_xlabel(r"Impact parameter $y$ [m]")
+ax_cmp.set_ylabel(r"$a_x$ [m/s$^2$]")
+ax_cmp.set_title(r"Final-sample comparison vs impact parameter")
+ax_cmp.grid(True, linestyle="--", alpha=0.45)
+ax_cmp.legend()
+fig_cmp.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_prescribed_point_mass_translation_step4_comparison.svg_)](../assets/models/tutorials/prescribed_point_mass_translation_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+![GWexpy time and FFT (_prescribed_point_mass_translation_step4_gwexpy.svg_)](../assets/models/tutorials/prescribed_point_mass_translation_step4_gwexpy.svg)
+
+*Time-domain and frequency-domain overlays generated by executing the STEP 4 code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -94,61 +266,11 @@ These observables strictly satisfy \(\mathrm{tr}(\mathbf\Gamma) = 0\) at all non
 
 High-level model factories create evaluation objects; call the documented `.at(...).run()` workflow to evaluate them. Observable functions listed above are direct calls with their own return values.
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import astropy.units as u
-from gragra.geometry import Frame
-from gragra.gravity_sources import PointMass
-from gragra.results import TimeSampling
-from gragra.targets import TargetPoints
-from gragra.analytic.objects import constant_velocity
-
-frame = Frame('world')
-pm = PointMass(1000.0, [0.0, 0.0, 0.0])
-sampling = TimeSampling(epoch=(100, 0), dt=0.1*u.s, count=5)
-model = constant_velocity(
-    pm, [10.0, 0.0, 0.0]*u.m/u.s, frame=frame, motion_epoch=(100, 0), sampling=sampling
-)
-res = model.at(TargetPoints([[0.0, 50.0, 0.0]]*u.m, ('t1',), frame)).run()
-print('potential:', res.potential.value, res.potential.units)
-print('acceleration:', res.acceleration.value, res.acceleration.units)
-```
-
-Representative output:
-
-```text
-potential: [[[-1.33486000e-09 -1.33459311e-09 -1.33379339e-09
-   -1.33246372e-09 -1.33060884e-09]]] [[Unit("m2 / s2")]]
-acceleration: [[[ 0.00000000e+00  5.33623794e-13  1.06533019e-12
-    1.59322087e-12  2.11543536e-12]
-  [-2.66972000e-11 -2.66811897e-11 -2.66332546e-11
-   -2.65536811e-11 -2.64429420e-11]
-  [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
-    0.00000000e+00  0.00000000e+00]]] [[Unit("m / s2") Unit("m / s2") Unit("m / s2")]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Formula expressions are declared in source; a separate local derivation proof was not located in the focused scan.
+### Derivation and source notes
 
 - No separate derivation is asserted from the formula declaration alone.
 
-### References
-
-Existing public documentation and original formulation context:
-
-- [Analytic models](../guide/gen1-analytic-models.md)
-
-**Bibliographic inventory:** partial.
-
 - Shared motion implementation reference metadata; local formulas in source.
-
-## Verification and applicability
 
 ### Verification
 

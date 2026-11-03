@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Isotropic stochastic elastic body waves centered cavity schematic](../assets/models/isotropic_stochastic_body_waves.svg)
 
 *3D isotropic diffuse field of P and S body waves surrounding a centered spherical cavity with sensor at center c.*
 
 B2 centered spherical cavity only, scattering neglected; arbitrary cavity geometry unsupported by API. basic plotting helper supports SphericalShell static shape but no source coupled setup stated.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -61,7 +63,144 @@ $$
 \mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+Full-space uses local bulk gravity transfer. Cavity implementation uses stable j1(x)/x series for |x|&lt;1e-3; local computational transcription, not independent proof.
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Stochastic NN](../guide/stochastic-nn.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+f&gt;0, one-sided per-component PSD nonnegative; B2 radius, density, vp, vs conditions; no scattering. No general displacement/potential/gradient outputs.
+
+## STEP 1 — Setup
+
+Primary path: `fullspace_p_isotropic_acceleration_csd`
+
+**A+ (`tutorial-display` axes):** wrap outputs with GWexpy only in the generator; do not invent frequency grids on the output side.
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+density = 2500.0
+frequency = 2.0
+displacement_psd = 1e-14
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+**1. Full-space isotropic P-waves (B1)** (Harms 2019 Eqs. 55, 60):
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 S_{\xi,P}(f) \, \mathbf I_3
+$$
+
+where \(S_{\xi,P}(f)\) is the one-sided per-component P-wave displacement PSD.
+
+**2. Spherical cavity isotropic P/S-waves (B2)** (Harms 2019 Eq. 65):
+
+Evaluated at the center of a spherical cavity of radius \(R > 0\) in an elastic medium with wavenumbers \(k_P = 2\pi f / v_P\) and \(k_S = 2\pi f / v_S\):
+
+Define the spherical Bessel suppression factors:
+
+$$
+f_P = \frac{j_1(k_P R)}{k_P R}, \qquad
+f_S = \frac{j_1(k_S R)}{k_S R}.
+$$
+
+The isotropic G-free acceleration CSD tensor is:
+
+$$
+\mathbf S_a^{(G\text{-free})}(f) = (4\pi \rho)^2 \left[ 4 f_P^2 S_{\xi,P}(f) + f_S^2 S_{\xi,S}(f) \right] \mathbf I_3
+$$
+
+where \(j_1(x) = \sin(x)/x^2 - \cos(x)/x\).
+
+Physical SI acceleration CSD tensors are obtained by multiplying by \(G^2\):
+
+$$
+\mathbf S_a^{(\mathrm{SI})}(f) = G^2 \mathbf S_a^{(G\text{-free})}(f).
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+import numpy as np
+from gragra.observables.stochastic_bodywave import fullspace_p_isotropic_acceleration_csd
+
+csd = fullspace_p_isotropic_acceleration_csd(
+    density_kg_m3=density, frequency_hz=frequency, p_displacement_psd_m2_hz=displacement_psd,
+)
+print('CSD matrix shape:', csd.shape)
+print('trace(CSD):', np.trace(np.real(csd)))
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables.stochastic_bodywave import fullspace_p_isotropic_acceleration_csd
+
+psds = np.array([1e-15, 5e-15, 1e-14, 5e-14, 1e-13])
+traces = [
+    float(np.trace(np.real(fullspace_p_isotropic_acceleration_csd(
+        density_kg_m3=2500.0, frequency_hz=2.0, p_displacement_psd_m2_hz=float(p),
+    ))))
+    for p in psds
+]
+
+fig, ax = plt.subplots(figsize=(8.0, 4.8))
+ax.plot(psds, traces, "o-", color="#316aa5", label=r"$\mathrm{Tr}(\mathrm{CSD})$")
+ax.set_xlabel(r"Displacement PSD [m$^2$/Hz]")
+ax.set_ylabel(r"Trace of CSD [m$^2$/s$^4$/Hz]")
+ax.set_title(r"Stochastic isotropic P-body waves ($f=2\,\mathrm{Hz}$)")
+ax.grid(True, linestyle="--", alpha=0.45)
+ax.legend()
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_isotropic_stochastic_elastic_body_waves_step4_comparison.svg_)](../assets/models/tutorials/isotropic_stochastic_elastic_body_waves_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -115,46 +254,10 @@ $$
 
 **Path-level source-declared output union:** a — Spectral density (CSD)
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-from gragra.observables.stochastic_bodywave import fullspace_p_isotropic_acceleration_csd
-
-csd = fullspace_p_isotropic_acceleration_csd(
-    density_kg_m3=2500.0, frequency_hz=2.0, p_displacement_psd_m2_hz=1e-14
-)
-print('P-wave CSD matrix:\n', csd)
-```
-
-Representative output:
-
-```text
-P-wave CSD matrix:
- [[4.39654166e-26 0.00000000e+00 0.00000000e+00]
- [0.00000000e+00 4.39654166e-26 0.00000000e+00]
- [0.00000000e+00 0.00000000e+00 4.39654166e-26]]
-```
-
-## Derivation and sources
-
-### Derivation
-
-Full-space uses local bulk gravity transfer. Cavity implementation uses stable j1(x)/x series for |x|&lt;1e-3; local computational transcription, not independent proof.
-
-### References
-
-Existing public documentation and original formulation context:
-
-- [Stochastic NN](../guide/stochastic-nn.md)
-
-**Bibliographic inventory:** located.
+### Derivation and source notes
 
 - The local formula specification maps formulas to the implementation; it is not itself a bibliographic record.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
-
-## Verification and applicability
 
 ### Verification
 

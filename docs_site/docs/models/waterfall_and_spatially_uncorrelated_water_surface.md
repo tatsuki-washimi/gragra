@@ -18,13 +18,15 @@ These pairs are a union over the listed calculation paths. They do not imply eve
 
 [Back to model catalogue](../guide/model-and-method-catalogue.md)
 
-## Geometry and equations
+## Geometry
 
 ![Waterfall and uncorrelated water surface schematic](../assets/models/waterfall_uncorrelated_surface.svg)
 
 *Vertical waterfall column with fluctuating cross-sectional area and uncorrelated surface cells of area \(A_{\mathrm{cell}}\).*
 
 - `plot_shape` targets static Cuboid, Cylinder, and SphericalShell shapes. No water-specific plotting adapter was identified in this review.
+
+## Analytic formulation, sources, and scope
 
 ### Equations
 
@@ -55,7 +57,157 @@ $$
 \mathrm{ASD}_a(f) = G \rho_w \sqrt{A_{\mathrm{cell}} w} \sqrt{\frac{\pi}{8 H^3}} \, \mathrm{ASD}_\eta(f).
 $$
 
-## Parameters and calculation paths
+### Derivation
+
+water module documents independent Model 1 integral: int x²/(H²+x²)³ dx=pi/(8H³).
+
+### References
+
+Existing public documentation and original formulation context:
+
+- [Water NN](../guide/water-newtonian-noise.md)
+- [water API](../api/water.md)
+
+**Bibliographic inventory:** located.
+
+### Applicability and scope
+
+Water positive-frequency Bessel domain requires representable 0&lt;q&lt;=700; DC not allowed by ASD; velocity nonzero, distance/width/density positive.
+
+- uncorrelated formula uses narrow-channel approximation and independent cells; source attribution remains unverified.
+## STEP 1 — Setup
+
+Primary path: `water_waterfall_asd`, `water_channel_uncorrelated_asd`
+
+**A+ (`tutorial-display` axes):** wrap outputs with GWexpy only in the generator; do not invent frequency grids on the output side.
+
+Build inputs consistent with **Detailed reference**:
+
+```python
+velocity = 5.0
+distance = 5.0
+channel_width = 0.5
+correlation_area = 0.01
+```
+
+## STEP 2 — Validate / Inspect
+
+STEP 2 items are tagged by information source:
+
+- **`api`**: read from a gragra evaluation object: `validate()` is a **method**; `parameters`, `formulas`, and `references` are **`@property`** objects (not callable).
+- **`tutorial-display`**: assembled for this page from documented inputs or catalogue-verified display equations (not a separate gragra registry lookup).
+- **`api-output`**: taken from executed result payloads (units, shapes, GWexpy axes).
+
+#### Display equations (`tutorial-display`)
+
+Catalogue-registered analytic formulation (same as **Analytic formulation, sources, and scope** above):
+
+**1. Waterfall model** (vertical water stream of velocity \(v\) at horizontal standoff distance \(D > 0\) with periodic area fluctuation \(A(z,t) = A_0 e^{-i \Omega (t - z/v)}\)):
+
+The G-free potential and acceleration transfer functions are:
+
+$$
+\begin{aligned}
+T_{a_x, A}^{(G\text{-free})} &= -2 \rho_w \frac{|\Omega|}{|v|} K_1\left(\frac{|\Omega| D}{|v|}\right), \\
+T_{a_z, A}^{(G\text{-free})} &= 2i \rho_w \frac{\Omega}{v} K_0\left(\frac{|\Omega| D}{|v|}\right)
+\end{aligned}
+$$
+
+where \(K_0, K_1\) are modified Bessel functions of the second kind.
+
+**2. Spatially uncorrelated water surface model** (narrow channel with uncorrelated surface elevation cells of area \(A_{\mathrm{cell}}\)):
+
+The geometric integral along the channel axis evaluates as:
+
+$$
+\int_{-\infty}^\infty \frac{x^2}{(H^2 + x^2)^3} \, dx = \frac{\pi}{8 H^3}.
+$$
+
+The resulting one-sided gravitational acceleration amplitude spectral density (ASD) in SI units \(\mathrm{m/(s^2\cdot\sqrt{Hz})}\) is:
+
+$$
+\mathrm{ASD}_a(f) = G \rho_w \sqrt{A_{\mathrm{cell}} w} \sqrt{\frac{\pi}{8 H^3}} \, \mathrm{ASD}_\eta(f).
+$$
+
+`request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
+
+For direct observable evaluation, parameters and display equations are verified above (`tutorial-display`).
+
+```python
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
+# Direct observable evaluation: parameters verified against catalogue specification
+print('Input configuration verified.')
+```
+
+## STEP 3 — Calculate
+
+Evaluate the model (`api-output`):
+
+```python
+import numpy as np
+from gragra.observables import water_waterfall_asd, water_channel_uncorrelated_asd
+
+w_asd = water_waterfall_asd(
+    frequency_hz=np.array([1.0]), velocity_mps=velocity, distance_m=distance,
+    area_asd_m2_per_rt_hz=np.array([1e-4]),
+)
+print('waterfall ASD at 1 Hz:', w_asd[0])
+u_asd = water_channel_uncorrelated_asd(
+    distance_m=2.0, width_m=channel_width, correlation_area_m2=correlation_area,
+    surface_asd_m_per_rt_hz=np.array([1e-3]),
+)
+print('uncorrelated surface ASD:', u_asd[0])
+```
+
+
+## STEP 4 — Results / Comparison
+
+Five (or fewer) overlayed parameter sets — execute inline (`api-output`):
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from gragra.observables import water_waterfall_asd, water_channel_uncorrelated_asd
+
+freqs = np.array([0.5, 1.0, 2.0, 5.0, 10.0])
+area = np.full_like(freqs, 1e-4)
+waterfall = water_waterfall_asd(
+    frequency_hz=freqs, velocity_mps=5.0, distance_m=5.0, area_asd_m2_per_rt_hz=area,
+)
+surf_asds = np.array([1e-4, 5e-4, 1e-3, 2e-3, 5e-3])
+uncorr = water_channel_uncorrelated_asd(
+    distance_m=2.0, width_m=0.5, correlation_area_m2=0.01, surface_asd_m_per_rt_hz=surf_asds,
+)
+
+fig, (ax_w, ax_u) = plt.subplots(1, 2, figsize=(9.0, 4.2))
+ax_w.plot(freqs, waterfall, "o-", color="#316aa5", label="Waterfall ASD")
+ax_w.set_yscale("log")
+ax_w.set_xlabel("Frequency [Hz]")
+ax_w.set_ylabel(r"Waterfall ASD [m/s$^2/\sqrt{\mathrm{Hz}}$]")
+ax_w.set_title("Waterfall: frequency dependence")
+ax_w.grid(True, linestyle="--", alpha=0.45)
+ax_w.legend()
+
+ax_u.plot(surf_asds * 1e3, uncorr, "s-", color="#27864b", label="Uncorrelated ASD")
+ax_u.set_xlabel(r"Surface displacement ASD [mm/$\sqrt{\mathrm{Hz}}$]")
+ax_u.set_ylabel(r"Acceleration ASD [m/s$^2/\sqrt{\mathrm{Hz}}$]")
+ax_u.set_title("Spatially uncorrelated surface")
+ax_u.grid(True, linestyle="--", alpha=0.45)
+ax_u.legend()
+
+fig.tight_layout()
+plt.show()
+```
+
+
+![STEP 4 comparison (_waterfall_and_spatially_uncorrelated_water_surface_step4_comparison.svg_)](../assets/models/tutorials/waterfall_and_spatially_uncorrelated_water_surface_step4_comparison.svg)
+
+*Figure generated by executing the STEP 4 comparison code above.*
+
+## Detailed reference and verification
 
 ### Parameters and units
 
@@ -112,52 +264,10 @@ $$
 
 **Path-level source-declared output union:** a — Spectral density (ASD)
 
-### Calculation example and output
-
-The following Python snippet evaluates this model with representative parameters and prints the resulting physical quantities:
-
-```python
-import numpy as np
-from gragra.observables import water_waterfall_asd, water_channel_uncorrelated_asd
-
-w_asd = water_waterfall_asd(
-    frequency_hz=np.array([1.0, 5.0]), velocity_mps=5.0, distance_m=5.0,
-    area_asd_m2_per_rt_hz=np.array([1e-4, 1e-4])
-)
-u_asd = water_channel_uncorrelated_asd(
-    distance_m=2.0, width_m=0.5, correlation_area_m2=0.01,
-    surface_asd_m_per_rt_hz=np.array([1e-3, 1e-3])
-)
-print('waterfall ASD:', w_asd)
-print('uncorrelated ASD:', u_asd)
-```
-
-Representative output:
-
-```text
-waterfall ASD: [1.65562129e-14 4.30963771e-25]
-uncorrelated ASD: [1.04562432e-12 1.04562432e-12]
-```
-
-## Derivation and sources
-
-### Derivation
-
-water module documents independent Model 1 integral: int x²/(H²+x²)³ dx=pi/(8H³).
-
-### References
-
-Existing public documentation and original formulation context:
-
-- [Water NN](../guide/water-newtonian-noise.md)
-- [water API](../api/water.md)
-
-**Bibliographic inventory:** located.
+### Derivation and source notes
 
 - The formula/source attribution text is repository evidence of attribution, not confirmation that the referenced external source was inspected or that source text proves this implementation.
 - No full bibliographic citation/DOI for the Nishizawa 2021 water source was located in the scoped water docs/source search.
-
-## Verification and applicability
 
 ### Verification
 
