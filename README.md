@@ -1,96 +1,123 @@
+<p align="center">
+  <a href="https://tatsuki-washimi.github.io/gragra/">
+    <img
+      src="docs_site/docs/assets/branding/gragra-logo-horizontal.png"
+      alt="GraGra logo"
+      width="640"
+    >
+  </a>
+</p>
+
 # gragra
 
-`gragra` calculates Newtonian gravitational perturbations from discretised mass
-distributions, analytic models, trajectory sources, wave-driven fields, and
-finite-body material regions. Release `v0.2.0rc1` pre-release. Python 3.11 or
-3.12 is required for public CI; see `pyproject.toml` for declared support.
+**Newtonian gravitational perturbation calculations in Python.**
 
-The reader accepts an existing canonical schema-v1 HDF5 file for a single-file,
-time-sampled, ENU, elastic, single-material, non-PML input. It does not create
-SPECFEM input or solver output.
+`gragra` computes gravitational potential, acceleration, and gravity-gradient
+responses from prescribed mass distributions, density perturbations, moving
+sources, and displacement fields.
 
-## Public verification boundary
+Its main application is **Newtonian-noise modelling for gravitational-wave
+detectors**, but it also provides general tools for forward calculations of
+gravity perturbations from analytic models, discretised geometries, and external
+field data.
 
-This repository verifies public candidate code and the quality of the published
-package surface. It does not verify private research branches, private data, or
-arbitrary research environments. Supported environments and environments
-actually exercised by CI are distinct; CI success does not certify arbitrary
-scientific conditions. Research-required scientific verification remains a
-local responsibility and must be run with the code, environment, inputs, and
-conditions identified for that work. Research-required scientific verification
-is therefore performed locally with the target code, environment, and
-conditions identified; GitHub Actions success is not a universal adoption
-condition for research PRs. Automatic Actions or environment matrices are not
-reintroduced without an explicit policy change. Moving execution location or
-frequency does not weaken scientific acceptance conditions.
+For the full documentation, physical models, API details, and verification
+scope, see the public documentation site:
 
-Public CI runs documentation-only checks for documentation changes. Changes to
-source, tests, builds, dependencies, workflows, scripts, or unknown paths run
-the full public checks: Python 3.11 and 3.12 reference tests, NumPy/Numba
-parity, a real C++ build and parity check, package wheel and sdist smoke tests
-in fresh environments, and a strict documentation build. These checks run on
-public standard runners and do not imply a publication or deployment step.
+- **Documentation:** https://tatsuki-washimi.github.io/gragra/
+- **Physics reference:** https://tatsuki-washimi.github.io/gragra/guide/physics-reference/
+- **Model & method catalogue:** https://tatsuki-washimi.github.io/gragra/guide/model-and-method-catalogue/
+- **API reference:** https://tatsuki-washimi.github.io/gragra/api/
+- **Verification & limitations:** https://tatsuki-washimi.github.io/gragra/verification/
 
-## Install
+## Installation
 
-`gragra` is not published on PyPI. Install a GitHub Release asset or the source
-tag; see [Getting started](docs_site/docs/getting-started/installation.md). Download
-`SHA256SUMS` with the selected asset and verify that asset in their directory:
+Python **3.11 or later** is required.
 
-```console
-grep '  gragra-0.2.0rc1-' SHA256SUMS | sha256sum --check -
+`gragra` is currently distributed through this repository and GitHub Releases,
+not through PyPI.
+
+### Install from source
+
+```bash
+git clone https://github.com/tatsuki-washimi/gragra.git
+cd gragra
+python -m pip install -e .
 ```
 
-Use the GitHub Release tagged `v0.2.0rc1` when published.
+### Install with development tools
 
-## Point-source smoke check
+If you want to run tests, build documentation, or contribute changes:
 
-```python
-import numpy as np
-from gragra import G_SI, PointMass, point_acceleration
-
-result = point_acceleration(PointMass(1.0, [-1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0]])
-np.testing.assert_allclose(result, [[-G_SI, 0.0, 0.0]])
-assert result.shape == (1, 3)
-assert not result.flags.writeable
+```bash
+python -m pip install -e ".[dev]"
 ```
 
-## Reader example
+### Optional features
 
-The reader needs a canonical schema-v1 HDF5 file supplied by the caller.
+Optional extras are available for specific workflows:
 
-```python
-from gragra.adapters.specfem.reader import read_specfem_gll_hdf5
-from gragra.observables import displacement_field_acceleration
+- `mesh` — mesh import support
+- `mesh-quality` — mesh quality diagnostics
+- `numba` — JIT backend
+- `lebedev` — Lebedev directional quadrature
+- `field-io` — HDF5 field import
 
-dataset = read_specfem_gll_hdf5(
-    "existing-canonical-gll.h5", profile_density_range=(1800.0, 3500.0)
-)
-acceleration = displacement_field_acceleration(dataset, [[100.0, 0.0, 0.0]])
+Example:
+
+```bash
+python -m pip install -e ".[mesh,field-io]"
 ```
 
-Read the [documentation site](docs_site/docs/index.md) built with MkDocs. See
-[CONTRIBUTING.md](CONTRIBUTING.md) and [CITATION.cff](CITATION.cff).
+For compiled and GPU backends, installation verification, and troubleshooting,
+see the installation guide:
 
-## Snippet-backed examples
+- **Installation guide:** https://tatsuki-washimi.github.io/gragra/getting-started/installation/
+- **Minimal example:** https://tatsuki-washimi.github.io/gragra/getting-started/minimal-example/
 
-```python
---8<-- "snippets/readme_point_mass_acceleration.py"
-```
+## Updates
 
-```python
---8<-- "snippets/readme_coherent_response.py"
-```
+### Documentation update (November 2026)
 
-```python
---8<-- "snippets/readme_continuous_sources.py"
-```
+The public documentation site now includes:
 
-## Reproduction material
+- **24 physical-model detail pages**
+- **STEP 1–4 walkthroughs** for all published models
+- **31 deterministic calculation figures**
+- expanded **physics reference**, **numerical methods**, and **API reference**
 
-This repository does not distribute persistent HDF5 fixtures, solver output, or
-reproduction archives. CI creates small temporary HDF5 inputs for its checks.
+See the documentation site for the current published content:
 
-## License
+https://tatsuki-washimi.github.io/gragra/
 
-MIT. See [LICENSE](LICENSE).
+### Release status
+
+- The current public `main` branch carries package version **`0.2.0rc1`**
+- The corresponding GitHub Release is currently **draft**
+- The latest published pre-release is **[`v0.1.0rc2`](https://github.com/tatsuki-washimi/gragra/releases/tag/v0.1.0rc2)**
+
+For detailed change history, see:
+
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Releases:** https://github.com/tatsuki-washimi/gragra/releases
+
+## What gragra provides
+
+`gragra` provides:
+
+- forward calculations of **gravitational potential**
+- **acceleration** and **gravity-gradient tensor** observables
+- analytic and discretised source models
+- support for displacement-field and density-perturbation inputs
+- documented public APIs and reproducible examples
+
+It does **not** act as a general PDE solver for elastodynamics or fluid
+dynamics. Instead, it evaluates gravity perturbations from sources or fields
+supplied analytically or by the caller.
+
+## Further information
+
+- [Documentation site](https://tatsuki-washimi.github.io/gragra/)
+- [Contributing](https://tatsuki-washimi.github.io/gragra/help/contributing/)
+- [Citation](CITATION.cff)
+- [License (MIT)](LICENSE)
