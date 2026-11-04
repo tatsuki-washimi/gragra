@@ -38,10 +38,15 @@ Run `ruff check .` and `ruff format --check .` locally after source edits.
 
 ## What continuous integration actually checks
 
-The CI workflow runs the NumPy core, optional C++ backend, optional extras,
-and the local documentation build. Extra-specific jobs use
-`GRAGRA_REQUIRE_EXTRAS=1` so a missing dependency cannot silently skip the
-tests for that extra.
+The CI workflow selects its checks from the changed paths. Documentation-only
+changes run `ruff check src`, a strict documentation build and
+`tests/test_public_docs.py`. All other changes run the default test selection
+and a strict documentation build on Python 3.11 and 3.12, a single SPECFEM
+reader test comparing NumPy with `numba` and with a built C++ extension, and
+wheel and sdist installation smoke tests.
+The test jobs install several optional extras, but there are no separate
+extra-specific jobs and `GRAGRA_REQUIRE_EXTRAS=1` is not set, so a test whose
+optional dependency is unavailable can skip without failing the job.
 There is no GPU runner: nothing in CI ever exercises the `cupy` backend,
 which is why [Compute backends](../guide/backends.md) states CuPy
 equivalence as verified on the maintainer's local GPU only.

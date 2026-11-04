@@ -67,10 +67,21 @@ D(t, r) &= \frac{15 J(t, r)}{r^4} - \frac{6 f(t - r/v_P)}{v_P^2 r^2} - \frac{\do
 \end{aligned}
 $$
 
-By relativistic and acoustic causality, all perturbation fields strictly vanish prior to P-wave arrival (\(t < r/v_P\)):
+With the force starting at \(t = 0\), all fields are zero for \(t \le 0\). P-wave arrival does not mark the onset of the gravity response. Newtonian gravity is evaluated here without a light-travel delay, so a prompt gravity perturbation appears as soon as the force acts. For \(0 < t < r/v_P\), the retarded force terms \(f(t - r/v_P)\) and \(\dot f(t - r/v_P)\) are zero, while the delay moment reduces to
 
 $$
-\Phi(\mathbf x, t) = 0, \quad \mathbf a(\mathbf x, t) = \mathbf 0, \quad \mathbf\Gamma(\mathbf x, t) = \mathbf 0 \qquad \text{for } t < \frac{r}{v_P}
+J(t, r) = \int_0^{t} \tau f(t - \tau) \, d\tau ,
+$$
+
+which is generally non-zero and independent of \(v_P\). Substituting into the expressions above gives the response before P-wave arrival (the acceleration corresponds to Harms 2019 Section 4.1; the potential and gradient follow from the general expressions on this page):
+
+$$
+\begin{aligned}
+\Phi(\mathbf x, t) &= -G \frac{J(t, r)}{r^2} \mu, \\
+\mathbf a(\mathbf x, t) &= G \frac{J(t, r)}{r^3} \left( \mathbf e - 3 \mu \hat{\mathbf n} \right), \\
+\mathbf\Gamma(\mathbf x, t) &= G \frac{J(t, r)}{r^4} \left[ -3 \left( \mathbf e \otimes \hat{\mathbf n} + \hat{\mathbf n} \otimes \mathbf e + \mu \mathbf I_3 \right) + 15 \mu \, \hat{\mathbf n} \otimes \hat{\mathbf n} \right],
+\end{aligned}
+\quad 0 < t < \frac{r}{v_P}
 $$
 
 ### Derivation
@@ -170,10 +181,21 @@ D(t, r) &= \frac{15 J(t, r)}{r^4} - \frac{6 f(t - r/v_P)}{v_P^2 r^2} - \frac{\do
 \end{aligned}
 $$
 
-By relativistic and acoustic causality, all perturbation fields strictly vanish prior to P-wave arrival (\(t < r/v_P\)):
+With the force starting at \(t = 0\), all fields are zero for \(t \le 0\). P-wave arrival does not mark the onset of the gravity response. Newtonian gravity is evaluated here without a light-travel delay, so a prompt gravity perturbation appears as soon as the force acts. For \(0 < t < r/v_P\), the retarded force terms \(f(t - r/v_P)\) and \(\dot f(t - r/v_P)\) are zero, while the delay moment reduces to
 
 $$
-\Phi(\mathbf x, t) = 0, \quad \mathbf a(\mathbf x, t) = \mathbf 0, \quad \mathbf\Gamma(\mathbf x, t) = \mathbf 0 \qquad \text{for } t < \frac{r}{v_P}
+J(t, r) = \int_0^{t} \tau f(t - \tau) \, d\tau ,
+$$
+
+which is generally non-zero and independent of \(v_P\). Substituting into the expressions above gives the response before P-wave arrival (the acceleration corresponds to Harms 2019 Section 4.1; the potential and gradient follow from the general expressions on this page):
+
+$$
+\begin{aligned}
+\Phi(\mathbf x, t) &= -G \frac{J(t, r)}{r^2} \mu, \\
+\mathbf a(\mathbf x, t) &= G \frac{J(t, r)}{r^3} \left( \mathbf e - 3 \mu \hat{\mathbf n} \right), \\
+\mathbf\Gamma(\mathbf x, t) &= G \frac{J(t, r)}{r^4} \left[ -3 \left( \mathbf e \otimes \hat{\mathbf n} + \hat{\mathbf n} \otimes \mathbf e + \mu \mathbf I_3 \right) + 15 \mu \, \hat{\mathbf n} \otimes \hat{\mathbf n} \right],
+\end{aligned}
+\quad 0 < t < \frac{r}{v_P}
 $$
 
 `request.formulas` lists **implementation routing** (`api`), which may differ from these display equations.
@@ -323,7 +345,7 @@ Saved with `fig.savefig(path, bbox_inches='tight', metadata={'Date': None})` and
 
 - High-level factory `point_force(...)` evaluates to a `PointForceModel` object; call `.at(targets).run()` to evaluate time series.
 - Collision check: targets coincident with the source position (\(r = 0\)) raise `ValueError`.
-- Causality: gravitational perturbations identically vanish prior to P-wave arrival (\(t < r / v_P\)).
+- Prompt response: all fields are zero for \(t \le 0\), but for \(0 < t < r / v_P\) only the retarded force terms are zero; \(J(t, r)\) is generally non-zero, so a gravity perturbation precedes P-wave arrival.
 
 ### Calculation paths
 
@@ -341,7 +363,7 @@ Saved with `fig.savefig(path, bbox_inches='tight', metadata={'Date': None})` and
 
 - Love, A. E. H. (1927), ‘A Treatise on the Mathematical Theory of Elasticity’ (4th ed.), Cambridge University Press, Chapter XIII (Elastodynamic Green tensor).
 - Aki, K., & Richards, P. G. (2002), ‘Quantitative Seismology’ (2nd ed.), University Science Books, Section 2.4 (Representation theorem and point-force Green tensor).
-- Harms, J. (2019), ‘Terrestrial gravity fluctuations’, Living Reviews in Relativity, 22(1), 6, DOI 10.1007/s41114-019-0022-2, Section 2.
+- Harms, J. (2019), ‘Terrestrial gravity fluctuations’, Living Reviews in Relativity, 22(1), 6, DOI 10.1007/s41114-019-0022-2, Section 4.1.
 - [DOI 10.1007/s41114-019-0022-2](https://doi.org/10.1007/s41114-019-0022-2)
 
 ### Verification
