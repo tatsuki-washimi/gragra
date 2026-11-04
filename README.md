@@ -121,3 +121,17 @@ supplied analytically or by the caller.
 - [Contributing](https://tatsuki-washimi.github.io/gragra/help/contributing/)
 - [Citation](CITATION.cff)
 - [License (MIT)](LICENSE)
+
+## Snippet-backed examples
+
+```python
+--8<-- "snippets/readme_point_mass_acceleration.py"
+```
+
+```python
+--8<-- "snippets/readme_coherent_response.py"
+```
+
+```python
+--8<-- "snippets/readme_continuous_sources.py"
+```
