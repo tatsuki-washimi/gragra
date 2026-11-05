@@ -186,11 +186,15 @@ def _select_target(
     """Return the index of the one target a quantity uses, or None."""
     if not required:
         if target_id is not None:
-            raise ValueError("target_id applies only to distance and inverse_square")
+            raise ValueError(
+                "target_id applies only to distance-dependent source quantities"
+            )
         return None
     ids = tuple(resolved.targets.ids)
     if not ids:
-        raise ValueError("distance and inverse_square need at least one target")
+        raise ValueError(
+            "distance-dependent source quantities need at least one target"
+        )
     if target_id is None:
         if len(ids) > 1:
             raise ValueError(
@@ -239,15 +243,51 @@ def _extract_values(
     if target_index is None:
         raise ValueError(f"{quantity} requires a target")
     target_id = resolved.targets.ids[target_index]
-    squared = _separations_squared(
-        view,
-        resolved.target_traces[target_index],
-        target_id=target_id,
-        quantity=quantity,
+    squared = _source_distance_squared(
+        view, resolved, target_index, target_id=target_id, quantity=quantity
     )
     if quantity == "distance":
         return np.sqrt(squared)
     return _inverse_squares(squared, target_id)
+
+
+def _source_distance_squared(
+    view: _SourceView,
+    resolved: ResolvedEvaluation,
+    target_index: int,
+    *,
+    target_id: str | None = None,
+    quantity: str = "distance",
+) -> np.ndarray:
+    """Return precision-checked source-target squared distances in m^2."""
+    if target_index < 0 or target_index >= len(resolved.target_traces):
+        raise IndexError("target_index is out of range")
+    resolved_target_id = (
+        resolved.targets.ids[target_index] if target_id is None else target_id
+    )
+    return _separations_squared(
+        view,
+        resolved.target_traces[target_index],
+        target_id=resolved_target_id,
+        quantity=quantity,
+    )
+
+
+def _source_positions_in_frame(
+    view: _SourceView, resolved: ResolvedEvaluation, frame: Frame | None = None
+) -> tuple[np.ndarray, Frame]:
+    """Return source coordinates and their explicit connected frame."""
+    _check_frame(resolved, frame)
+    output_frame = resolved.computation_frame if frame is None else frame
+    if output_frame is resolved.computation_frame:
+        positions = np.asarray(view.positions_m, dtype=np.float64).copy()
+    else:
+        positions = resolved.computation_frame.transform_points_m(
+            view.positions_m, output_frame
+        )
+    positions = np.array(positions, dtype=np.float64, copy=True)
+    positions.setflags(write=False)
+    return positions, output_frame
 
 
 def _heights(
@@ -288,7 +328,7 @@ def _difference_and_squared(
         raise ValueError(
             _pair_message(
                 "squared separation is zero or subnormal for a nonzero separation; "
-                "distance and inverse square cannot be represented",
+                "distance-based source quantities cannot be represented",
                 target_id,
                 index,
             )

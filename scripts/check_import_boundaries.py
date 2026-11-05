@@ -88,6 +88,11 @@ HIGH_LEVEL_SOURCE_PATHS = frozenset(
         "_plotting/_contribution.py",
         "_plotting/_result_field.py",
         "_plotting/_formula_latex.py",
+        "_plotting/_dynamic_contribution.py",
+        "_plotting/_radial_histogram.py",
+        "_plotting/_source_contracts.py",
+        "_plotting/_source_field.py",
+        "_plotting/_source_quantities.py",
         "plotting/__init__.py",
     }
 )

@@ -31,8 +31,7 @@ def _validate_inputs(
     chunk_size: int | None,
 ) -> tuple[FloatArray, FloatArray | ComplexArray, FloatArray, float, int]:
     """Validate and normalize inputs for kernel contractions."""
-    if softening_m < 0:
-        raise ValueError(f"softening_m must be non-negative, got {softening_m}")
+    eps = _validate_softening(softening_m)
 
     if chunk_size is not None and chunk_size <= 0:
         raise ValueError(f"chunk_size must be positive, got {chunk_size}")
@@ -52,7 +51,22 @@ def _validate_inputs(
     n_sources = len(sources)
     actual_chunk_size = chunk_size if chunk_size is not None else max(n_sources, 1)
 
-    return sources, w, targets, float(softening_m), actual_chunk_size
+    return sources, w, targets, eps, actual_chunk_size
+
+
+def _validate_softening(softening_m: float) -> float:
+    """Return a finite non-negative softening value, rejecting booleans."""
+    if isinstance(softening_m, (bool, np.bool_)):
+        raise ValueError("softening_m must be a finite non-negative scalar")
+    try:
+        eps = float(softening_m)
+    except (TypeError, ValueError) as error:
+        raise ValueError("softening_m must be a finite non-negative scalar") from error
+    if eps < 0.0:
+        raise ValueError(f"softening_m must be non-negative, got {eps}")
+    if not np.isfinite(eps):
+        raise ValueError(f"softening_m must be finite and non-negative, got {eps}")
+    return eps
 
 
 def _validate_dipole_inputs(
@@ -160,6 +174,31 @@ def _check_chunk_collision(xp, r2, start: int) -> None:
         )
 
 
+def _potential_pairwise_terms(xp, r2, eps: float):
+    """Return the G-free potential kernel for each source-target pair."""
+    return -1.0 / xp.sqrt(r2 + eps**2)
+
+
+def _acceleration_pairwise_terms(xp, diff, r2, eps: float):
+    """Return source-minus-target acceleration kernels for each pair."""
+    q = r2 + eps**2
+    return diff / (q * xp.sqrt(q))[:, :, xp.newaxis]
+
+
+def _gradient_pairwise_terms(xp, diff, r2, eps: float):
+    """Return G-free gravity-gradient kernels for each pair."""
+    q = r2 + eps**2
+    q_sqrt = xp.sqrt(q)
+    q3 = q * q_sqrt
+    q5 = q3 * q
+    diff_outer = diff[:, :, :, xp.newaxis] * diff[:, :, xp.newaxis, :]
+    eye3 = xp.eye(3)
+    return (
+        3.0 * diff_outer / q5[:, :, xp.newaxis, xp.newaxis]
+        - eye3[xp.newaxis, xp.newaxis, :, :] / q3[:, :, xp.newaxis, xp.newaxis]
+    )
+
+
 def _potential_impl(xp, sources, w, targets, eps: float, c_size: int, out) -> None:
     """xp-agnostic chunk loop for the potential contraction.
 
@@ -169,7 +208,6 @@ def _potential_impl(xp, sources, w, targets, eps: float, c_size: int, out) -> No
     dtype selection and allocation are the caller's responsibility.
     """
     n_sources = len(sources)
-    eps2 = eps**2
 
     # Loop over source chunks
     for start in range(0, n_sources, c_size):
@@ -184,8 +222,7 @@ def _potential_impl(xp, sources, w, targets, eps: float, c_size: int, out) -> No
         if eps == 0.0:
             _check_chunk_collision(xp, r2, start)
 
-        r_eff = xp.sqrt(r2 + eps2)
-        term = -1.0 / r_eff  # Shape (M, C)
+        term = _potential_pairwise_terms(xp, r2, eps)  # Shape (M, C)
 
         out += xp.sum(term * w_chunk, axis=-1)
 
@@ -198,7 +235,6 @@ def _acceleration_impl(xp, sources, w, targets, eps: float, c_size: int, out) ->
     xp / allocation contract.
     """
     n_sources = len(sources)
-    eps2 = eps**2
 
     # Loop over source chunks
     for start in range(0, n_sources, c_size):
@@ -213,12 +249,9 @@ def _acceleration_impl(xp, sources, w, targets, eps: float, c_size: int, out) ->
         if eps == 0.0:
             _check_chunk_collision(xp, r2, start)
 
-        r_eff = xp.sqrt(r2 + eps2)
-        r_eff3 = (r2 + eps2) * r_eff
-
         # diff: (M, C, 3), w_chunk: (C,)
         # sum over C
-        term = diff / r_eff3[:, :, xp.newaxis]
+        term = _acceleration_pairwise_terms(xp, diff, r2, eps)
         out += xp.sum(term * w_chunk[xp.newaxis, :, xp.newaxis], axis=1)
 
 
@@ -230,8 +263,6 @@ def _gradient_impl(xp, sources, w, targets, eps: float, c_size: int, out) -> Non
     ``_potential_impl`` for the xp / allocation contract.
     """
     n_sources = len(sources)
-    eps2 = eps**2
-    eye3 = xp.eye(3)
 
     # Loop over source chunks
     for start in range(0, n_sources, c_size):
@@ -246,19 +277,7 @@ def _gradient_impl(xp, sources, w, targets, eps: float, c_size: int, out) -> Non
         if eps == 0.0:
             _check_chunk_collision(xp, r2, start)
 
-        r_eff = xp.sqrt(r2 + eps2)
-        r_eff3 = (r2 + eps2) * r_eff
-        r_eff5 = r_eff3 * (r2 + eps2)
-
-        # Outer product of diff vectors along space component axes
-        # diff is (M, C, 3) -> diff_outer (M, C, 3, 3)
-        diff_outer = diff[:, :, :, xp.newaxis] * diff[:, :, xp.newaxis, :]
-
-        # (M, C, 3, 3)
-        term = (
-            3.0 * diff_outer / r_eff5[:, :, xp.newaxis, xp.newaxis]
-            - eye3[xp.newaxis, xp.newaxis, :, :] / r_eff3[:, :, xp.newaxis, xp.newaxis]
-        )
+        term = _gradient_pairwise_terms(xp, diff, r2, eps)
 
         out += xp.sum(term * w_chunk[xp.newaxis, :, xp.newaxis, xp.newaxis], axis=1)
 

@@ -50,6 +50,119 @@ A bulk density-perturbation field already expressed as δρ on a
 regular/rectilinear grid, for callers who have δρ directly rather than a
 displacement to differentiate.
 
+::: gragra.plotting.plot_field
+
+Plot a density perturbation or displacement field faithful to native grid
+coordinates without modifying the input field object.
+
+::: gragra.plotting.hist
+
+Histogram per-element density, height, distance, inverse-distance,
+inverse-square, inverse-cube, and density-over-distance diagnostics of a
+discrete point-sum setup as a GWexpy `Histogram`, with counts or volumes per bin. See [Source
+diagnostics](../guide/source-diagnostics.md) for the quantity names, units, and
+frame rules.
+
+::: gragra.plotting.plot_hist
+
+Draw a `hist` result as a step plot on a new or supplied empty Matplotlib axes
+and return the figure. A `RadialHistogramResult` can also be passed directly;
+that overload draws its normalized `values` against the stored edges without
+re-binning and returns `(figure, axes, result)`. See
+`gragra.plotting.radial_histogram` for the radial histogram API.
+
+::: gragra.plotting.plot_map
+
+Plot Newtonian kernel or gravitational acceleration contributions of discrete
+source elements across space in 3D or 2D projections. Total physical sum is
+preserved and agrees with PointSumModel evaluation within floating-point
+tolerance (rtol=1e-12, atol=1e-20); it is not bitwise identical. See
+[Source diagnostics](../guide/source-diagnostics.md) for details.
+
+::: gragra.plotting.plot_shape
+
+Render 3D geometric shapes of analytical sources as surfaces or wireframes on Matplotlib 3D axes.
+
+::: gragra.plotting.formula_to_latex
+
+Format verified analytical source equations and potential formulas into LaTeX math expressions.
+
+::: gragra.plotting.plot_contribution_hist
+
+Display histogram distributions of directional or magnitude gravitational acceleration contributions from discrete elements.
+
+::: gragra.plotting.plot_cumulative_contribution
+
+Graph the radial cumulative profile of gravitational acceleration as a function of source-to-target distance.
+
+::: gragra.plotting.plot_result
+
+Visualize physical fields, time series, or spectra directly from an EvaluationResult container.
+
+::: gragra.plotting.RadialHistogramResult
+
+Keeps the raw integrated GWexpy histogram and flow values alongside normalized finite-bin values, the signed all-source normalization total, and the selected target context.
+
+::: gragra.plotting.radial_histogram
+
+Integrates registered scalar source quantities by unsoftened distance. Extensive values are summed directly; intensive values are multiplied by verified source volumes. Raw flows and optional per-length or signed-fraction normalization are retained.
+
+::: gragra.plotting.DynamicRadialHistogramResult
+
+Stores one selected dynamic radial metric as a GWexpy `Histogram`, with finite-bin validity and separate underflow/overflow validity.
+
+::: gragra.plotting.dynamic_radial_histogram
+
+Converts stored radial groups from `SourceContributionResult` into a GWexpy `Histogram` for real or imaginary response, amplitude, phase, amplitude fraction, RMS amplitude fraction, interference share, or cumulative complex response. Frequency-resolved metrics select one exact frequency, target, and component; RMS can use frequency and direction weights.
+
+::: gragra.plotting.SourceFieldResult
+
+Wraps a native GWexpy scalar, vector, or tensor field with an aligned validity mask and immutable grid, target, frequency, and provenance metadata.
+
+::: gragra.plotting.source_field
+
+Bins source-position quantities or physical contributions into explicit three-dimensional cells and returns a native scalar, vector, or tensor field. Dynamic results retain all frequencies by default; `frequency_hz` selects one exact stored frequency. `spatial_projection` can sum along the omitted axis for an XY, XZ, or YZ projection.
+
+::: gragra.plotting.source_field_result
+
+Returns the source-position field together with a mask for empty means and undefined phase or interference values, plus immutable grid, target, frequency, and provenance metadata.
+
+::: gragra.plotting.SourceContributionResult
+
+Retains source and group phasors, target and source labels, physical metadata, and access to native frequency-series matrices or explicitly laid-out arrays.
+
+::: gragra.plotting.source_contributions
+
+Computes complex source-resolved potential, acceleration, or gravity-gradient responses from `DensityPhasors`, accumulating groups and totals in bounded source blocks.
+
+::: gragra.plotting.ContributionValidityMask
+
+Labels which frequency-resolved group statistics are defined for each target and component, with array extraction requiring an explicit layout.
+
+::: gragra.plotting.ContributionFrequencyStatistic
+
+Provides per-group native frequency matrices, validity masks, and explicit-layout extraction for a frequency-resolved statistic.
+
+::: gragra.plotting.ContributionRMSStatistics
+
+Stores explicitly weighted peak-phasor spectral norms, RMS shares, total ratios, group-total cross terms, and their validity masks.
+
+::: gragra.plotting.ContributionStatistics
+
+Groups the frequency-resolved amplitude shares, phases, cumulative complex contributions, interference shares, and optional weighted RMS results.
+
+::: gragra.plotting.contribution_statistics
+
+Computes componentwise group statistics; exact-zero phase and interference denominators are reported with validity masks.
+
+::: gragra.plotting.DirectionalContributionStatistics
+
+Stores direction-ensemble cross terms, powers, interference shares, optional weighted RMS results, and per-direction provenance.
+
+::: gragra.plotting.directional_contribution_statistics
+
+Computes compatible direction-ensemble cross and power averages before taking interference ratios, for directions treated as statistically independent.
+
 ### Gen1 temperature fields
 
 These immutable inputs describe one prescribed temperature perturbation. The

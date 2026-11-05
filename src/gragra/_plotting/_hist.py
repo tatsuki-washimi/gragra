@@ -25,6 +25,11 @@ from gragra._plotting._diagnostics import (
     _resolved_from,
     _select_target,
 )
+from gragra._plotting._source_quantities import (
+    QUANTITY_SPECS,
+    resolve_quantity,
+    source_quantity_data,
+)
 
 if TYPE_CHECKING:
     from gwexpy.histogram import Histogram
@@ -32,12 +37,14 @@ if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
     from gragra._evaluation_setup import ResolvedEvaluation
+    from gragra._plotting._radial_histogram import RadialHistogramResult
     from gragra.evaluation import EvaluationSetup
     from gragra.geometry import Frame
 
 _MAX_BINS = 1_000_000
 _MAX_PLOT_BINS = 100_000
 _WEIGHTS = ("count", "volume")
+_HIST_QUANTITIES = frozenset({*QUANTITIES, "height", *QUANTITY_SPECS})
 _AUTO_RULES = ("legacy", "relaxed")
 _COMPLEX_BINS_MESSAGE = "bins must be real; complex values are not accepted"
 _RANGE_OVERFLOW_MESSAGE = (
@@ -68,18 +75,14 @@ def hist(
         Fixed request built from a point-sum source, for example
         ``point_sum(source, ...).at(targets)``. Analytic models have no
         source elements and raise ``ValueError``.
-    quantity : {"density", "height", "distance", "inverse_square"}
-        Diagnostic to histogram. ``density`` is the per-element density in
-        kg/m^3. ``height`` is the z coordinate of each element in ``frame``;
-        it is not an elevation above a geoid or ground surface. ``distance``
-        is the Euclidean distance from the selected target. ``inverse_square``
-        is ``1/r**2`` for that distance. It is the plain inverse square, not
-        a softened kernel, and softening is not supported.
+    quantity : registered source quantity
+        Diagnostic to histogram. Every registered scalar source quantity and
+        the existing ``height`` selector are accepted. Exact aliases are
+        resolved from the fixed source-quantity registry.
     target_id : str, optional, default None
-        Target used by ``distance`` and ``inverse_square``. It is required
+        Target used by distance-dependent source quantities. It is required
         when the setup has more than one target. It must be omitted for
-        ``density`` and ``height``, which do not depend on targets, so those
-        quantities also work for a setup with no targets.
+        target-independent quantities such as ``density`` and ``height``.
     bins : int, "auto", 1-D array, or astropy Quantity, default "auto"
         An integer gives that many equal bins over the data range. ``"auto"``
         uses NumPy's automatic rule. A 1-D array gives the bin edges. Plain
@@ -99,8 +102,9 @@ def hist(
         so it can differ from the geometric volume of the sphere.
     xunit : str or astropy unit, optional, default None
         Unit of the horizontal axis (the bin edges) only. The default is
-        ``kg/m3`` for density, ``m`` for height and distance, and ``1/m2``
-        for inverse_square. The unit must be equivalent to the default.
+        ``kg/m3`` for density, ``m`` for height and distance, and the
+        registered SI unit for other quantities. The unit must be equivalent
+        to the default.
         Converting ``xunit`` never changes the volume weights.
     frame : Frame, optional, default None
         Frame used for ``height``. ``None`` means the computation frame of
@@ -187,37 +191,61 @@ def hist(
     sources.
     """
     resolved = _resolved_from(setup)
-    _check_quantity(quantity)
+    canonical = _canonical_quantity(quantity)
     _check_weight(weight)
-    xunit_unit = _xunit_for(quantity, xunit)
-    _check_frame(resolved, frame)
-    view = _resolve_source(resolved)
-    target_index = _select_target(
-        resolved,
-        target_id,
-        required=quantity not in TARGET_INDEPENDENT_QUANTITIES,
-    )
-    values = _require_finite(
-        _extract_values(
-            view,
+    xunit_unit = _xunit_for(canonical, xunit)
+
+    # Keep the original diagnostic path for its established public selectors.
+    # Registry aliases and added quantities use the shared source-data helper.
+    if quantity in QUANTITIES:
+        _check_frame(resolved, frame)
+        view = _resolve_source(resolved)
+        target_index = _select_target(
+            resolved,
+            target_id,
+            required=canonical not in TARGET_INDEPENDENT_QUANTITIES,
+        )
+        values = _require_finite(
+            _extract_values(
+                view,
+                canonical,
+                resolved=resolved,
+                target_index=target_index,
+                frame=frame,
+            ),
+            canonical,
+        )
+        weights = (
+            None if weight == "count" else _require_finite(view.volumes(), "volume")
+        )
+        si_unit = STANDARD_XUNIT[canonical]
+        target_name = (
+            None if target_index is None else resolved.targets.ids[target_index]
+        )
+    else:
+        data = source_quantity_data(
+            setup,
             quantity,
-            resolved=resolved,
-            target_index=target_index,
+            target_id=target_id,
             frame=frame,
-        ),
-        quantity,
-    )
-    weights = None if weight == "count" else _require_finite(view.volumes(), "volume")
-    values_x = _to_xunit(values, STANDARD_XUNIT[quantity], xunit_unit)
+        )
+        values = _require_finite(data.values, canonical)
+        if weight == "count":
+            weights = None
+        else:
+            weights = _require_finite(_resolve_source(resolved).volumes(), "volume")
+        si_unit = data.unit
+        target_name = data.target_id
+
+    values_x = _to_xunit(values, si_unit, xunit_unit)
     edges = _resolve_edges(bins, values_x, xunit_unit)
     counts, underflow, overflow = _aggregate(values_x, weights, edges)
-    target_name = None if target_index is None else resolved.targets.ids[target_index]
     return _to_histogram(
         counts,
         edges,
         xunit=xunit_unit,
         weight=weight,
-        name=_histogram_name(quantity, weight, target_name),
+        name=_histogram_name(canonical, weight, target_name),
         underflow=underflow,
         overflow=overflow,
     )
@@ -313,8 +341,25 @@ def _numpy_auto_rule() -> str:
 
 
 def _check_quantity(quantity: object) -> None:
-    if quantity not in QUANTITIES:
-        raise ValueError(f"quantity must be one of {QUANTITIES}, got {quantity!r}")
+    _canonical_quantity(quantity)
+
+
+def _canonical_quantity(quantity: object) -> str:
+    if isinstance(quantity, str) and quantity == "height":
+        return quantity
+    try:
+        canonical = resolve_quantity(quantity).canonical
+    except ValueError as error:
+        raise ValueError(
+            f"quantity must be one of {QUANTITIES} or a registered alias, "
+            f"got {quantity!r}"
+        ) from error
+    if canonical not in _HIST_QUANTITIES:
+        raise ValueError(
+            f"quantity must be one of {QUANTITIES}, 'height', or a registered "
+            f"source quantity, got {quantity!r}"
+        )
+    return canonical
 
 
 def _check_weight(weight: object) -> None:
@@ -323,7 +368,11 @@ def _check_weight(weight: object) -> None:
 
 
 def _xunit_for(quantity: str, xunit: object) -> u.UnitBase:
-    default = STANDARD_XUNIT[quantity]
+    default = (
+        STANDARD_XUNIT[quantity]
+        if quantity in STANDARD_XUNIT
+        else resolve_quantity(quantity).unit
+    )
     if xunit is None:
         return default
     try:
@@ -495,8 +544,8 @@ def _to_histogram(
 
 
 def plot_hist(
-    setup: EvaluationSetup | ResolvedEvaluation,
-    quantity: str,
+    setup: EvaluationSetup | ResolvedEvaluation | RadialHistogramResult,
+    quantity: str | None = None,
     *,
     target_id: str | None = None,
     bins: int | str | np.ndarray | u.Quantity = "auto",
@@ -504,26 +553,26 @@ def plot_hist(
     xunit: str | u.UnitBase | None = None,
     frame: Frame | None = None,
     ax: Axes | None = None,
-) -> Figure:
-    """Draw the histogram that ``hist()`` returns as a step plot.
+) -> Figure | tuple[Figure, Axes, RadialHistogramResult]:
+    """Draw a source histogram as a step plot.
 
-    The arguments have the same meaning as in ``hist()``. The drawn values
-    and edges are those of the ``Histogram`` that ``hist()`` returns for the
-    same arguments. Nothing is re-binned here. Calling this function loads
-    GWexpy and Matplotlib's ``pyplot`` through ``hist()``.
+    For an evaluation setup, arguments have the same meaning as in ``hist()``
+    and the function returns a Figure. For a ``RadialHistogramResult``, call
+    ``plot_hist(result)``; it draws the result's normalized ``values`` against
+    the raw histogram edges and returns ``(figure, axes, result)``. The result
+    overload does not re-bin. Calling this function loads GWexpy and
+    Matplotlib's ``pyplot``.
 
     Parameters
     ----------
-    setup : EvaluationSetup or ResolvedEvaluation
-        Fixed request built from a point-sum source, for example
-        ``point_sum(source, ...).at(targets)``. Analytic models raise
-        ``ValueError``.
-    quantity : {"density", "height", "distance", "inverse_square"}
+    setup : EvaluationSetup, ResolvedEvaluation or RadialHistogramResult
+        Fixed source request or a precomputed radial histogram result.
+    quantity : registered source quantity
         Diagnostic to draw. See ``hist()``.
     target_id : str, optional, default None
-        Target for ``distance`` and ``inverse_square``. It is required when
-        the setup has more than one target. It must be omitted for ``density``
-        and ``height``.
+        Target used by distance-dependent source quantities. It is required
+        when the setup has more than one target and must be omitted for
+        target-independent quantities.
     bins : int, "auto", 1-D array, or astropy Quantity, default "auto"
         Bin count or bin edges, read as in ``hist()``. An integer above
         100,000 is rejected before anything is computed. ``"auto"``, explicit
@@ -543,10 +592,9 @@ def plot_hist(
 
     Returns
     -------
-    matplotlib.figure.Figure
-        The figure that contains the drawn histogram. A figure created by this
-        function stays open; close it with ``matplotlib.pyplot.close`` when it
-        is no longer needed.
+    matplotlib.figure.Figure or tuple
+        Setup calls return the open figure. Result calls return the open figure,
+        axes and same result object.
 
     Raises
     ------
@@ -569,8 +617,26 @@ def plot_hist(
     """
     from matplotlib import pyplot as plt
 
+    from gragra._plotting._radial_histogram import RadialHistogramResult
+
     if ax is not None:
         _validate_plot_axes(ax)
+    if isinstance(setup, RadialHistogramResult):
+        if quantity is not None:
+            raise ValueError("quantity cannot be changed for a radial histogram result")
+        if (
+            target_id is not None
+            or not (isinstance(bins, str) and bins == "auto")
+            or weight != "count"
+            or xunit is not None
+            or frame is not None
+        ):
+            raise ValueError(
+                "histogram options cannot be changed for a radial histogram result"
+            )
+        return _plot_radial_result(setup, ax, plt)
+    if quantity is None:
+        raise TypeError("quantity is required when plotting an evaluation setup")
     _check_plot_bin_request(bins)
     histogram = hist(
         setup,
@@ -608,6 +674,43 @@ def plot_hist(
             va="top",
         )
     return fig
+
+
+def _plot_radial_result(result, ax, pyplot):
+    """Plot a precomputed radial result using its selected values and raw edges."""
+    values = result.values.value
+    if len(values) > _MAX_PLOT_BINS:
+        raise ValueError(
+            f"plot_hist draws at most {_MAX_PLOT_BINS:,} bins, got {len(values):,}; "
+            "use radial_histogram() with fewer bins"
+        )
+    if ax is None:
+        fig, ax = pyplot.subplots(figsize=(6.5, 5.0))
+    else:
+        fig = ax.figure
+    ax.stairs(values, result.histogram.edges.value)
+    ax.set_xlabel(f"distance [{result.histogram.xunit.to_string()}]")
+    label = {
+        "none": "integrated contribution",
+        "per_length": "contribution per length",
+        "fraction": "fraction",
+        "fraction_per_length": "fraction per length",
+    }[result.normalization]
+    ax.set_ylabel(f"{label} [{result.unit.to_string()}]")
+    ax.set_title(f"{result.quantity}; target={result.target_id}")
+    underflow = float(result.histogram.underflow.value)
+    overflow = float(result.histogram.overflow.value)
+    if underflow or overflow:
+        ax.text(
+            0.98,
+            0.98,
+            f"underflow: {underflow:.6g} {result.histogram.unit}\n"
+            f"overflow: {overflow:.6g} {result.histogram.unit}",
+            transform=ax.transAxes,
+            ha="right",
+            va="top",
+        )
+    return fig, ax, result
 
 
 def _validate_plot_axes(ax: object) -> None:
