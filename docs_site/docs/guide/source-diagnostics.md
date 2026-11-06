@@ -445,7 +445,7 @@ direction_0 = contributions
 second_phasors = DensityPhasors(
     positions_m,
     volumes_m3,
-    density_kg_m3 * np.array([[1.0], [-1.0]]),
+    density_kg_m3 * np.array([1.0, -1.0]),
     frequencies_hz,
     0.0,
     np.zeros(3),
