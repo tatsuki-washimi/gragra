@@ -11,6 +11,7 @@ import numpy as np
 from astropy import units as u
 
 from gragra._arrays import _check_no_bool, as_xyz_table
+from gragra._evaluation_setup import CoordinatePrecisionError, check_pair_precision
 from gragra._plotting._diagnostics import (
     _extract_values,
     _resolve_source,
@@ -20,7 +21,10 @@ from gragra._plotting._diagnostics import (
     _source_positions_in_frame,
 )
 from gragra.geometry import Frame
+from gragra.kernels._source_terms import iter_source_kernel_terms
 from gragra.targets.points import TargetPoints as NumericTargetPoints
+
+_GG_NORM_BLOCK_SIZE = 256
 
 
 @dataclass(frozen=True)
@@ -33,6 +37,7 @@ class QuantitySpec:
     extensive: bool
     target_dependent: bool
     requires_density: bool = False
+    requires_kernel_norm: bool = False
 
 
 _SPECS = (
@@ -40,7 +45,7 @@ _SPECS = (
     QuantitySpec("inverse_r", ("1/r", "inverse_distance"), u.m**-1, False, True),
     QuantitySpec(
         "inverse_square",
-        ("1/r^2", "inverse_r2", "inverse_square_distance"),
+        ("1/r^2", "r^-2", "inverse_r2", "inverse_square_distance"),
         u.m**-2,
         False,
         True,
@@ -51,6 +56,14 @@ _SPECS = (
         u.m**-3,
         False,
         True,
+    ),
+    QuantitySpec(
+        "gravity_gradient_kernel_norm",
+        ("GG_kernel_norm",),
+        u.m**-3,
+        True,
+        True,
+        requires_kernel_norm=True,
     ),
     QuantitySpec("density", ("rho", "ρ"), u.kg / u.m**3, False, False, True),
     QuantitySpec(
@@ -155,6 +168,9 @@ class StaticSourceQuantityData:
     target_trace: object | None = None
     source_type: str | None = None
     source_metadata: Mapping[str, Any] | None = None
+    kernel_norm: str | None = None
+    softening_m: float = 0.0
+    radial_distance_m: np.ndarray | None = None
 
     def __post_init__(self) -> None:
         values = _as_real_float64(self.values, "values")
@@ -169,6 +185,25 @@ class StaticSourceQuantityData:
             raise ValueError("source_index must be the stable ordered index 0..N-1")
         if origin.shape != (3,):
             raise ValueError("coordinate_origin_m must have shape (3,)")
+        if self.kernel_norm is not None and (
+            not isinstance(self.kernel_norm, str)
+            or self.kernel_norm not in {"frobenius", "spectral"}
+        ):
+            raise ValueError("kernel_norm must be 'frobenius', 'spectral', or None")
+        softening = float(self.softening_m)
+        if not np.isfinite(softening) or softening < 0.0:
+            raise ValueError("softening_m must be finite and non-negative")
+        if self.kernel_norm is None and softening != 0.0:
+            raise ValueError("softening_m is only retained for a kernel norm")
+        radial_distance = None
+        if self.radial_distance_m is not None:
+            radial_distance = _as_real_float64(
+                self.radial_distance_m, "radial_distance_m"
+            )
+            if radial_distance.shape != values.shape:
+                raise ValueError("radial_distance_m must align with values")
+            if not np.isfinite(radial_distance).all() or np.any(radial_distance < 0.0):
+                raise ValueError("radial_distance_m must be finite and non-negative")
         if not (
             np.isfinite(values).all()
             and np.isfinite(positions).all()
@@ -183,6 +218,8 @@ class StaticSourceQuantityData:
             target.setflags(write=False)
         for array in (values, positions, indices, origin):
             array.setflags(write=False)
+        if radial_distance is not None:
+            radial_distance.setflags(write=False)
         metadata = self.source_metadata
         if metadata is not None:
             metadata = MappingProxyType(dict(metadata))
@@ -192,6 +229,8 @@ class StaticSourceQuantityData:
         object.__setattr__(self, "coordinate_origin_m", origin)
         object.__setattr__(self, "target_xyz_m", target)
         object.__setattr__(self, "source_metadata", metadata)
+        object.__setattr__(self, "softening_m", softening)
+        object.__setattr__(self, "radial_distance_m", radial_distance)
 
 
 def source_quantity_data(
@@ -201,24 +240,34 @@ def source_quantity_data(
     target_id: str | None = None,
     frame: Frame | None = None,
     softening_m: float = 0.0,
+    norm: str | None = None,
 ) -> StaticSourceQuantityData:
     """Extract one registered scalar quantity for every static source.
 
-    Geometry ratios use the unsoftened Euclidean distance. Nonzero softening
-    is rejected because it applies only to physical point kernels. Density
-    values are available only when existing source diagnostics can verify
-    them against the source's mass weights and volumes.
+    Geometry ratios use the unsoftened Euclidean distance. The gravity-gradient
+    kernel norm instead uses the existing Plummer point kernel and requires an
+    explicit Frobenius or spectral norm. Density values are available only
+    when existing source diagnostics can verify them against source mass
+    weights and volumes.
     """
     spec = resolve_quantity(quantity)
+    if spec.requires_kernel_norm:
+        if not isinstance(norm, str) or norm not in {"frobenius", "spectral"}:
+            raise ValueError("norm must be 'frobenius' or 'spectral'")
+        kernel_norm = norm
+    else:
+        if norm is not None:
+            raise ValueError("norm applies only to gravity_gradient_kernel_norm")
+        kernel_norm = None
     if isinstance(softening_m, (bool, np.bool_)):
-        raise ValueError("softening_m must be zero for static source quantities")
+        raise ValueError("softening_m must be a finite non-negative scalar")
     try:
         softening = float(softening_m)
     except (TypeError, ValueError) as error:
-        raise ValueError(
-            "softening_m must be zero for static source quantities"
-        ) from error
-    if not np.isfinite(softening) or softening != 0.0:
+        raise ValueError("softening_m must be a finite non-negative scalar") from error
+    if not np.isfinite(softening) or softening < 0.0:
+        raise ValueError("softening_m must be a finite non-negative scalar")
+    if not spec.requires_kernel_norm and softening != 0.0:
         raise ValueError(
             "softening_m must be zero; static geometry ratios are unsoftened"
         )
@@ -232,19 +281,29 @@ def source_quantity_data(
     target_xyz: np.ndarray | None = None
     target_trace = None
     distance: np.ndarray | None = None
+    radial_distance: np.ndarray | None = None
     if target_index is not None:
         target_id_value = resolved.targets.ids[target_index]
         target_trace = resolved.target_traces[target_index]
-        squared = _source_distance_squared(
-            view,
-            resolved,
-            target_index,
-            target_id=target_id_value,
-            quantity=spec.canonical,
-        )
-        with np.errstate(over="ignore", invalid="ignore"):
-            distance = np.sqrt(squared)
         target_xyz = np.asarray(target_trace.point_m, dtype=np.float64)
+        if spec.requires_kernel_norm:
+            radial_distance = _check_kernel_norm_precision(
+                view.positions_m,
+                target_trace,
+                target_id=target_id_value,
+                softening_m=softening,
+            )
+        else:
+            squared = _source_distance_squared(
+                view,
+                resolved,
+                target_index,
+                target_id=target_id_value,
+                quantity=spec.canonical,
+            )
+            with np.errstate(over="ignore", invalid="ignore"):
+                distance = np.sqrt(squared)
+            radial_distance = distance
         if output_frame is not resolved.computation_frame:
             target_xyz = resolved.computation_frame.transform_points_m(
                 target_xyz.reshape(1, 3), output_frame
@@ -272,6 +331,14 @@ def source_quantity_data(
         ):
             inverse_r = 1.0 / distance
             values = inverse_r * inverse_r * inverse_r
+    elif spec.requires_kernel_norm:
+        assert target_trace is not None
+        values = _gravity_gradient_kernel_norm_values(
+            view.positions_m,
+            np.asarray(target_trace.point_m, dtype=np.float64),
+            norm=kernel_norm,
+            softening_m=softening,
+        )
     elif spec.canonical == "density":
         values = view.density()
     elif spec.canonical == "mass":
@@ -316,7 +383,86 @@ def source_quantity_data(
         target_trace=target_trace,
         source_type=view.source_type,
         source_metadata=source_metadata,
+        kernel_norm=kernel_norm,
+        softening_m=softening if spec.requires_kernel_norm else 0.0,
+        radial_distance_m=radial_distance,
     )
+
+
+def _gravity_gradient_kernel_norm_values(
+    positions_m: np.ndarray,
+    target_xyz_m: np.ndarray,
+    *,
+    norm: str | None,
+    softening_m: float,
+) -> np.ndarray:
+    """Compute each G-free source tensor norm before any source aggregation."""
+    if not isinstance(norm, str) or norm not in {"frobenius", "spectral"}:
+        raise ValueError("norm must be 'frobenius' or 'spectral'")
+    values = np.empty(len(positions_m), dtype=np.float64)
+    weights = np.ones(len(positions_m), dtype=np.float64)
+    for source_slice, tensors in iter_source_kernel_terms(
+        positions_m,
+        weights,
+        target_xyz_m.reshape(1, 3),
+        observable="gravity_gradient",
+        softening_m=softening_m,
+        chunk_size=_GG_NORM_BLOCK_SIZE,
+    ):
+        source_tensors = tensors[0]
+        if norm == "frobenius":
+            block_values = np.linalg.norm(source_tensors, ord="fro", axis=(-2, -1))
+        else:
+            block_values = np.linalg.svd(source_tensors, compute_uv=False)[..., 0]
+        values[source_slice] = block_values
+    return values
+
+
+def _check_kernel_norm_precision(
+    positions_m: np.ndarray,
+    target_trace: object,
+    *,
+    target_id: str,
+    softening_m: float,
+) -> np.ndarray:
+    """Return radii after checking precision, allowing softened collisions."""
+    from gragra._plotting._diagnostics import (
+        _check_finite_pairs,
+        _check_precision_candidates,
+    )
+
+    with np.errstate(over="ignore", invalid="ignore"):
+        difference = positions_m - target_trace.point_m
+    _check_finite_pairs(
+        positions_m, difference, target_trace, target_id, "gravity_gradient"
+    )
+    try:
+        _check_precision_candidates(
+            positions_m, difference, target_trace, target_id, "gravity_gradient"
+        )
+    except CoordinatePrecisionError as error:
+        if softening_m == 0.0 or error.reason != "collision":
+            raise
+        for index, position in enumerate(positions_m):
+            try:
+                check_pair_precision(
+                    position,
+                    target_trace,
+                    target_id=target_id,
+                    source_index=index,
+                    observables=("gravity_gradient",),
+                )
+            except CoordinatePrecisionError as pair_error:
+                if pair_error.reason == "collision":
+                    continue
+                raise
+    radii = np.linalg.norm(difference, axis=1)
+    if not np.isfinite(radii).all():
+        bad = int(np.flatnonzero(~np.isfinite(radii))[0])
+        raise ValueError(
+            f"gravity_gradient_kernel_norm radius is not finite at source index {bad}"
+        )
+    return radii
 
 
 def normalize_targets_m(targets_m: object) -> np.ndarray:

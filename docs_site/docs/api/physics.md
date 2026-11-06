@@ -107,13 +107,21 @@ Keeps the raw integrated GWexpy histogram and flow values alongside normalized f
 
 Integrates registered scalar source quantities by unsoftened distance. Extensive values are summed directly; intensive values are multiplied by verified source volumes. Raw flows and optional per-length or signed-fraction normalization are retained.
 
+::: gragra.plotting.GravityGradientRadialHistogramResult
+
+Stores all nine signed components of the static gravity-gradient tensor in finite distance bins, underflow, overflow, and the all-source total. Each component can be returned as a GWexpy `Histogram`.
+
+::: gragra.plotting.gravity_gradient_radial_histogram
+
+Sums static gravity-gradient source tensors by unsoftened source-target distance using the existing softened point kernel. The result retains all signed components and the source-field computation frame.
+
 ::: gragra.plotting.DynamicRadialHistogramResult
 
 Stores one selected dynamic radial metric as a GWexpy `Histogram`, with finite-bin validity and separate underflow/overflow validity.
 
 ::: gragra.plotting.dynamic_radial_histogram
 
-Converts stored radial groups from `SourceContributionResult` into a GWexpy `Histogram` for real or imaginary response, amplitude, phase, amplitude fraction, RMS amplitude fraction, interference share, or cumulative complex response. Frequency-resolved metrics select one exact frequency, target, and component; RMS can use frequency and direction weights.
+Converts stored radial groups from `SourceContributionResult` into a GWexpy `Histogram` for real or imaginary response, amplitude, phase, amplitude fraction, RMS amplitude fraction, interference share, or cumulative complex response. Frequency-resolved metrics select one exact frequency, target, and component; RMS can use frequency and direction weights, and interference share can use compatible directional results with direction weights.
 
 ::: gragra.plotting.SourceFieldResult
 

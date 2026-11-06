@@ -48,12 +48,14 @@ from gragra.plotting import (
     ContributionValidityMask,
     DirectionalContributionStatistics,
     DynamicRadialHistogramResult,
+    GravityGradientRadialHistogramResult,
     RadialHistogramResult,
     SourceContributionResult,
     SourceFieldResult,
     contribution_statistics,
     directional_contribution_statistics,
     dynamic_radial_histogram,
+    gravity_gradient_radial_histogram,
     radial_histogram,
     source_contributions,
     source_field,
@@ -83,6 +85,7 @@ assert isinstance(result, SourceContributionResult)
 assert callable(contribution_statistics)
 assert callable(directional_contribution_statistics)
 assert callable(dynamic_radial_histogram)
+assert callable(gravity_gradient_radial_histogram)
 assert callable(radial_histogram)
 assert callable(source_field)
 assert callable(source_field_result)
@@ -95,6 +98,7 @@ assert all(
         ContributionValidityMask,
         DirectionalContributionStatistics,
         DynamicRadialHistogramResult,
+        GravityGradientRadialHistogramResult,
         RadialHistogramResult,
         SourceFieldResult,
     )

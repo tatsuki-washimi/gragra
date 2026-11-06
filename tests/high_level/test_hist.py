@@ -399,6 +399,42 @@ def test_default_xunit_per_quantity(quantity: str, expected_unit) -> None:
 
 
 @pytest.mark.parametrize(
+    ("norm", "expected_counts"),
+    [("frobenius", [0.0, 2.0]), ("spectral", [2.0, 0.0])],
+)
+def test_gg_kernel_norm_histogram_uses_explicit_per_source_norm(norm, expected_counts):
+    setup = _weighted_setup(
+        [[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]],
+        [3.0, 5.0],
+        targets=_targets(((0.0, 0.0, 0.0),), ids=("A",)),
+    )
+
+    histogram = _api_hist(
+        setup,
+        "GG_kernel_norm",
+        target_id="A",
+        bins=[0.0, 0.275, 0.5],
+        norm=norm,
+    )
+
+    assert isinstance(histogram, Histogram)
+    np.testing.assert_array_equal(_values(histogram), expected_counts)
+    assert u.Unit(histogram.xunit) == u.m**-3
+    assert f"norm={norm}" in histogram.name
+
+
+def test_gg_kernel_norm_histogram_requires_explicit_norm():
+    setup = _weighted_setup(
+        [[2.0, 0.0, 0.0]],
+        [3.0],
+        targets=_targets(((0.0, 0.0, 0.0),), ids=("A",)),
+    )
+
+    with pytest.raises(ValueError, match="norm must be 'frobenius' or 'spectral'"):
+        _api_hist(setup, "gravity_gradient_kernel_norm", target_id="A")
+
+
+@pytest.mark.parametrize(
     ("quantity", "kwargs"),
     [
         ("distance", {"xunit": "kg"}),

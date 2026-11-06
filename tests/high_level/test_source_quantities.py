@@ -44,6 +44,7 @@ def _setup(positions, weights, *, volumes=None, density=None):
 def test_registry_has_exact_aliases_units_and_extensive_flags():
     assert resolve_quantity("r").canonical == "distance"
     assert resolve_quantity("inverse_square_distance").canonical == "inverse_square"
+    assert resolve_quantity("r^-2").canonical == "inverse_square"
     assert resolve_quantity("rho_over_r2").canonical == "density_over_r2"
     assert resolve_quantity("1/r^3").canonical == "inverse_cube"
     assert resolve_quantity("rho/r^3").canonical == "density_over_r3"
@@ -51,6 +52,9 @@ def test_registry_has_exact_aliases_units_and_extensive_flags():
     assert resolve_quantity("mass/r").canonical == "mass_over_r"
     assert resolve_quantity("dm/r^2").canonical == "mass_over_r2"
     assert resolve_quantity("dm/r^3").canonical == "mass_over_r3"
+    assert resolve_quantity("GG_kernel_norm").canonical == (
+        "gravity_gradient_kernel_norm"
+    )
     assert resolve_quantity("mass_over_r2").extensive is True
     assert resolve_quantity("density_over_r").extensive is False
     assert QUANTITY_SPECS["inverse_square"].unit == u.m**-2
@@ -58,6 +62,8 @@ def test_registry_has_exact_aliases_units_and_extensive_flags():
     assert resolve_quantity("density_over_r3").unit == u.kg / u.m**6
     assert resolve_quantity("mass_over_r2").unit == u.kg / u.m**2
     assert resolve_quantity("mass_over_r3").unit == u.kg / u.m**3
+    assert resolve_quantity("GG_kernel_norm").unit == u.m**-3
+    assert resolve_quantity("GG_kernel_norm").extensive is True
     with pytest.raises(ValueError, match="unknown"):
         resolve_quantity("1 / r ** 2")
 
@@ -128,6 +134,87 @@ def test_new_gg_weight_quantities_match_single_source_values_and_units():
         )
         np.testing.assert_allclose(record.values, [value], rtol=0, atol=0)
         assert record.unit == unit
+
+
+@pytest.mark.parametrize(
+    ("norm", "expected"),
+    [("frobenius", np.sqrt(6.0) / 8.0), ("spectral", 0.25)],
+)
+def test_gg_kernel_norm_is_computed_per_source(norm, expected):
+    setup = _setup([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]], [3.0, 5.0])
+
+    record = source_quantity_data(
+        setup,
+        "GG_kernel_norm",
+        target_id="target-0",
+        norm=norm,
+    )
+
+    np.testing.assert_allclose(record.values, [expected, expected], rtol=0, atol=1e-15)
+    assert record.quantity == "gravity_gradient_kernel_norm"
+    assert record.kernel_norm == norm
+    assert record.unit == u.m**-3
+    assert record.extensive is True
+
+
+def test_gg_kernel_norm_requires_an_explicit_supported_norm():
+    setup = _setup([[2.0, 0.0, 0.0]], [3.0])
+
+    with pytest.raises(ValueError, match="norm must be 'frobenius' or 'spectral'"):
+        source_quantity_data(
+            setup,
+            "gravity_gradient_kernel_norm",
+            target_id="target-0",
+        )
+    with pytest.raises(ValueError, match="norm must be 'frobenius' or 'spectral'"):
+        source_quantity_data(
+            setup,
+            "gravity_gradient_kernel_norm",
+            target_id="target-0",
+            norm="euclidean",
+        )
+
+
+def test_gg_kernel_norm_uses_the_softened_point_kernel():
+    setup = _setup([[2.0, 0.0, 0.0]], [3.0])
+    softening = 0.5
+    q = 4.0 + softening**2
+    kxx = 12.0 / q**2.5 - 1.0 / q**1.5
+    kyy = -1.0 / q**1.5
+    expected = np.sqrt(kxx**2 + 2.0 * kyy**2)
+
+    record = source_quantity_data(
+        setup,
+        "gravity_gradient_kernel_norm",
+        target_id="target-0",
+        norm="frobenius",
+        softening_m=softening,
+    )
+
+    np.testing.assert_allclose(record.values, [expected], rtol=1e-14, atol=0)
+    assert record.softening_m == softening
+
+
+def test_gg_kernel_norm_is_invariant_to_large_output_frame_translation():
+    setup = _setup([[2.0, 0.0, 0.0]], [3.0])
+    output = Frame(
+        "source-quantity-distant-origin",
+        origin=[1.0e17, 0.0, 0.0] * u.m,
+        parent=ROOT,
+    )
+
+    record = source_quantity_data(
+        setup,
+        "GG_kernel_norm",
+        target_id="target-0",
+        frame=output,
+        norm="frobenius",
+    )
+
+    np.testing.assert_allclose(record.values, [np.sqrt(6.0) / 8.0], rtol=0, atol=1e-15)
+    np.testing.assert_array_equal(record.positions_m, [[-1.0e17, 0.0, 0.0]])
+    np.testing.assert_array_equal(record.target_xyz_m, [-1.0e17, 0.0, 0.0])
+    np.testing.assert_array_equal(record.radial_distance_m, [2.0])
 
 
 def test_static_quantities_reject_missing_verified_density_and_softened_geometry():

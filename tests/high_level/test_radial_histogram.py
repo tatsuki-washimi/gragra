@@ -49,6 +49,32 @@ def _api_radial(setup, quantity="mass", **kwargs):
     return radial_histogram(setup, quantity, **kwargs)
 
 
+def _api_gg_radial(setup, **kwargs):
+    from gragra.plotting import gravity_gradient_radial_histogram
+
+    return gravity_gradient_radial_histogram(setup, **kwargs)
+
+
+def _setup_positions(
+    positions, masses, *, frame=ROOT, target=(0.0, 0.0, 0.0), target_frame=None
+):
+    source = WeightedPointSource(
+        np.asarray(positions, dtype=np.float64), np.asarray(masses, dtype=np.float64)
+    )
+    field = GravityFieldDefinition.source_field(
+        "radial-cartesian", Contribution("total"), PotentialReference.ZERO_AT_INFINITY
+    )
+    model = point_sum(source, frame=frame, field_definition=field)
+    selected_target_frame = frame if target_frame is None else target_frame
+    return model.at(
+        TargetPoints(
+            np.asarray(target, dtype=np.float64).reshape(1, 3) * u.m,
+            ("A",),
+            selected_target_frame,
+        )
+    )
+
+
 def _dynamic_result(
     positions,
     density,
@@ -257,6 +283,314 @@ def test_radial_histogram_integrates_intensive_quantities_and_keeps_aliases() ->
     np.testing.assert_array_equal(mass_r2.histogram.values.value, [8.0, 15.0 / 4.0])
     assert mass_r3.quantity == "mass_over_r3"
     np.testing.assert_array_equal(mass_r3.histogram.values.value, [8.0, 15.0 / 8.0])
+
+
+@pytest.mark.parametrize(
+    ("norm", "expected"),
+    [("frobenius", np.sqrt(6.0) / 4.0), ("spectral", 0.5)],
+)
+def test_gg_kernel_norm_radial_histogram_sums_per_source_norms(norm, expected):
+    positions = np.array([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]])
+    source = WeightedPointSource(positions, np.array([3.0, 5.0]))
+    definition = GravityFieldDefinition.source_field(
+        "radial-gg-kernel-norm",
+        Contribution("total"),
+        PotentialReference.ZERO_AT_INFINITY,
+    )
+    setup = point_sum(source, frame=ROOT, field_definition=definition).at(
+        TargetPoints([[0.0, 0.0, 0.0]] * u.m, ("target-0",), ROOT)
+    )
+
+    result = _api_radial(
+        setup,
+        "GG_kernel_norm",
+        target_id="target-0",
+        norm=norm,
+        bins=[0.0, 3.0],
+    )
+
+    np.testing.assert_allclose(
+        result.histogram.values.value, [expected], rtol=0, atol=1e-15
+    )
+    assert result.quantity == "gravity_gradient_kernel_norm"
+    assert result.norm == norm
+    assert result.histogram.unit == u.m**-3
+
+
+def test_gg_kernel_norm_radial_histogram_requires_explicit_norm():
+    setup = _setup([2.0], [3.0])
+
+    with pytest.raises(ValueError, match="norm must be 'frobenius' or 'spectral'"):
+        _api_radial(
+            setup,
+            "gravity_gradient_kernel_norm",
+            target_id="A",
+            bins=[0.0, 3.0],
+        )
+
+
+def test_static_gg_radial_histogram_matches_one_source_analytic_tensor():
+    from gragra.constants import G_SI
+
+    result = _api_gg_radial(_setup([2.0], [3.0]), target_id="A", bins=[0.0, 1.0, 2.0])
+    expected = G_SI * 3.0 / 2.0**3 * np.diag([2.0, -1.0, -1.0])
+
+    assert result.tensor_values.shape == (2, 3, 3)
+    np.testing.assert_array_equal(result.tensor_values.value[0], np.zeros((3, 3)))
+    np.testing.assert_allclose(result.tensor_values.value[1], expected)
+    np.testing.assert_allclose(result.total_tensor.value, expected)
+    assert result.unit == u.s**-2
+    assert result.target_id == "A"
+    assert result.frame is ROOT
+    assert result.metadata["softening_m"] == 0.0
+    assert result.metadata["radial_distance_definition"] == (
+        "unsoftened Euclidean source-target distance"
+    )
+
+    histogram = result.histogram("xx")
+    assert isinstance(histogram, Histogram)
+    assert histogram.unit == u.s**-2
+    np.testing.assert_allclose(histogram.values.value, [0.0, expected[0, 0]])
+    assert histogram.edges.to_value(u.m).tolist() == [0.0, 1.0, 2.0]
+    with pytest.raises(ValueError, match="component must be one of"):
+        result.histogram("trace")
+
+
+def test_static_gg_radial_result_rejects_invalid_index_and_complex_tensor():
+    from dataclasses import replace
+
+    result = _api_gg_radial(_setup([2.0], [3.0]), target_id="A", bins=[0.0, 3.0])
+
+    with pytest.raises(TypeError, match="source_index must contain integers"):
+        replace(result, source_index=[0.5])
+    with pytest.raises(TypeError, match="tensors must contain real values"):
+        replace(
+            result,
+            tensor_values=u.Quantity(
+                result.tensor_values.value.astype(np.complex128) + 1j,
+                unit=result.unit,
+            ),
+        )
+
+
+def test_static_gg_radial_histogram_preserves_signed_flows_and_total_tensor():
+    from gragra.constants import G_SI
+    from gragra.plotting import source_field
+
+    setup = _setup([0.5, 1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0, 5.0])
+    result = _api_gg_radial(setup, target_id="A", bins=[1.0, 2.0, 3.0])
+    scale = G_SI * np.diag([2.0, -1.0, -1.0])
+
+    np.testing.assert_allclose(result.underflow_tensor.value, scale * (1.0 / 0.5**3))
+    np.testing.assert_allclose(result.tensor_values.value[0], scale * (2.0 / 1.0**3))
+    np.testing.assert_allclose(
+        result.tensor_values.value[1],
+        scale * (3.0 / 2.0**3 + 4.0 / 3.0**3),
+    )
+    np.testing.assert_allclose(result.overflow_tensor.value, scale * (5.0 / 4.0**3))
+
+    grouped_total = (
+        result.underflow_tensor.value
+        + result.tensor_values.value.sum(axis=0)
+        + result.overflow_tensor.value
+    )
+    np.testing.assert_allclose(grouped_total, result.total_tensor.value)
+    grid_total = source_field(
+        setup,
+        "GG",
+        target_id="A",
+        grid=([-1.0, 5.0], [-1.0, 1.0], [-1.0, 1.0]),
+        aggregation="sum",
+    ).to_array()[0, 0, 0, 0]
+    np.testing.assert_allclose(result.total_tensor.value, grid_total)
+
+    xx = result.histogram("xx")
+    assert xx.underflow.value > 0.0
+    assert xx.overflow.value > 0.0
+    assert xx.values.value[0] > 0.0
+    assert xx.values.value[1] > 0.0
+    yy = result.histogram("yy")
+    assert yy.underflow.value < 0.0
+    assert yy.overflow.value < 0.0
+    assert np.all(yy.values.value < 0.0)
+
+
+def test_static_gg_radial_tensor_keeps_component_cancellation():
+    from gragra.constants import G_SI
+
+    setup = _setup_positions([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]], [1.0, 2.0])
+    result = _api_gg_radial(setup, target_id="A", bins=[0.0, 3.0])
+    scale = G_SI / 2.0**3
+    expected = scale * np.diag([0.0, 3.0, -3.0])
+
+    np.testing.assert_allclose(result.tensor_values.value[0], expected)
+    assert result.tensor_values.value[0, 0, 0] == pytest.approx(0.0, abs=1e-30)
+    assert result.tensor_values.value[0, 1, 1] > 0.0
+    assert result.tensor_values.value[0, 2, 2] < 0.0
+
+
+def test_static_gg_radial_histogram_matches_softened_source_field_at_zero_radius():
+    from gragra._evaluation_setup import CoordinatePrecisionError
+    from gragra.constants import G_SI
+    from gragra.plotting import source_field
+
+    setup = _setup([0.0], [3.0])
+    result = _api_gg_radial(setup, target_id="A", bins=[0.0, 1.0], softening_m=0.5)
+    expected = -G_SI * 3.0 / 0.5**3 * np.eye(3)
+    np.testing.assert_allclose(result.tensor_values.value[0], expected)
+    assert result.softening_m == 0.5
+    field_total = source_field(
+        setup,
+        "GG",
+        target_id="A",
+        grid=([-0.5, 0.5], [-0.5, 0.5], [-0.5, 0.5]),
+        aggregation="sum",
+        softening_m=0.5,
+    ).to_array()[0, 0, 0, 0]
+    np.testing.assert_allclose(result.total_tensor.value, field_total)
+    with pytest.raises(CoordinatePrecisionError) as caught:
+        _api_gg_radial(setup, target_id="A", bins=[0.0, 1.0])
+    assert caught.value.reason == "collision"
+
+
+def test_static_gg_radial_membership_uses_geometric_radius_with_softening():
+    from gragra.plotting import source_field
+
+    setup = _setup([0.25], [3.0])
+    result = _api_gg_radial(
+        setup,
+        target_id="A",
+        bins=[0.0, 0.4, 1.0],
+        softening_m=0.5,
+    )
+    softened_total = source_field(
+        setup,
+        "GG",
+        target_id="A",
+        grid=([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]),
+        aggregation="sum",
+        softening_m=0.5,
+    ).to_array()[0, 0, 0, 0]
+
+    np.testing.assert_allclose(result.tensor_values.value[0], softened_total)
+    np.testing.assert_array_equal(result.tensor_values.value[1], np.zeros((3, 3)))
+    np.testing.assert_array_equal(result.underflow_tensor.value, np.zeros((3, 3)))
+    np.testing.assert_array_equal(result.overflow_tensor.value, np.zeros((3, 3)))
+    np.testing.assert_allclose(result.total_tensor.value, softened_total)
+
+
+def test_static_gg_radial_softening_keeps_subnormal_squared_radius():
+    from gragra.plotting import source_field
+
+    setup = _setup_positions([[1e-160, 0.0, 0.0]], [1.0])
+    result = _api_gg_radial(
+        setup,
+        target_id="A",
+        bins=[0.0, 2e-160],
+        softening_m=0.5,
+    )
+    field_total = source_field(
+        setup,
+        "GG",
+        target_id="A",
+        grid=([-1e-159, 1e-159], [-1.0, 1.0], [-1.0, 1.0]),
+        aggregation="sum",
+        softening_m=0.5,
+    ).to_array()[0, 0, 0, 0]
+
+    np.testing.assert_allclose(result.total_tensor.value, field_total)
+    np.testing.assert_allclose(result.tensor_values.value.sum(axis=0), field_total)
+    assert result.softening_m == 0.5
+
+
+def test_static_gg_radial_histogram_uses_source_computation_frame():
+    from gragra.constants import G_SI
+
+    root = ROOT
+    local = Frame("gg-radial-local", origin=[1.0, 0.0, 0.0] * u.m, parent=root)
+    setup = _setup_positions(
+        [[3.0, 0.0, 0.0]],
+        [2.0],
+        frame=local,
+        target=[0.0, 0.0, 0.0],
+        target_frame=root,
+    )
+    result = _api_gg_radial(setup, target_id="A", bins=[4.0, 5.0])
+    expected = G_SI * 2.0 / 4.0**3 * np.diag([2.0, -1.0, -1.0])
+
+    assert result.frame is local
+    np.testing.assert_allclose(result.target_xyz_m, [-1.0, 0.0, 0.0])
+    np.testing.assert_allclose(result.tensor_values.value[0], expected)
+    assert result.metadata["frame"] == local.name
+
+
+def test_static_gg_radial_histogram_preserves_coordinate_precision_gate():
+    from gragra._evaluation_setup import CoordinatePrecisionError
+
+    root = Frame("gg-radial-precision-root")
+    source_frame = Frame(
+        "gg-radial-precision-local", origin=[1e6, 0.0, 0.0] * u.m, parent=root
+    )
+    setup = _setup_positions(
+        [[0.0, 0.0, 0.0]],
+        [1.0],
+        frame=source_frame,
+        target=[1e6 + 1e-8, 0.0, 0.0],
+        target_frame=root,
+    )
+
+    with pytest.raises(CoordinatePrecisionError) as caught:
+        _api_gg_radial(setup, target_id="A", bins=[0.0, 1.0], softening_m=0.5)
+    assert caught.value.reason == "coordinate_precision"
+    assert caught.value.target_id == "A"
+    assert caught.value.source_index == 0
+
+
+@pytest.mark.parametrize(
+    ("quantity", "kwargs", "expected_title"),
+    [
+        ("mass", {}, "mass; target=A"),
+        (
+            "GG_kernel_norm",
+            {"norm": "spectral"},
+            "gravity_gradient_kernel_norm; target=A; norm=spectral",
+        ),
+    ],
+)
+def test_plot_radial_histogram_title_shows_selected_norm(
+    quantity, kwargs, expected_title
+):
+    from matplotlib import pyplot as plt
+
+    from gragra.plotting import plot_hist
+
+    result = _api_radial(
+        _setup([2.0], [3.0]), quantity, target_id="A", bins=[0.0, 3.0], **kwargs
+    )
+
+    fig, ax, returned = plot_hist(result)
+    try:
+        assert returned is result
+        assert ax.get_title() == expected_title
+    finally:
+        plt.close(fig)
+
+
+def test_softened_gg_kernel_norm_radial_histogram_allows_zero_radius():
+    setup = _setup([0.0], [3.0])
+
+    result = _api_radial(
+        setup,
+        "GG_kernel_norm",
+        target_id="A",
+        norm="spectral",
+        softening_m=0.5,
+        bins=[0.0, 1.0],
+    )
+
+    np.testing.assert_allclose(result.histogram.values.value, [8.0], rtol=0, atol=0)
+    assert result.domain == (0.0, 0.0)
+    assert result.softening_m == 0.5
 
 
 def test_radial_intensive_quantity_requires_verified_source_volume() -> None:
@@ -585,3 +919,120 @@ def test_interference_histogram_reproduces_constructive_and_cancelling_pairs():
     assert constructive_share.valid.all()
     np.testing.assert_array_equal(cancelling_share.values.value, [0.0, 0.0])
     assert not cancelling_share.valid.any()
+
+
+def test_direction_averaged_interference_share_averages_cross_terms_before_ratio():
+    positions = [[1.0, 0, 0], [2.0, 0, 0]]
+    edges = [0.5, 1.5, 2.5]
+    first = _dynamic_result(positions, [[1.0, 0.0]], frequencies=(10.0,), edges=edges)
+    second = _dynamic_result(positions, [[0.0, 4.0]], frequencies=(10.0,), edges=edges)
+
+    averaged = _api_dynamic(
+        (first, second),
+        "interference_share",
+        frequency_hz=10.0,
+        direction_weights=[1.0, 1.0],
+    )
+    first_share = _api_dynamic(first, "interference_share", frequency_hz=10.0)
+    second_share = _api_dynamic(second, "interference_share", frequency_hz=10.0)
+
+    np.testing.assert_allclose(averaged.values.value, [0.2, 0.8])
+    np.testing.assert_allclose(
+        0.5 * (first_share.values.value + second_share.values.value), [0.5, 0.5]
+    )
+    assert averaged.valid.all()
+    assert averaged.metadata["direction_weights"] == (1.0, 1.0)
+    assert averaged.metadata["normalized_direction_weights"] == (0.5, 0.5)
+    assert "direction-weighted mean" in averaged.metadata["metric_definition"]
+    total_share = (
+        averaged.histogram.underflow.value
+        + averaged.values.value.sum()
+        + averaged.histogram.overflow.value
+    )
+    assert total_share == pytest.approx(1.0)
+
+    signed = _dynamic_result(positions, [[-2.0, 1.0]], frequencies=(10.0,), edges=edges)
+    signed_share = _api_dynamic(signed, "interference_share", frequency_hz=10.0)
+    np.testing.assert_allclose(signed_share.values.value, [4.0 / 3.0, -1.0 / 3.0])
+    assert signed_share.valid.all()
+
+
+def test_direction_averaged_interference_share_masks_zero_total_power():
+    positions = [[1.0, 0, 0], [2.0, 0, 0]]
+    edges = [0.5, 1.5, 2.5]
+    first = _dynamic_result(positions, [[1.0, -2.0]], frequencies=(10.0,), edges=edges)
+    second = _dynamic_result(positions, [[2.0, -4.0]], frequencies=(10.0,), edges=edges)
+
+    result = _api_dynamic(
+        (first, second),
+        "interference_share",
+        frequency_hz=10.0,
+        direction_weights=[0.25, 0.75],
+    )
+
+    np.testing.assert_array_equal(result.values.value, [0.0, 0.0])
+    assert not result.valid.any()
+    assert not result.underflow_valid
+    assert not result.overflow_valid
+
+
+@pytest.mark.parametrize("mismatch", ["frequency", "edges", "target", "observable"])
+def test_direction_averaged_interference_rejects_incompatible_results(mismatch):
+    positions = [[1.0, 0, 0], [2.0, 0, 0]]
+    edges = [0.5, 1.5, 2.5]
+    reference = _dynamic_result(
+        positions, [[1.0, 2.0]], frequencies=(10.0,), edges=edges
+    )
+    if mismatch == "frequency":
+        candidate = _dynamic_result(
+            positions, [[1.0, 2.0]], frequencies=(11.0,), edges=edges
+        )
+    elif mismatch == "edges":
+        candidate = _dynamic_result(
+            positions,
+            [[1.0, 2.0]],
+            frequencies=(10.0,),
+            edges=[0.25, 1.5, 2.75],
+        )
+    elif mismatch == "target":
+        candidate = _dynamic_result(
+            positions,
+            [[1.0, 2.0]],
+            frequencies=(10.0,),
+            edges=edges,
+            targets=[[0.0, 0.25, 0.0]],
+        )
+    else:
+        candidate = _dynamic_result(
+            positions,
+            [[1.0, 2.0]],
+            frequencies=(10.0,),
+            edges=edges,
+            observable="acceleration",
+        )
+
+    with pytest.raises(ValueError, match="not compatible for directional statistics"):
+        _api_dynamic(
+            (reference, candidate),
+            "interference_share",
+            frequency_hz=10.0,
+            direction_weights=[1.0, 1.0],
+        )
+
+
+def test_direction_averaged_interference_validates_direction_weights():
+    positions = [[1.0, 0, 0], [2.0, 0, 0]]
+    first = _dynamic_result(
+        positions, [[1.0, 2.0]], frequencies=(10.0,), edges=[0.5, 1.5, 2.5]
+    )
+    second = _dynamic_result(
+        positions, [[2.0, 1.0]], frequencies=(10.0,), edges=[0.5, 1.5, 2.5]
+    )
+
+    with pytest.raises(ValueError, match=r"direction_weights must have shape \(2,\)"):
+        _api_dynamic(
+            (first, second),
+            "interference_share",
+            frequency_hz=10.0,
+            direction_weights=[1.0],
+        )

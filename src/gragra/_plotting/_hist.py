@@ -63,6 +63,7 @@ def hist(
     weight: str = "count",
     xunit: str | u.UnitBase | None = None,
     frame: Frame | None = None,
+    norm: str | None = None,
 ) -> Histogram:
     """Histogram one source-element diagnostic as a GWexpy ``Histogram``.
 
@@ -79,6 +80,8 @@ def hist(
         Diagnostic to histogram. Every registered scalar source quantity and
         the existing ``height`` selector are accepted. Exact aliases are
         resolved from the fixed source-quantity registry.
+        ``gravity_gradient_kernel_norm`` requires ``norm="frobenius"`` or
+        ``norm="spectral"`` and bins each source's G-free tensor norm.
     target_id : str, optional, default None
         Target used by distance-dependent source quantities. It is required
         when the setup has more than one target. It must be omitted for
@@ -116,6 +119,9 @@ def hist(
         those quantities ``frame`` only has to be connected to it. For
         ``density``, ``frame`` is checked for connection and is otherwise
         ignored.
+    norm : {"frobenius", "spectral"}, optional
+        Explicit norm for ``gravity_gradient_kernel_norm``. It is rejected for
+        other quantities.
 
     Returns
     -------
@@ -193,6 +199,13 @@ def hist(
     resolved = _resolved_from(setup)
     canonical = _canonical_quantity(quantity)
     _check_weight(weight)
+    if norm is not None and not isinstance(norm, str):
+        raise TypeError("norm must be a string or None")
+    quantity_spec = QUANTITY_SPECS.get(canonical)
+    if norm is not None and (
+        quantity_spec is None or not quantity_spec.requires_kernel_norm
+    ):
+        raise ValueError("norm applies only to gravity_gradient_kernel_norm")
     xunit_unit = _xunit_for(canonical, xunit)
 
     # Keep the original diagnostic path for its established public selectors.
@@ -228,6 +241,7 @@ def hist(
             quantity,
             target_id=target_id,
             frame=frame,
+            norm=norm,
         )
         values = _require_finite(data.values, canonical)
         if weight == "count":
@@ -245,7 +259,7 @@ def hist(
         edges,
         xunit=xunit_unit,
         weight=weight,
-        name=_histogram_name(canonical, weight, target_name),
+        name=_histogram_name(canonical, weight, target_name, norm=norm),
         underflow=underflow,
         overflow=overflow,
     )
@@ -512,8 +526,16 @@ def _aggregate(
     return counts.astype(np.float64), underflow, overflow
 
 
-def _histogram_name(quantity: str, weight: str, target_name: str | None) -> str:
+def _histogram_name(
+    quantity: str,
+    weight: str,
+    target_name: str | None,
+    *,
+    norm: str | None = None,
+) -> str:
     parts = [quantity, weight]
+    if norm is not None:
+        parts.insert(1, f"norm={norm}")
     if target_name is not None:
         parts.append(f"target={target_name}")
     return " ".join(parts)
@@ -552,6 +574,7 @@ def plot_hist(
     weight: str = "count",
     xunit: str | u.UnitBase | None = None,
     frame: Frame | None = None,
+    norm: str | None = None,
     ax: Axes | None = None,
 ) -> Figure | tuple[Figure, Axes, RadialHistogramResult]:
     """Draw a source histogram as a step plot.
@@ -586,6 +609,8 @@ def plot_hist(
         the quantity; see ``hist()``.
     frame : Frame, optional, default None
         Frame used for ``height``. See ``hist()``.
+    norm : {"frobenius", "spectral"}, optional
+        Explicit norm for ``gravity_gradient_kernel_norm``. See ``hist()``.
     ax : matplotlib.axes.Axes, optional, default None
         Empty, 2-D Cartesian axes with linear scales to draw on. If omitted, a
         new figure is created. The axes is not closed.
@@ -630,6 +655,7 @@ def plot_hist(
             or weight != "count"
             or xunit is not None
             or frame is not None
+            or norm is not None
         ):
             raise ValueError(
                 "histogram options cannot be changed for a radial histogram result"
@@ -646,6 +672,7 @@ def plot_hist(
         weight=weight,
         xunit=xunit,
         frame=frame,
+        norm=norm,
     )
     values = histogram.values.value
     if len(values) > _MAX_PLOT_BINS:
@@ -697,7 +724,10 @@ def _plot_radial_result(result, ax, pyplot):
         "fraction_per_length": "fraction per length",
     }[result.normalization]
     ax.set_ylabel(f"{label} [{result.unit.to_string()}]")
-    ax.set_title(f"{result.quantity}; target={result.target_id}")
+    title = f"{result.quantity}; target={result.target_id}"
+    if result.norm is not None:
+        title += f"; norm={result.norm}"
+    ax.set_title(title)
     underflow = float(result.histogram.underflow.value)
     overflow = float(result.histogram.overflow.value)
     if underflow or overflow:

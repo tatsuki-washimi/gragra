@@ -42,7 +42,7 @@ and displacement observables alongside the source and target containers.
 | `gragra.analytic.atmospheric` | 7 | [Sources, targets and geometry](core.md) |
 | `gragra.analytic.objects` | 6 | [Sources, targets and geometry](core.md) and [Fields, waves and coherent](physics.md) |
 | `gragra.analytic.seismic` | 7 | [Sources, targets and geometry](core.md) and [Fields, waves and coherent](physics.md) |
-| `gragra.plotting` | 25 | [Fields, waves and coherent](physics.md) and [Source diagnostics](../guide/source-diagnostics.md) |
+| `gragra.plotting` | 27 | [Fields, waves and coherent](physics.md) and [Source diagnostics](../guide/source-diagnostics.md) |
 | `gragra.adapters` | 54 | [Additional APIs and internal modules](experimental.md) |
 | `gragra.adapters.specfem` | 4 | [Additional APIs and internal modules](experimental.md) |
 
