@@ -439,6 +439,26 @@ contributions = source_contributions(
     [[0.0, 0.0, 0.0]],
     radial_edges_m=[0.0, 5.0, 10.0],
 )
+direction_0 = contributions
+
+# Represent a second direction with the second source shifted by pi radians.
+second_phasors = DensityPhasors(
+    positions_m,
+    volumes_m3,
+    density_kg_m3 * np.array([[1.0], [-1.0]]),
+    frequencies_hz,
+    0.0,
+    np.zeros(3),
+    "root",
+    np.zeros(3),
+    ("source-0", "source-1"),
+)
+direction_1 = source_contributions(
+    second_phasors,
+    "acceleration",
+    [[0.0, 0.0, 0.0]],
+    radial_edges_m=[0.0, 5.0, 10.0],
+)
 radial = dynamic_radial_histogram(
     contributions,
     "interference_share",
