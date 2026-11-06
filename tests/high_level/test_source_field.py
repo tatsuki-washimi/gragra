@@ -1020,3 +1020,54 @@ def test_static_gg_aliases_preserve_full_tensor_and_select_named_component():
     np.testing.assert_array_equal(tensor_alias.to_array(), canonical_kernel.to_array())
     np.testing.assert_allclose(_field_array(xx), tensor.to_array()[..., 0, 0])
     assert u.Unit(xx_result.metadata["unit"]) == u.s**-2
+
+
+@pytest.mark.parametrize(
+    ("norm", "per_source_expected", "post_sum_expected"),
+    [
+        ("frobenius", np.sqrt(6.0) / 4.0, np.sqrt(6.0) / 8.0),
+        ("spectral", 0.5, 0.25),
+    ],
+)
+def test_gg_kernel_norm_field_applies_norm_before_cell_aggregation(
+    norm, per_source_expected, post_sum_expected
+):
+    setup = _setup(
+        [[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]],
+        [3.0, 5.0],
+    )
+    grid = (
+        np.array([-3.0, 3.0]),
+        np.array([-3.0, 3.0]),
+        np.array([-1.0, 1.0]),
+    )
+    kwargs = {"target_id": "target-0", "grid": grid, "aggregation": "sum"}
+
+    per_source = source_field_result(
+        setup,
+        "GG_kernel_norm",
+        norm=norm,
+        **kwargs,
+    )
+    summed_tensor = source_field(setup, "GG_kernel", norm=norm, **kwargs)
+
+    assert isinstance(per_source.field, fields.ScalarField)
+    assert _field_array(per_source.field)[0, 0, 0, 0] == pytest.approx(
+        per_source_expected
+    )
+    assert _field_array(summed_tensor)[0, 0, 0, 0] == pytest.approx(post_sum_expected)
+    assert per_source.metadata["canonical_quantity"] == ("gravity_gradient_kernel_norm")
+    assert per_source.metadata["kernel_norm"] == norm
+    assert u.Unit(per_source.metadata["unit"]) == u.m**-3
+
+
+def test_gg_kernel_norm_field_requires_explicit_norm():
+    setup = _setup([[2.0, 0.0, 0.0]], [3.0])
+    kwargs = {
+        "target_id": "target-0",
+        "grid": _GRID,
+        "aggregation": "sum",
+    }
+
+    with pytest.raises(ValueError, match="norm must be 'frobenius' or 'spectral'"):
+        source_field(setup, "gravity_gradient_kernel_norm", **kwargs)

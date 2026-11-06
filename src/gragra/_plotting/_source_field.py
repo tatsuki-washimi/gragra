@@ -32,6 +32,7 @@ from gragra._plotting._diagnostics import (
 )
 from gragra._plotting._source_contracts import SourceContributionResult
 from gragra._plotting._source_quantities import (
+    resolve_quantity,
     source_quantity_data,
 )
 from gragra.kernels._source_terms import iter_source_kernel_terms
@@ -142,6 +143,7 @@ class _SourceValues:
     frequencies_hz: np.ndarray | None = None
     physical_weights: np.ndarray | None = None
     source_type: str | None = None
+    kernel_norm: str | None = None
 
 
 def source_field(
@@ -170,6 +172,8 @@ def source_field(
     ``GG_xx``/``GG_xy`` and the other named GG component aliases select one
     signed component from the static gravity-gradient contribution. ``GG``
     retains the full tensor, and ``GG_kernel`` selects the G-free tensor kernel.
+    ``GG_kernel_norm`` requires ``norm="frobenius"`` or ``norm="spectral"``
+    and applies that norm to each source tensor before spatial aggregation.
 
     Static fields receive a structural singleton time axis at zero seconds.
     Dynamic fields keep every stored frequency when ``frequency_hz`` is
@@ -178,6 +182,10 @@ def source_field(
     omitted spatial axis, or to compute a volume-weighted mean for intensive
     static values. Use :func:`source_field_result` for phase and
     interference-fraction maps so their validity mask is retained.
+
+    For ``GG_kernel``, ``norm`` applies after tensor components are summed in
+    each cell. For ``GG_kernel_norm``, it selects the norm applied to each
+    source kernel before those scalar norms are summed.
     """
     if not isinstance(quantity, str):
         raise TypeError("quantity must be a string")
@@ -294,6 +302,7 @@ def _source_field_result(
             target_id=target_id,
             aggregation=aggregation,
             softening_m=softening_m,
+            norm=norm,
         )
 
     if source_data.aggregation != aggregation:
@@ -428,7 +437,7 @@ def _source_field_result(
             quantity=quantity,
             dynamic=False,
             total=None,
-            norm=norm,
+            norm=None if source_data.kernel_norm is not None else norm,
             projection=projection,
         )
 
@@ -488,6 +497,7 @@ def _static_source_values(
     target_id: str | None,
     aggregation: str,
     softening_m: float | None,
+    norm: str | None,
 ) -> _SourceValues:
     canonical_physical = _PHYSICAL_ALIASES.get(quantity)
     if canonical_physical is not None:
@@ -536,12 +546,14 @@ def _static_source_values(
 
     if softening_m is None:
         softening_m = 0.0
+    quantity_spec = resolve_quantity(quantity)
     try:
         record = source_quantity_data(
             setup,
             quantity,
             target_id=target_id,
             softening_m=softening_m,
+            norm=norm if quantity_spec.requires_kernel_norm else None,
         )
     except ValueError:
         raise
@@ -572,8 +584,9 @@ def _static_source_values(
         target_xyz_m=record.target_xyz_m,
         target_trace=record.target_trace,
         volumes_m3=volumes,
-        softening_m=0.0,
+        softening_m=record.softening_m,
         source_type=record.source_type,
+        kernel_norm=record.kernel_norm,
     )
 
 
@@ -1151,6 +1164,7 @@ def _field_metadata(
         ),
         "frequency_hz": source_data.frequency_hz,
         "softening_m": source_data.softening_m,
+        "kernel_norm": source_data.kernel_norm,
         "source_index": tuple(int(item) for item in source_data.source_index),
         "source_positions_m": tuple(
             tuple(float(value) for value in row) for row in source_data.positions_m

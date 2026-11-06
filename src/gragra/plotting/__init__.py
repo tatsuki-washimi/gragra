@@ -30,8 +30,10 @@ if TYPE_CHECKING:
     from gragra._plotting._map import plot_map
     from gragra._plotting._radial_histogram import (
         DynamicRadialHistogramResult,
+        GravityGradientRadialHistogramResult,
         RadialHistogramResult,
         dynamic_radial_histogram,
+        gravity_gradient_radial_histogram,
         radial_histogram,
     )
     from gragra._plotting._result_field import plot_result
@@ -50,6 +52,7 @@ __all__ = [
     "ContributionValidityMask",
     "DirectionalContributionStatistics",
     "DynamicRadialHistogramResult",
+    "GravityGradientRadialHistogramResult",
     "RadialHistogramResult",
     "SourceContributionResult",
     "SourceFieldResult",
@@ -57,6 +60,7 @@ __all__ = [
     "directional_contribution_statistics",
     "dynamic_radial_histogram",
     "formula_to_latex",
+    "gravity_gradient_radial_histogram",
     "hist",
     "plot_contribution_hist",
     "plot_cumulative_contribution",
@@ -78,6 +82,7 @@ _LAZY_SOURCES = {
     "ContributionValidityMask": "gragra._plotting._dynamic_contribution",
     "DirectionalContributionStatistics": "gragra._plotting._dynamic_contribution",
     "DynamicRadialHistogramResult": "gragra._plotting._radial_histogram",
+    "GravityGradientRadialHistogramResult": "gragra._plotting._radial_histogram",
     "RadialHistogramResult": "gragra._plotting._radial_histogram",
     "SourceContributionResult": "gragra._plotting._source_contracts",
     "SourceFieldResult": "gragra._plotting._source_field",
@@ -85,6 +90,7 @@ _LAZY_SOURCES = {
     "directional_contribution_statistics": "gragra._plotting._dynamic_contribution",
     "dynamic_radial_histogram": "gragra._plotting._radial_histogram",
     "formula_to_latex": "gragra._plotting._formula_latex",
+    "gravity_gradient_radial_histogram": "gragra._plotting._radial_histogram",
     "hist": "gragra._plotting._hist",
     "plot_contribution_hist": "gragra._plotting._contribution",
     "plot_cumulative_contribution": "gragra._plotting._contribution",

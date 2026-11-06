@@ -22,6 +22,10 @@ if TYPE_CHECKING:
     from gwexpy.histogram import Histogram
 
     from gragra._evaluation_setup import ResolvedEvaluation
+    from gragra._plotting._dynamic_contribution import (
+        ContributionStatistics,
+        DirectionalContributionStatistics,
+    )
     from gragra._plotting._source_contracts import SourceContributionResult
     from gragra.evaluation import EvaluationSetup
     from gragra.geometry import Frame
@@ -54,6 +58,8 @@ class RadialHistogramResult:
     frame: Frame
     domain: tuple[float, float] | None
     source_index: np.ndarray
+    norm: str | None = None
+    softening_m: float = 0.0
 
     def __post_init__(self) -> None:
         values = u.Quantity(self.values, copy=True)
@@ -68,6 +74,15 @@ class RadialHistogramResult:
             raise ValueError("source_index must be the stable ordered index 0..N-1")
         if not np.isfinite(values.value).all() or not np.isfinite(total.value).all():
             raise ValueError("radial histogram result values must be finite")
+        if self.norm is not None and (
+            not isinstance(self.norm, str) or self.norm not in {"frobenius", "spectral"}
+        ):
+            raise ValueError("norm must be 'frobenius', 'spectral', or None")
+        softening = float(self.softening_m)
+        if not np.isfinite(softening) or softening < 0.0:
+            raise ValueError("softening_m must be finite and non-negative")
+        if self.norm is None and softening != 0.0:
+            raise ValueError("softening_m requires a gravity-gradient kernel norm")
         target.setflags(write=False)
         indices.setflags(write=False)
         values.setflags(write=False)
@@ -81,6 +96,7 @@ class RadialHistogramResult:
         object.__setattr__(self, "normalization_total", total)
         object.__setattr__(self, "target_xyz_m", target)
         object.__setattr__(self, "source_index", indices)
+        object.__setattr__(self, "softening_m", softening)
 
     @property
     def unit(self) -> u.UnitBase:
@@ -113,6 +129,134 @@ class RadialHistogramResult:
         result = u.Quantity(cumulative, unit=unit, copy=True)
         result.setflags(write=False)
         return result
+
+
+_GG_COMPONENT_INDICES = {
+    "xx": (0, 0),
+    "xy": (0, 1),
+    "xz": (0, 2),
+    "yx": (1, 0),
+    "yy": (1, 1),
+    "yz": (1, 2),
+    "zx": (2, 0),
+    "zy": (2, 1),
+    "zz": (2, 2),
+}
+
+
+@dataclass(frozen=True, eq=False)
+class GravityGradientRadialHistogramResult:
+    """Signed static GG tensor sums grouped by source-target distance."""
+
+    tensor_values: u.Quantity
+    underflow_tensor: u.Quantity
+    overflow_tensor: u.Quantity
+    total_tensor: u.Quantity
+    radial_edges_m: np.ndarray
+    target_id: str
+    target_xyz_m: np.ndarray
+    frame: Frame
+    source_index: np.ndarray
+    softening_m: float
+    metadata: Mapping[str, Any]
+
+    def __post_init__(self) -> None:
+        tensor = u.Quantity(self.tensor_values, copy=True)
+        underflow = u.Quantity(self.underflow_tensor, copy=True).to(tensor.unit)
+        overflow = u.Quantity(self.overflow_tensor, copy=True).to(tensor.unit)
+        total = u.Quantity(self.total_tensor, copy=True).to(tensor.unit)
+        if tensor.ndim != 3 or tensor.shape[1:] != (3, 3):
+            raise ValueError("tensor_values must have shape (bins, 3, 3)")
+        if underflow.shape != (3, 3) or overflow.shape != (3, 3):
+            raise ValueError("flow tensors must have shape (3, 3)")
+        if total.shape != (3, 3):
+            raise ValueError("total_tensor must have shape (3, 3)")
+        for value in (tensor, underflow, overflow, total):
+            raw_value = np.asarray(value.value)
+            if raw_value.dtype.kind == "b" or np.iscomplexobj(raw_value):
+                raise TypeError("gravity-gradient tensors must contain real values")
+        if not (
+            np.isfinite(tensor.value).all()
+            and np.isfinite(underflow.value).all()
+            and np.isfinite(overflow.value).all()
+            and np.isfinite(total.value).all()
+        ):
+            raise ValueError("gravity-gradient radial values must be finite")
+        if not (
+            tensor.unit.is_equivalent(u.s**-2)
+            and underflow.unit.is_equivalent(tensor.unit)
+            and overflow.unit.is_equivalent(tensor.unit)
+            and total.unit.is_equivalent(tensor.unit)
+        ):
+            raise ValueError(
+                "all GG tensors must use a common acceleration-gradient unit"
+            )
+        edges = np.array(self.radial_edges_m, dtype=np.float64, copy=True)
+        target = np.array(self.target_xyz_m, dtype=np.float64, copy=True)
+        raw_indices = np.asarray(self.source_index)
+        if raw_indices.dtype.kind not in "iu":
+            raise TypeError("source_index must contain integers")
+        if (
+            raw_indices.dtype.kind == "u"
+            and raw_indices.size
+            and raw_indices.max() > (2**63 - 1)
+        ):
+            raise ValueError("source_index values must fit in int64")
+        indices = np.array(raw_indices, dtype=np.int64, copy=True)
+        if (
+            edges.ndim != 1
+            or len(edges) < 2
+            or not np.isfinite(edges).all()
+            or np.any(np.diff(edges) <= 0.0)
+        ):
+            raise ValueError("radial_edges_m must be finite and strictly increasing")
+        if tensor.shape[0] != len(edges) - 1:
+            raise ValueError("tensor_values must align with radial_edges_m")
+        if target.shape != (3,) or not np.isfinite(target).all():
+            raise ValueError("target_xyz_m must be a finite 3-vector")
+        if indices.ndim != 1 or not np.array_equal(indices, np.arange(len(indices))):
+            raise ValueError("source_index must be the stable ordered index 0..N-1")
+        if isinstance(self.softening_m, (bool, np.bool_)):
+            raise ValueError("softening_m must be finite and non-negative")
+        softening = float(self.softening_m)
+        if not np.isfinite(softening) or softening < 0.0:
+            raise ValueError("softening_m must be finite and non-negative")
+        if not isinstance(self.target_id, str) or not self.target_id:
+            raise ValueError("target_id must be a nonempty string")
+        if not isinstance(self.metadata, Mapping):
+            raise TypeError("metadata must be a mapping")
+        for value in (tensor, underflow, overflow, total):
+            value.setflags(write=False)
+        for array in (edges, target, indices):
+            array.setflags(write=False)
+        object.__setattr__(self, "tensor_values", tensor)
+        object.__setattr__(self, "underflow_tensor", underflow)
+        object.__setattr__(self, "overflow_tensor", overflow)
+        object.__setattr__(self, "total_tensor", total)
+        object.__setattr__(self, "radial_edges_m", edges)
+        object.__setattr__(self, "target_xyz_m", target)
+        object.__setattr__(self, "source_index", indices)
+        object.__setattr__(self, "softening_m", softening)
+        object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
+
+    @property
+    def unit(self) -> u.UnitBase:
+        """Unit of the tensor contributions, normally s^-2."""
+        return self.tensor_values.unit
+
+    def histogram(self, component: str) -> Histogram:
+        """Return one signed tensor component as a GWexpy radial histogram."""
+        if not isinstance(component, str) or component not in _GG_COMPONENT_INDICES:
+            raise ValueError(f"component must be one of {tuple(_GG_COMPONENT_INDICES)}")
+        row, column = _GG_COMPONENT_INDICES[component]
+        return _raw_histogram(
+            np.asarray(self.tensor_values[:, row, column].value),
+            self.radial_edges_m,
+            unit=self.unit,
+            name=f"gravity_gradient target={self.target_id} component={component}",
+            underflow=float(self.underflow_tensor[row, column].value),
+            overflow=float(self.overflow_tensor[row, column].value),
+        )
 
 
 @dataclass(frozen=True, eq=False)
@@ -201,6 +345,8 @@ def radial_histogram(
     bins: int | str | np.ndarray | u.Quantity = "auto",
     normalization: str = "none",
     frame: Frame | None = None,
+    norm: str | None = None,
+    softening_m: float = 0.0,
 ) -> RadialHistogramResult:
     """Aggregate a source contribution quantity in distance bins.
 
@@ -209,7 +355,10 @@ def radial_histogram(
     Intensive quantities such as ``density_over_r2`` are multiplied by their
     verified source-cell volumes before binning. Fixed aliases from the
     source-quantity registry resolve to canonical IDs. Distances and ratios
-    use the unsoftened Euclidean radius.
+    use the unsoftened Euclidean radius. ``gravity_gradient_kernel_norm``
+    requires ``norm="frobenius"`` or ``norm="spectral"``; each source kernel
+    is normed before radial grouping. Its kernel uses ``softening_m`` while
+    radial bin membership continues to use the unsoftened radius.
 
     The raw ``histogram`` stores integrated finite-bin and flow contributions
     in the integrated quantity's unit. ``values`` uses one of four normalizations:
@@ -229,14 +378,32 @@ def radial_histogram(
     source_kwargs = {"frame": frame}
     if spec.target_dependent:
         source_kwargs["target_id"] = target_id
-    source_data = source_quantity_data(setup, quantity, **source_kwargs)
-    distance_data = source_quantity_data(
-        setup, "distance", target_id=target_id, frame=frame
+    source_data = source_quantity_data(
+        setup,
+        quantity,
+        norm=norm,
+        softening_m=softening_m,
+        **source_kwargs,
     )
     values = np.asarray(source_data.values, dtype=np.float64)
-    radii = np.asarray(distance_data.values, dtype=np.float64)
+    if spec.requires_kernel_norm:
+        assert source_data.radial_distance_m is not None
+        radii = np.asarray(source_data.radial_distance_m, dtype=np.float64)
+        radial_target_id = source_data.target_id
+        radial_target_xyz_m = source_data.target_xyz_m
+        radial_frame = source_data.frame
+        radial_source_index = source_data.source_index
+    else:
+        distance_data = source_quantity_data(
+            setup, "distance", target_id=target_id, frame=frame
+        )
+        radii = np.asarray(distance_data.values, dtype=np.float64)
+        radial_target_id = distance_data.target_id
+        radial_target_xyz_m = distance_data.target_xyz_m
+        radial_frame = distance_data.frame
+        radial_source_index = distance_data.source_index
     if values.shape != radii.shape or not np.array_equal(
-        source_data.source_index, distance_data.source_index
+        source_data.source_index, radial_source_index
     ):
         raise ValueError("source contribution and radial distance arrays do not align")
     if not (np.isfinite(values).all() and np.isfinite(radii).all()):
@@ -284,7 +451,11 @@ def radial_histogram(
         raw_values,
         edges,
         unit=integrated_unit,
-        name=f"{spec.canonical} target={distance_data.target_id}",
+        name=(
+            f"{spec.canonical} norm={source_data.kernel_norm} target={radial_target_id}"
+            if spec.requires_kernel_norm
+            else f"{spec.canonical} target={radial_target_id}"
+        ),
         underflow=underflow,
         overflow=overflow,
     )
@@ -312,11 +483,150 @@ def radial_histogram(
         normalization_total=u.Quantity(
             np.array(normalization_total), unit=integrated_unit, copy=True
         ),
-        target_id=distance_data.target_id,
-        target_xyz_m=distance_data.target_xyz_m,
-        frame=distance_data.frame,
+        target_id=radial_target_id,
+        target_xyz_m=radial_target_xyz_m,
+        frame=radial_frame,
         domain=domain,
         source_index=source_data.source_index,
+        norm=source_data.kernel_norm,
+        softening_m=source_data.softening_m,
+    )
+
+
+def gravity_gradient_radial_histogram(
+    setup: EvaluationSetup | ResolvedEvaluation,
+    *,
+    target_id: str | None = None,
+    bins: int | str | np.ndarray | u.Quantity = "auto",
+    softening_m: float | None = None,
+) -> GravityGradientRadialHistogramResult:
+    """Sum the signed static gravity-gradient tensor in distance bins.
+
+    Each source term is evaluated by the established point gravity-gradient
+    kernel with its Plummer softening and physical mass weight. Bin membership
+    uses the unsoftened Euclidean source-target distance. The result retains
+    all nine signed tensor components, including underflow and overflow.
+    """
+    from gragra._plotting._source_field import (
+        _BLOCK_SIZE,
+        _check_static_physical_precision,
+        _static_source_values,
+    )
+    from gragra._plotting._source_quantities import source_quantity_data
+    from gragra.observables._source_terms import iter_point_observable_source_terms
+
+    source_data = _static_source_values(
+        setup,
+        "gravity_gradient_contribution",
+        target_id=target_id,
+        aggregation="sum",
+        softening_m=softening_m,
+        norm=None,
+    )
+    _check_static_physical_precision(source_data, "gravity_gradient")
+    if (
+        source_data.target_id is None
+        or source_data.target_xyz_m is None
+        or source_data.physical_weights is None
+    ):
+        raise RuntimeError("static gravity-gradient source data lack target context")
+    target_id_value = source_data.target_id
+    difference = source_data.positions_m - source_data.target_xyz_m
+    with np.errstate(over="ignore", invalid="ignore"):
+        squared_radii = np.sum(difference * difference, axis=1)
+    stable_radii = np.hypot.reduce(difference, axis=1)
+    distance_requires_stable_norm = ~np.isfinite(squared_radii) | (
+        squared_radii < np.finfo(np.float64).tiny
+    )
+    if source_data.softening_m > 0.0 and np.any(distance_requires_stable_norm):
+        radii = stable_radii
+    else:
+        distance_data = source_quantity_data(
+            setup,
+            "distance",
+            target_id=target_id_value,
+            frame=source_data.frame,
+        )
+        if not np.array_equal(distance_data.source_index, source_data.source_index):
+            raise ValueError("source positions and radial distances do not align")
+        radii = np.asarray(distance_data.values, dtype=np.float64)
+    if not np.isfinite(radii).all():
+        raise ValueError("source-target distances must be finite")
+    edges = _resolve_edges(bins, radii, u.m)
+    membership, group_ids = source_radial_membership(radii.reshape(1, -1), edges)
+    expected_group_count = len(edges) + 1
+    if len(group_ids) != expected_group_count:
+        raise RuntimeError("radial membership returned an unexpected group layout")
+
+    grouped = np.zeros((expected_group_count, 3, 3), dtype=np.float64)
+    total = np.zeros((3, 3), dtype=np.float64)
+    grouped_flat = grouped.reshape(expected_group_count, 9)
+    total_flat = total.reshape(9)
+    for source_slice, terms in iter_point_observable_source_terms(
+        source_data.positions_m,
+        source_data.physical_weights,
+        source_data.target_xyz_m.reshape(1, 3),
+        observable="gravity_gradient",
+        softening_m=source_data.softening_m,
+        chunk_size=_BLOCK_SIZE,
+    ):
+        block = np.asarray(terms[0], dtype=np.float64)
+        if not np.isfinite(block).all():
+            raise ValueError("gravity-gradient source terms must be finite")
+        block_flat = block.reshape(len(block), 9)
+        block_membership = membership[0, source_slice]
+        for component_index in range(9):
+            np.add.at(
+                grouped_flat[:, component_index],
+                block_membership,
+                block_flat[:, component_index],
+            )
+            np.add.at(
+                total_flat[component_index : component_index + 1],
+                np.zeros(len(block), dtype=np.intp),
+                block_flat[:, component_index],
+            )
+
+    if not np.isfinite(grouped).all() or not np.isfinite(total).all():
+        raise ValueError("aggregated gravity-gradient tensors must be finite")
+    unit = source_data.unit
+    underflow = grouped[0]
+    overflow = grouped[-1]
+    finite = grouped[1:-1]
+    target_xyz = np.asarray(source_data.target_xyz_m, dtype=np.float64)
+    metadata = {
+        "quantity": "gravity_gradient_contribution",
+        "metric_definition": (
+            "G times the source-mass-weighted signed sum of the point "
+            "gravity-gradient tensor within each geometric distance group"
+        ),
+        "component_order": tuple(_GG_COMPONENT_INDICES),
+        "unit": unit.to_string(),
+        "target_id": source_data.target_id,
+        "target_xyz_m": tuple(float(value) for value in target_xyz),
+        "frame": source_data.frame.name,
+        "coordinate_origin_m": tuple(
+            float(value) for value in source_data.coordinate_origin_m
+        ),
+        "radial_edges_m": tuple(float(value) for value in edges),
+        "group_ids": tuple(group_ids),
+        "radial_distance_definition": "unsoftened Euclidean source-target distance",
+        "softening_m": source_data.softening_m,
+        "softening_kernel": "existing Plummer-softened point gravity-gradient kernel",
+        "source_index": tuple(int(value) for value in source_data.source_index),
+    }
+    return GravityGradientRadialHistogramResult(
+        tensor_values=u.Quantity(finite, unit=unit, copy=True),
+        underflow_tensor=u.Quantity(underflow, unit=unit, copy=True),
+        overflow_tensor=u.Quantity(overflow, unit=unit, copy=True),
+        total_tensor=u.Quantity(total, unit=unit, copy=True),
+        radial_edges_m=edges,
+        target_id=source_data.target_id,
+        target_xyz_m=target_xyz,
+        frame=source_data.frame,
+        source_index=source_data.source_index,
+        softening_m=source_data.softening_m,
+        metadata=metadata,
     )
 
 
@@ -357,8 +667,10 @@ def dynamic_radial_histogram(
     underflow, finite distance bins, and overflow. Frequency-resolved
     quantities require one exact ``frequency_hz``. RMS amplitude fraction
     instead requires ``frequency_weights`` and may combine compatible results
-    using ``direction_weights``. A Histogram stores real values, so cumulative
-    complex responses are selected as real and imaginary parts separately.
+    using ``direction_weights``. Interference share may also combine compatible
+    directional results; its cross term and total power are averaged before
+    the ratio is formed. A Histogram stores real values, so cumulative complex
+    responses are selected as real and imaginary parts separately.
     """
     from gragra._plotting._source_contracts import SourceContributionResult
 
@@ -399,15 +711,9 @@ def dynamic_radial_histogram(
     if tuple(data.group_ids) != expected_group_ids:
         raise ValueError("dynamic radial groups do not match their stored bin edges")
 
-    for candidate in results[1:]:
-        candidate_data = candidate._data
-        if (
-            candidate_data.group_ids != data.group_ids
-            or candidate_data.radial_edges_m is None
-            or not np.array_equal(candidate_data.radial_edges_m, edges)
-        ):
-            raise ValueError("direction results must have identical radial groups")
-
+    statistics: ContributionStatistics | DirectionalContributionStatistics
+    directional_statistics: DirectionalContributionStatistics | None = None
+    normalized_direction_weights: tuple[float, ...] | None = None
     if quantity == "rms_amplitude_fraction":
         if frequency_hz is not None:
             raise ValueError(
@@ -434,11 +740,46 @@ def dynamic_radial_histogram(
                 direction_weights=direction_weights,
                 frequency_weights=frequency_weights,
             )
+            directional_statistics = statistics
         frequency_index = None
         selected_frequency = None
+    elif quantity == "interference_share":
+        if frequency_weights is not None:
+            raise ValueError("frequency_weights apply only to rms_amplitude_fraction")
+        if frequency_hz is None:
+            raise ValueError(f"{quantity} requires frequency_hz")
+        if len(results) > 1 and direction_weights is None:
+            raise ValueError("multiple direction results require direction_weights")
+        frequency = _frequency_hz(frequency_hz)
+        matches = np.flatnonzero(data.frequencies_hz == frequency)
+        if len(matches) != 1:
+            raise ValueError(
+                "frequency_hz must exactly match one stored frequency; "
+                f"got {frequency:g} Hz"
+            )
+        frequency_index = int(matches[0])
+        selected_frequency = frequency
+        if direction_weights is None:
+            from gragra._plotting._dynamic_contribution import (
+                contribution_statistics,
+            )
+
+            statistics = contribution_statistics(reference)
+        else:
+            from gragra._plotting._dynamic_contribution import (
+                directional_contribution_statistics,
+            )
+
+            statistics = directional_contribution_statistics(
+                results, direction_weights=direction_weights
+            )
+            directional_statistics = statistics
     else:
         if len(results) != 1:
-            raise ValueError("only rms_amplitude_fraction accepts multiple results")
+            raise ValueError(
+                "multiple results are supported only for rms_amplitude_fraction "
+                "and interference_share"
+            )
         if frequency_hz is None:
             raise ValueError(f"{quantity} requires frequency_hz")
         if frequency_weights is not None or direction_weights is not None:
@@ -461,6 +802,15 @@ def dynamic_radial_histogram(
             )
 
             statistics = contribution_statistics(reference)
+
+    if directional_statistics is not None:
+        assert direction_weights is not None
+        from gragra._plotting._dynamic_contribution import _direction_weights
+
+        normalized_direction_weights = tuple(
+            float(value)
+            for value in _direction_weights(direction_weights, len(results))
+        )
 
     if target_id is None:
         if len(data.target_ids) != 1:
@@ -566,7 +916,12 @@ def dynamic_radial_histogram(
     direction_tuple = _weight_tuple(direction_weights)
     metadata = {
         "quantity": quantity,
-        "metric_definition": _dynamic_metric_definition(quantity),
+        "metric_definition": (
+            "ratio of the direction-weighted mean group-total cross term to the "
+            "direction-weighted mean total response power"
+            if quantity == "interference_share" and directional_statistics is not None
+            else _dynamic_metric_definition(quantity)
+        ),
         "target_id": target_id,
         "target_xyz_m": tuple(float(value) for value in data.targets_m[target_index]),
         "component": component,
@@ -574,6 +929,7 @@ def dynamic_radial_histogram(
         "frequencies_hz": tuple(float(value) for value in data.frequencies_hz),
         "frequency_weights": weight_tuple,
         "direction_weights": direction_tuple,
+        "normalized_direction_weights": normalized_direction_weights,
         "radial_edges_m": tuple(float(value) for value in edges),
         "group_ids": tuple(data.group_ids),
         "frame": data.frame,

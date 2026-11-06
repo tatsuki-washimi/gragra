@@ -8,6 +8,8 @@ discrete source setups, geometric shapes, and calculation results:
   diagnostics as a GWexpy `Histogram` or step plot.
 - `radial_histogram`: Integrate registered scalar source quantities in distance
   bins and retain raw flows alongside finite-bin normalized values.
+- `gravity_gradient_radial_histogram`: Sum all signed components of the static
+  gravity-gradient tensor by distance, retaining underflow and overflow.
 - `source_field` and `source_field_result`: Map source-position values or
   responses onto explicit three-dimensional cells while retaining every axis
   and vector/tensor component.
@@ -25,7 +27,9 @@ discrete source setups, geometric shapes, and calculation results:
 ## Histograms (`hist` and `plot_hist`)
 
 The quantities are `density` (kg/m^3), `height` (the z coordinate in `frame`),
-`distance` (r from one target), `inverse_r` (1/r), `inverse_square` (1/r^2),
+`distance` (r from one target), `inverse_r` (1/r), `inverse_square` (1/r^2,
+alias `r^-2`, unit m^-2), `gravity_gradient_kernel_norm` (per-source G-free GG
+tensor norm, unit m^-3; select `norm="frobenius"` or `norm="spectral"`),
 `inverse_cube` (1/r^3), `density_over_r` through `density_over_r3` (ρ/r through
 ρ/r^3), and `mass_over_r3`. Distance-based quantities require one target.
 `weight="count"` counts elements, and `weight="volume"` sums their volumes in
@@ -81,8 +85,9 @@ such as `density_over_r2` are multiplied by each source's verified cell volume
 before summation; for example, the result has units kg/m². A volume is required
 for intensive quantities and is never inferred from point-source mass weights.
 The fixed alias table accepts documented spellings such as `dm/r^2` and
-`dm/r^3`; it does not evaluate arbitrary expressions. Distances are geometric
-and remain unsoftened, even if an evaluation used physical softening.
+`dm/r^3`; `dm/r^2` has unit kg m^-2. The table does not evaluate arbitrary
+expressions. Distances are geometric and remain unsoftened, even if an
+evaluation used physical softening.
 
 The result separates two views of the same bins. `result.histogram` is an
 un-normalized GWexpy `Histogram` with finite-bin values, underflow, and
@@ -125,6 +130,55 @@ divides those raw cumulative values by the signed all-source denominator.
 Direct histogram construction does not define `sumw2`, covariance, or
 statistical uncertainty.
 
+## Static gravity-gradient tensor by distance
+
+`gravity_gradient_radial_histogram` sums the physical static GG tensor in each
+source-target distance group. For source position \(\mathbf r_i\), target
+position \(\mathbf r_T\), mass \(\Delta m_i\), and unsoftened radius \(r_i\),
+the zero-softening tensor is
+
+\[
+\boldsymbol{\Gamma}_j = G\sum_{i\in B_j}\Delta m_i
+\frac{3\hat{\mathbf n}_i\hat{\mathbf n}_i^{\mathsf T}-\mathbf I}{r_i^3},
+\qquad
+\hat{\mathbf n}_i = \frac{\mathbf r_i-\mathbf r_T}{r_i}.
+\]
+
+The result retains every signed component in the computation frame and uses
+units of s\(^{-2}\). `tensor_values` contains finite distance bins;
+`underflow_tensor`, `overflow_tensor`, and `total_tensor` contain the flow groups
+and the all-source sum. All are 3×3 tensors in s⁻², and the total satisfies
+\(\boldsymbol{\Gamma}_{\mathrm{total}} =
+\boldsymbol{\Gamma}_{\mathrm{underflow}} +
+\sum_j\boldsymbol{\Gamma}_j +
+\boldsymbol{\Gamma}_{\mathrm{overflow}}\). `histogram(component)` returns one
+component, such as `"xx"` or `"yz"`, as a GWexpy `Histogram` with the same
+flows.
+
+```python
+from gragra.plotting import gravity_gradient_radial_histogram
+
+gg = gravity_gradient_radial_histogram(
+    setup,
+    target_id="A",
+    bins=[0.0, 5.0, 10.0, 20.0],
+    softening_m=0.25,
+)
+xx_histogram = gg.histogram("xx")
+total_tensor = gg.total_tensor
+```
+
+Bin membership uses the unsoftened Euclidean radius. `softening_m` changes the
+existing Plummer gravity-gradient kernel only. A softened source at radius zero
+is assigned to the bin containing zero; without softening, the existing
+point-kernel collision check raises an error. Internal edges belong to the bin
+on their right, and the final right edge belongs to the last finite bin.
+
+This is a signed tensor sum. It preserves component cancellation before any
+norm is taken, so the norm of `total_tensor` differs from the sum of per-source
+tensor norms. `radial_histogram(..., "GG_kernel_norm", norm=...)` keeps its
+existing G-free per-source norm definition.
+
 ## Source-position fields
 
 `source_field` and `source_field_result` place source values at physical
@@ -141,10 +195,13 @@ axes unless `spatial_projection` requests an XY, XZ, or YZ projection.
 Static source quantities include `distance`/`r`, `inverse_r`, `inverse_square`,
 `inverse_cube`/`1/r^3`, `density`, `density_over_r` through `density_over_r3`,
 and the additive `mass`, `mass_over_r`, `mass_over_r2`, and `mass_over_r3`
-quantities. The inverse-distance and density-over-distance quantities use the
-unsoftened geometric radius. `density` is the source density ρ only; it does
-not name a Newtonian kernel. Density selectors require an actual verified
-density and volume representation; they are not inferred from mass weights.
+quantities. `gravity_gradient_kernel_norm`/`GG_kernel_norm` selects the
+per-source norm of the G-free gravity-gradient tensor kernel and has unit
+m⁻³. It requires `norm="frobenius"` or `norm="spectral"`. The inverse-distance
+and density-over-distance quantities use the unsoftened geometric radius.
+`density` is the source density ρ only; it does not name a Newtonian kernel.
+Density selectors require an actual verified density and volume
+representation; they are not inferred from mass weights.
 
 Physical source terms are separate selectors. `acceleration_kernel` and
 `gravity_gradient_kernel` are G-free geometric kernels. Their physical
@@ -155,10 +212,15 @@ the physical terms use the existing Plummer kernel. The acceleration and
 gravity-gradient kernels are not replaced by a shortcut based on
 `1 / (r**2 + eps**2)`.
 
-`GG_kernel` selects the G-free gravity-gradient tensor kernel. `GG_xx`,
-`GG_xy`, and the other component aliases select a signed component of the
-physical gravity-gradient contribution and return a scalar field. The full
-`GG` selector continues to return all nine tensor components.
+`GG_kernel` selects the G-free gravity-gradient tensor kernel. `GG_kernel_norm`
+selects each source kernel norm before radial or spatial aggregation. For
+example, `source_field(..., "GG_kernel_norm", norm="frobenius")` sums the
+Frobenius norms of the source tensors in each cell. By contrast,
+`source_field(..., "GG_kernel", norm="frobenius")` norms the cell's summed
+tensor, so cancellation between source tensors is retained. `GG_xx`, `GG_xy`,
+and the other component aliases select a signed component of the physical
+gravity-gradient contribution and return a scalar field. The full `GG`
+selector continues to return all nine tensor components.
 
 Extensive values and physical contributions require `aggregation="sum"`.
 Intensive values require `aggregation="mean"` and use source volumes as
@@ -260,10 +322,11 @@ I_j = \frac{\operatorname{Re}(a_j\,\overline{a_{total}})}
            {|a_{total}|^2}.
 \]
 
-Interference shares may be negative or greater than one. Exact zero
-denominators produce a zero placeholder and a false validity mask; no epsilon
-is added. Group statistics are available as native matrices and as NumPy
-arrays only when the caller selects an explicit layout. The result fields are
+Interference shares are signed and dimensionless, and may be negative or
+greater than one. Exact zero denominators produce a zero placeholder and a
+false validity mask; no epsilon is added. Group statistics are available as
+native matrices and as NumPy arrays only when the caller selects an explicit
+layout. The result fields are
 `amplitude_share`, `phase_rad`, `cumulative_complex`, `interference_share`,
 and optional `rms`. For each frequency statistic, `series(group_id)` returns
 the group's native matrix, `validity(group_id)` returns its mask, and
@@ -309,11 +372,13 @@ The `quantity` selectors are `complex_real`, `complex_imag`, `amplitude`,
 `phase`, `amplitude_fraction`, `interference_share`, `cumulative_real`, and
 `cumulative_imag`. Real and imaginary values come from the complex sum within
 each radial group. `amplitude` is the magnitude of that sum, and `phase` is its
-argument. The fractions use `ContributionStatistics`: amplitude fraction
+argument. The fractions use `ContributionStatistics` for one result and
+`DirectionalContributionStatistics` for an ensemble. Amplitude fraction
 normalizes each group amplitude by the sum of amplitudes over all groups;
-interference share uses the complex correlation with the total response and
-can be negative or greater than one. The valid shares sum to one when their
-denominator is nonzero. Cumulative real and imaginary selectors separately
+interference share uses the complex correlation with the total response. It is
+signed and dimensionless, so it can be negative or greater than one. The valid
+shares sum to one when their denominator is nonzero. Cumulative real and
+imaginary selectors separately
 show the near-to-far cumulative complex response. Their histogram finite bins
 are cumulative values at each outer bin edge; underflow and overflow store the
 cumulative values at the corresponding radial boundaries.
@@ -331,6 +396,20 @@ used as supplied. For an ensemble of directions, pass a sequence of compatible
 radial results and `direction_weights`, which are normalized internally.
 RMS histograms have no single `frequency_hz`; their metadata retains the
 frequency and weight vectors used.
+
+The same compatible-result form is available for `interference_share`, with
+one exact `frequency_hz`. For each group it averages the group-total cross term
+and total response power over directions, then divides:
+
+\[
+S_j(f)=\frac{\sum_d p_d\,\operatorname{Re}[a_j(f,d)a_{\mathrm{tot}}^*(f,d)]}
+{\sum_d p_d\,|a_{\mathrm{tot}}(f,d)|^2}.
+\]
+
+The direction weights are normalized to sum to one. This is a ratio of
+direction-averaged terms, not the average of per-direction ratios. The
+`normalized_direction_weights` metadata records the weights used by the
+statistic.
 
 ```python
 import numpy as np
@@ -360,12 +439,41 @@ contributions = source_contributions(
     [[0.0, 0.0, 0.0]],
     radial_edges_m=[0.0, 5.0, 10.0],
 )
+direction_0 = contributions
+
+# Represent a second direction with the second source shifted by pi radians.
+second_phasors = DensityPhasors(
+    positions_m,
+    volumes_m3,
+    density_kg_m3 * np.array([1.0, -1.0]),
+    frequencies_hz,
+    0.0,
+    np.zeros(3),
+    "root",
+    np.zeros(3),
+    ("source-0", "source-1"),
+)
+direction_1 = source_contributions(
+    second_phasors,
+    "acceleration",
+    [[0.0, 0.0, 0.0]],
+    radial_edges_m=[0.0, 5.0, 10.0],
+)
 radial = dynamic_radial_histogram(
     contributions,
     "interference_share",
     target_id="target-0",
     frequency_hz=10.0,
     component="x",
+)
+
+directional_interference = dynamic_radial_histogram(
+    (direction_0, direction_1),
+    "interference_share",
+    target_id="target-0",
+    frequency_hz=10.0,
+    component="x",
+    direction_weights=[1.0, 1.0],
 )
 ```
 
