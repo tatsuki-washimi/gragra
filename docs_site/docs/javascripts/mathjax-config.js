@@ -15,6 +15,11 @@
  * woff-v2/ is found without any extra configuration.
  */
 window.MathJax = {
+  loader: {
+    /* boldsymbol is webpack'd into tex-mml-chtml.js; this registers the handler
+     * locally (no CDN) on first paint and after Material instant navigation. */
+    load: ["[tex]/boldsymbol"],
+  },
   tex: {
     /* AMS + boldsymbol: included in the vendored tex-mml-chtml bundle. Do not
      * add the separate ``bm`` TeX package here — it is not part of that

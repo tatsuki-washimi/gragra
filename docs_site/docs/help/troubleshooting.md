@@ -72,11 +72,13 @@ a bug:
 
 If your result is zero for a reason other than these two, check the six
 equivalence conditions in
-[kernel_contract.md §2.2](https://github.com/tatsuki-washimi/gragra/blob/main/docs/architecture/kernel_contract.md)
+[fields.md equivalence section](../guide/fields.md#equivalence-conditions-for-the-bulk-and-surface-forms)
 (closed manifold, consistent winding, verified outward normals, sign
 convention, bulk/surface geometric agreement, background-density
-truncation) before assuming a bug — a broken equivalence condition also
-produces a suspicious near-zero or exactly-zero residual.
+truncation) before assuming a bug. A broken equivalence condition can show
+up as a **large** mismatch or a misleadingly **small** one (not only near-zero
+residuals); compare the intended decomposition (dipole transfer vs bulk+surface
+mesh sum) documented on the Fields page.
 
 ### A result that changes with discretization
 
@@ -96,4 +98,5 @@ iterations. On the `numba` and `cpp` backends the execution is independent
 of `chunk_size`; on `numpy`, chunking accumulates intermediate partial sums
 and matches within float64 roundoff tolerance (typically `rtol ≤ 1e-13`).
 On `cupy` it becomes a VRAM tiling parameter and relaxes to a device/kernel
-tolerance — see [Chunking, softening and tolerances](../concepts/numerics.md).
+tolerance — see
+[Chunking, softening and tolerances](../concepts/numerics.md).
