@@ -566,16 +566,21 @@ def fig_plot_result_spectrum_and_phase() -> None:
         result, observable="acceleration", component="x", view="spectrum", part="phase"
     )
 
-    # R02: Mask phase values where amplitude is zero / below numerical solver tolerance.
-    # The pure harmonic circular motion has physical acceleration amplitude only at 1 Hz
-    # (~2.00e-10 m/s^2); other orders (0, 2, 3 Hz) are numerical noise (~1e-26 m/s^2),
-    # well below the solver atol (~6.67e-20 m/s^2). A mathematical phase is undefined
-    # for zero amplitude, so we mask these sub-tolerance residuals with NaN.
+    # R02: Mask phase values where amplitude is zero / below numerical tolerance.
+    # The pure harmonic circular motion has physical acceleration amplitude only
+    # at 1 Hz (~2.00e-10 m/s^2); other orders (0, 2, 3 Hz) have exact zero
+    # amplitude in theory, yielding only numerical quadrature residuals
+    # (~1e-26 m/s^2), well below solver atol (~6.67e-20 m/s^2).
+    # Since phase is mathematically undefined for zero amplitude, we mask
+    # sub-tolerance residuals with NaN. We set phase_mask_threshold = 1e-15 m/s^2:
+    # 1) Robustly above solver atol (~6.67e-20 m/s^2) by a factor of ~1.5e4.
+    # 2) Robustly below physical signal (~2.00e-10 m/s^2) by a factor of ~2e5.
     matrix = np.asarray(result.acceleration.value[0, 0, :])
     magnitudes = np.abs(matrix)
-    atol_threshold = 1e-15  # well above solver residual (~1e-26) and atol (~6.7e-20)
+    # Threshold sits safely between atol (~6.7e-20) and physical peak (~2.0e-10).
+    phase_mask_threshold = 1e-15
     line = ax_phase.lines[0]
-    y_data = np.where(magnitudes >= atol_threshold, line.get_ydata(), np.nan)
+    y_data = np.where(magnitudes >= phase_mask_threshold, line.get_ydata(), np.nan)
     line.set_ydata(y_data)
     ax_phase.set_title(
         ax_phase.get_title() + "\n(zero amplitude masked)",
