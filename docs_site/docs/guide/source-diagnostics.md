@@ -107,12 +107,12 @@ Vertical axis is m³; multiply by local $\rho$ if you need kg per bin.*
 - `view="xz"` is an **orthographic scatter** of source $(x,z)$; it does **not** integrate over $y$.
   Y-integrated extensive fields use `source_field(..., spatial_projection="xz")`.
 
-Figure-quality setup: $\sim 240$ volume elements on an $8\times6\times5$ jittered grid, target **A**
+Figure-quality setup: $\sim 240$ volume elements on a $15\times2\times8$ jittered grid, target **A**
 at $(-5,-3,1.5)$ m.
 
-![XZ scatter of kernel_norm (1/r², m⁻²)](../assets/guide/source-diagnostics/map_xz_kernel_norm.svg)
+![XZ scatter of kernel_norm (1/r², m⁻²)](../assets/guide/source-diagnostics/map_xz_kernel_norm.svg){ width="100%" }
 
-![XZ scatter of signed Δa_x (m/s²)](../assets/guide/source-diagnostics/map_xz_delta_a_x.svg)
+![XZ scatter of signed Δa_x (m/s²)](../assets/guide/source-diagnostics/map_xz_delta_a_x.svg){ width="100%" }
 
 ```python
 from gragra.plotting import plot_map
@@ -128,9 +128,9 @@ $Y$ into each $(x,z)$ cell (full $y$ extent, not a thin slab). Intensive quantit
 by verified cell volume before binning.
 
 Example: **420** point masses in a $28\times18\times11$ m cloud, $\sum \Delta m/r^2$ [kg/m²] at the
-origin target (see figure caption in the SVG).
+origin target (log scale; zero cells masked; see figure caption in the SVG).
 
-![Y-integrated Σ Δm/r² on an XZ grid (kg/m²)](../assets/guide/source-diagnostics/source_field_mass_over_r2_xz_sum.svg)
+![Y-integrated Σ Δm/r² on an XZ grid (kg/m²; log scale, zero cells masked)](../assets/guide/source-diagnostics/source_field_mass_over_r2_xz_sum.svg){ width="100%" }
 
 ```python
 import numpy as np
@@ -164,7 +164,7 @@ F_j = \frac{W_j}{\sum_i W_i}.
 
 This is **not** `fraction_per_length` (which also divides by bin width). Do not confuse the two.
 
-![Radial fraction of integrated Δm/r²](../assets/guide/source-diagnostics/radial_mass_over_r2_fraction.svg)
+![Radial fraction of integrated Δm/r²](../assets/guide/source-diagnostics/radial_mass_over_r2_fraction.svg){ width="100%" }
 
 ```python
 from gragra.plotting import plot_hist, radial_histogram
@@ -197,7 +197,7 @@ forward trace (figure annotates the total trace).
 
 $\|\sum_j \boldsymbol{\Gamma}_j\|_{\mathrm F}$ differs from $\sum_j \|\boldsymbol{\Gamma}_j\|_{\mathrm F}$.
 
-![GG_xx, yy, zz by distance (signed)](../assets/guide/source-diagnostics/radial_gg_components_signed.svg)
+![GG_xx, yy, zz by distance (signed)](../assets/guide/source-diagnostics/radial_gg_components_signed.svg){ width="100%" }
 
 ```python
 from gragra.plotting import gravity_gradient_radial_histogram
@@ -214,13 +214,13 @@ total_tensor = gg.total_tensor
 `plot_contribution_hist` bins **per-element** $\Delta\mathbf{a}_i$ scalars (norm or component);
 axis units are m/s², not distance.
 
-![Histogram of signed Δa_x contributions](../assets/guide/source-diagnostics/contribution_hist_delta_a_x.svg)
+![Histogram of signed Δa_x contributions](../assets/guide/source-diagnostics/contribution_hist_delta_a_x.svg){ width="100%" }
 
 `plot_cumulative_contribution` forms the cumulative **vector** $\mathbf{a}(<R)=\sum_{r_i\le R}\Delta\mathbf{a}_i$
 and, by default, plots $\|\mathbf{a}(<R)\|_2$, **not** $\sum_{r_i\le R}\|\Delta\mathbf{a}_i\|_2$.
 Directional cancellation can make the curve non-monotonic.
 
-![Cumulative acceleration norm vs distance](../assets/guide/source-diagnostics/cumulative_norm.svg)
+![Cumulative acceleration norm vs distance](../assets/guide/source-diagnostics/cumulative_norm.svg){ width="100%" }
 
 ```python
 from gragra.plotting import plot_contribution_hist, plot_cumulative_contribution
@@ -246,7 +246,7 @@ which is generally **not** the weighted mean of per-direction ratios
 $\operatorname{Re}(a_j a_{\mathrm{tot}}^*)/|a_{\mathrm{tot}}|^2$. Negative $I_j$ indicates
 destructive interference (synthetic complex densities in the figure).
 
-![Direction-averaged $I_j$ vs weighted mean of per-direction ratios (12 Hz and 24 Hz)](../assets/guide/source-diagnostics/dynamic_interference_share_x.svg)
+![Direction-averaged $I_j$ vs weighted mean of per-direction ratios (12 Hz and 24 Hz)](../assets/guide/source-diagnostics/dynamic_interference_share_x.svg){ width="100%" }
 
 Solid: direction-averaged $I_j(f)$ from `dynamic_radial_histogram`; dashed: weighted mean of
 $\operatorname{Re}(a_j a_{\mathrm{tot}}^*)/|a_{\mathrm{tot}}|^2$ computed **per direction**
@@ -270,20 +270,21 @@ densities (kg/m³); see `fig_dynamic_interference()` for parameters.
 `observable` selects potential, acceleration, or gravity gradient; `component` selects `norm`,
 `x`, …, or tensor entry; `part` applies only to **complex** spectral data.
 
-Static field: **41×41** targets in the $xy$ plane, 800 kg point mass at $(1.5,-1,0)$ m.
+Static field: **41×41** targets in the $xy$ plane, 800 kg point mass at $(1.5,-1,3)$ m.
 
-![Acceleration norm on a 41×41 grid](../assets/guide/source-diagnostics/plot_result_static_field_xy.svg)
+![Acceleration norm on a 41×41 grid (source at z = 3 m)](../assets/guide/source-diagnostics/plot_result_static_field_xy.svg){ width="100%" }
 
 Time series: 200 samples, $\Delta t=0.05$ s, harmonic $x(t)$ plus drift for a moving 5 kg source.
 
-![Acceleration time series (target A, x component)](../assets/guide/source-diagnostics/plot_result_time_series.svg)
+![Acceleration time series (target A, x component)](../assets/guide/source-diagnostics/plot_result_time_series.svg){ width="100%" }
 
 Spectrum: circular motion Fourier series; amplitude and phase of $a_x(f)$ share the same
-frequency grid (`tref` from the evaluation).
+frequency grid (`tref` from the evaluation). Phases of zero-amplitude (sub-tolerance)
+components are masked.
 
-![Fourier amplitude spectrum](../assets/guide/source-diagnostics/plot_result_spectrum_magnitude.svg)
+![Fourier amplitude spectrum](../assets/guide/source-diagnostics/plot_result_spectrum_magnitude.svg){ width="100%" }
 
-![Fourier phase spectrum](../assets/guide/source-diagnostics/plot_result_spectrum_phase.svg)
+![Fourier phase spectrum (zero amplitude masked)](../assets/guide/source-diagnostics/plot_result_spectrum_phase.svg){ width="100%" }
 
 ```python
 from gragra.gravity_sources import PointMassCloud, point_sum, rigid_motion

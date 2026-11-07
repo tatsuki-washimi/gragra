@@ -28,6 +28,10 @@ RADIAL_BINS_M = [0.0, 6.0, 12.0, 20.0, 35.0]
 
 if TYPE_CHECKING:
     from gragra.evaluation import EvaluationSetup
+    from gragra.geometry import Frame
+    from gragra.gravity_sources import VolumeElementSource
+    from gragra.results import GravityFieldDefinition
+    from gragra.targets import TargetPoints
 
 
 def _setup_mpl() -> None:
@@ -36,7 +40,9 @@ def _setup_mpl() -> None:
     matplotlib.use("Agg")
 
 
-def _tutorial_volume_setup() -> tuple:
+def _tutorial_volume_setup() -> tuple[
+    EvaluationSetup, VolumeElementSource, Frame, GravityFieldDefinition, TargetPoints
+]:
     """Four volume elements for short guide snippets (minimal element count)."""
     from astropy import units as u
 
@@ -66,8 +72,10 @@ def _tutorial_volume_setup() -> tuple:
     return setup, source, root, field, targets
 
 
-def _rich_volume_setup() -> tuple:
-    """~240 volume elements over a 3D grid (figure-quality spatial spread)."""
+def _rich_volume_setup() -> tuple[
+    EvaluationSetup, VolumeElementSource, Frame, GravityFieldDefinition, TargetPoints
+]:
+    """~240 volume elements over a 3D grid (15x2x8 figure-quality spatial spread)."""
     from astropy import units as u
 
     from gragra.geometry import Frame
@@ -76,9 +84,9 @@ def _rich_volume_setup() -> tuple:
     from gragra.targets import TargetPoints
 
     rng = np.random.default_rng(17)
-    nx, ny, nz = 8, 6, 5
+    nx, ny, nz = 15, 2, 8
     xs = np.linspace(-18.0, 18.0, nx)
-    ys = np.linspace(-12.0, 12.0, ny)
+    ys = np.linspace(-10.0, 10.0, ny)
     zs = np.linspace(-8.0, 8.0, nz)
     xx, yy, zz = np.meshgrid(xs, ys, zs, indexing="ij")
     positions = np.column_stack([xx.ravel(), yy.ravel(), zz.ravel()])
@@ -124,7 +132,9 @@ def fig_map_xz_delta_a_x() -> None:
 
 
 def fig_radial_mass_over_r2() -> None:
-    """Radial :math:`\\Delta m/r^2` with ``normalization=\"fraction\"`` (bin fraction)."""
+    """Radial :math:`\\Delta m/r^2` with ``normalization=\"fraction\"``
+    (bin fraction).
+    """
     from gragra.plotting import plot_hist, radial_histogram
 
     setup, _, _, _, _ = _rich_volume_setup()
@@ -154,19 +164,23 @@ def fig_gg_components() -> None:
         bins=RADIAL_BINS_M,
         softening_m=0.0,
     )
-    fig, axes = plt.subplots(1, 3, figsize=(12.0, 4.0), sharex=True)
+    fig, axes = plt.subplots(3, 1, figsize=(8.0, 8.5), sharex=True)
     total = gg.total_tensor.value
     trace = float(total[0, 0] + total[1, 1] + total[2, 2])
     for ax, comp in zip(axes, ("xx", "yy", "zz"), strict=True):
         h = gg.histogram(comp)
-        ax.stairs(h.values.value, h.edges.value)
-        ax.set_ylabel(f"GG_{comp} [{h.unit.to_string()}]")
-        ax.set_xlabel(f"distance [{h.xunit.to_string()}]")
-        ax.set_title(f"$\\Gamma_{{{comp}{comp}}}$ by distance (signed)")
+        ax.stairs(h.values.value, h.edges.value, color="#1f77b4", linewidth=1.5)
+        ax.axhline(0.0, color="0.5", linewidth=0.8, linestyle=":")
+        ax.grid(True, linestyle=":", alpha=0.5)
+        ax.set_ylabel(f"GG_{comp} [{h.unit.to_string()}]", fontsize=10)
+        ax.set_title(f"$\\Gamma_{{{comp}}}$ by distance (signed)", fontsize=11)
+        ax.tick_params(labelsize=9)
+    axes[-1].set_xlabel(f"distance [{h.xunit.to_string()}]", fontsize=10)
     fig.suptitle(
         f"Static GG components (target A, softening=0); "
         f"tr($\\Gamma$)={trace:.3g} s$^{{-2}}$",
-        y=1.02,
+        y=0.99,
+        fontsize=12,
     )
     fig.tight_layout()
     fig.savefig(OUT_DIR / "radial_gg_components_signed.svg", bbox_inches="tight")
@@ -190,6 +204,7 @@ def fig_contribution_and_cumulative() -> None:
 def fig_source_field_mass_over_r2_xz_sum() -> None:
     import matplotlib.pyplot as plt
     from astropy import units as u
+    from matplotlib.colors import LogNorm
 
     from gragra.geometry import Frame
     from gragra.gravity_sources import PointMassCloud, point_sum
@@ -200,10 +215,8 @@ def fig_source_field_mass_over_r2_xz_sum() -> None:
     rng = np.random.default_rng(9)
     n = 420
     positions = rng.uniform([-14.0, -9.0, -5.0], [14.0, 9.0, 6.0], size=(n, 3))
-    masses = (
-        1.5
-        + 6.0 * (0.5 + 0.5 * np.sin(positions[:, 0] / 5.0))
-        * (0.5 + 0.5 * np.cos(positions[:, 2] / 3.5))
+    masses = 1.5 + 6.0 * (0.5 + 0.5 * np.sin(positions[:, 0] / 5.0)) * (
+        0.5 + 0.5 * np.cos(positions[:, 2] / 3.5)
     )
     root = Frame("sf_root")
     field = GravityFieldDefinition.source_field(
@@ -228,11 +241,17 @@ def fig_source_field_mass_over_r2_xz_sum() -> None:
     xc = 0.5 * (x_edges[:-1] + x_edges[1:])
     zc = 0.5 * (z_edges[:-1] + z_edges[1:])
     fig, ax = plt.subplots(figsize=(7.5, 5.5))
-    im = ax.pcolormesh(xc, zc, xz.T, shading="auto", cmap="viridis")
+    xz_masked = np.ma.masked_equal(xz, 0.0)
+    cmap = plt.get_cmap("viridis").copy()
+    cmap.set_bad(color="#f0f0f0")
+    norm = LogNorm(vmin=1e-2, vmax=10.0)
+    im = ax.pcolormesh(xc, zc, xz_masked.T, shading="auto", cmap=cmap, norm=norm)
     ax.set_xlabel(r"$x$ [m]")
     ax.set_ylabel(r"$z$ [m]")
     ax.set_title(
-        rf"Y-integrated $\sum \Delta m/r^2$ ({n} point masses, target at origin)"
+        rf"Y-integrated $\sum \Delta m/r^2$ ({n} point masses)"
+        + "\n(log scale; zero cells masked)",
+        fontsize=11,
     )
     ax.set_aspect("equal")
     cbar = fig.colorbar(im, ax=ax)
@@ -248,14 +267,16 @@ def _weighted_mean_direction_interference_ratios(
     target_id: str,
     frequency_hz: float,
     component: str,
-) -> tuple[np.ndarray, np.ndarray, tuple]:
+) -> tuple[np.ndarray, np.ndarray, tuple[str, ...]]:
     """Per-group weighted mean of single-direction interference_share ratios."""
     from gragra._plotting._dynamic_contribution import (
         _direction_weights,
         contribution_statistics,
     )
 
-    weights = np.asarray(_direction_weights(direction_weights, len(results)), dtype=np.float64)
+    weights = np.asarray(
+        _direction_weights(direction_weights, len(results)), dtype=np.float64
+    )
     reference = results[0]
     data = reference._data
     frequency_index = int(np.flatnonzero(data.frequencies_hz == frequency_hz)[0])
@@ -272,7 +293,9 @@ def _weighted_mean_direction_interference_ratios(
             sample = stats.interference_share.to_array(
                 group_id=group_id, layout="sample_first"
             )
-            value = float(np.real(sample[frequency_index, target_index, component_index]))
+            value = float(
+                np.real(sample[frequency_index, target_index, component_index])
+            )
             is_valid = bool(
                 stats.interference_share.validity(group_id).to_array(
                     layout="sample_first"
@@ -346,7 +369,7 @@ def fig_dynamic_interference() -> None:
     )
     direction_weights = [1.0, 2.0]
     results = (r_a, r_b)
-    fig, axes = plt.subplots(1, 2, figsize=(12.0, 5.0), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11.0, 5.0), sharey=True)
     for ax, f_hz in zip(axes, (12.0, 24.0), strict=True):
         dyn = dynamic_radial_histogram(
             results,
@@ -359,12 +382,14 @@ def fig_dynamic_interference() -> None:
         h = dyn.histogram
         i_dir = np.where(dyn.valid, h.values.value, np.nan)
 
-        wmean_all, wmean_valid, group_ids = _weighted_mean_direction_interference_ratios(
-            results,
-            direction_weights,
-            target_id="target-0",
-            frequency_hz=f_hz,
-            component="x",
+        wmean_all, wmean_valid, group_ids = (
+            _weighted_mean_direction_interference_ratios(
+                results,
+                direction_weights,
+                target_id="target-0",
+                frequency_hz=f_hz,
+                component="x",
+            )
         )
         finite_valid = np.asarray(
             [wmean_valid[group_ids.index(gid)] for gid in group_ids[1:-1]], dtype=bool
@@ -382,21 +407,35 @@ def fig_dynamic_interference() -> None:
                 f"to differ at {f_hz:g} Hz; max |Δ|={max_abs_diff}"
             )
 
-        ax.stairs(i_dir, h.edges.value, label=r"Direction-averaged $I_j(f)$")
+        ax.stairs(
+            i_dir,
+            h.edges.value,
+            label=r"Direction-averaged $I_j(f)$",
+            linewidth=1.8,
+            color="#1f77b4",
+        )
         ax.stairs(
             wmean,
             h.edges.value,
             linestyle="--",
             label=r"Weighted mean of per-direction ratios",
+            linewidth=1.8,
+            color="#ff7f0e",
         )
-        ax.axhline(0.0, color="0.5", linewidth=0.8)
-        ax.set_xlabel(f"distance [{h.xunit.to_string()}]")
-        ax.set_title(f"{f_hz:g} Hz (max $|I_j-\\bar r|$ = {max_abs_diff:.3g} over finite bins)")
-        ax.legend(loc="best", fontsize=8)
-    axes[0].set_ylabel("interference share (x) [dimensionless]")
+        ax.axhline(0.0, color="0.5", linewidth=0.8, linestyle=":")
+        ax.grid(True, linestyle=":", alpha=0.5)
+        ax.set_xlabel(f"distance [{h.xunit.to_string()}]", fontsize=10.5)
+        ax.set_title(
+            f"{f_hz:g} Hz (max $|I_j-\\bar r|$ = {max_abs_diff:.3g})",
+            fontsize=11,
+        )
+        ax.legend(loc="upper right", fontsize=9.5)
+        ax.tick_params(labelsize=9.5)
+    axes[0].set_ylabel("interference share (x) [dimensionless]", fontsize=10.5)
     fig.suptitle(
         "Synthetic peak complex densities; invalid bins masked (zero total power)",
-        y=1.02,
+        y=1.01,
+        fontsize=12,
     )
     fig.tight_layout()
     fig.savefig(OUT_DIR / "dynamic_interference_share_x.svg", bbox_inches="tight")
@@ -410,15 +449,19 @@ def fig_plot_result_static_and_series() -> None:
     from gragra.gravity_sources import PointMassCloud, point_sum, rigid_motion
     from gragra.gravity_sources.trajectory import PrescribedRigidTransform
     from gragra.plotting import plot_result
-    from gragra.results import Contribution, GravityFieldDefinition, PotentialReference
-    from gragra.results import TimeSampling
+    from gragra.results import (
+        Contribution,
+        GravityFieldDefinition,
+        PotentialReference,
+        TimeSampling,
+    )
     from gragra.targets import TargetPoints
 
     root = Frame("root")
     field = GravityFieldDefinition.source_field(
         "source", Contribution("total"), PotentialReference.ZERO_AT_INFINITY
     )
-    source = PointMassCloud(np.array([800.0]), np.array([[1.5, -1.0, 0.0]]))
+    source = PointMassCloud(np.array([800.0]), np.array([[1.5, -1.0, 3.0]]))
     xs = np.linspace(-20.0, 20.0, 41)
     ys = np.linspace(-20.0, 20.0, 41)
     gx, gy = np.meshgrid(xs, ys)
@@ -478,15 +521,13 @@ def fig_plot_result_spectrum_and_phase() -> None:
     import astropy.units as u
     import matplotlib.pyplot as plt
     from gwpy.time import LIGOTimeGPS
-
-    from gragra.geometry import Frame
-    from gragra.gravity_sources import PointMassCloud, rigid_motion
-    from gragra.gravity_sources.trajectory import PrescribedRigidTransform
-    from gragra.plotting import plot_result
-    from gragra.targets import TargetPoints
     from scipy.spatial.transform import Rotation
 
     from gragra._continuous_contract import normalize_relative_times
+    from gragra.geometry import Frame
+    from gragra.gravity_sources import PointMassCloud, rigid_motion
+    from gragra.plotting import plot_result
+    from gragra.targets import TargetPoints
 
     world = Frame("world")
     epoch = LIGOTimeGPS(1_000_000_000, 0)
@@ -501,6 +542,7 @@ def fig_plot_result_spectrum_and_phase() -> None:
         return Rotation.identity(len(t)), translation * u.m
 
     targets = TargetPoints(np.array([[0.0, 0.0, 0.0]]) * u.m, ("origin",), world)
+    atol_qty = 1e-9 * 6.67430e-11 * (u.m / u.s**2)
     result = (
         rigid_motion(cloud, circular_pose, frame=world, epoch=epoch)
         .at(targets, observables=("acceleration",))
@@ -509,16 +551,38 @@ def fig_plot_result_spectrum_and_phase() -> None:
             orders=[0, 1, 2, 3],
             tref=epoch,
             tau_min=0.125 * u.s,
-            atol=1e-9 * 6.67430e-11 * (u.m / u.s**2),
+            atol=atol_qty,
             rtol=1e-10,
         )
     )
     fig_mag, _ = plot_result(
-        result, observable="acceleration", component="x", view="spectrum", part="magnitude"
+        result,
+        observable="acceleration",
+        component="x",
+        view="spectrum",
+        part="magnitude",
     )
-    fig_phase, _ = plot_result(
+    fig_phase, ax_phase = plot_result(
         result, observable="acceleration", component="x", view="spectrum", part="phase"
     )
+
+    # R02: Mask phase values where amplitude is zero / below numerical solver tolerance.
+    # The pure harmonic circular motion has physical acceleration amplitude only at 1 Hz
+    # (~2.00e-10 m/s^2); other orders (0, 2, 3 Hz) are numerical noise (~1e-26 m/s^2),
+    # well below the solver atol (~6.67e-20 m/s^2). A mathematical phase is undefined
+    # for zero amplitude, so we mask these sub-tolerance residuals with NaN.
+    matrix = np.asarray(result.acceleration.value[0, 0, :])
+    magnitudes = np.abs(matrix)
+    atol_threshold = 1e-15  # well above solver residual (~1e-26) and atol (~6.7e-20)
+    line = ax_phase.lines[0]
+    y_data = np.where(magnitudes >= atol_threshold, line.get_ydata(), np.nan)
+    line.set_ydata(y_data)
+    ax_phase.set_title(
+        ax_phase.get_title() + "\n(zero amplitude masked)",
+        fontsize=9.5,
+    )
+    ax_phase.set_ylim(-3.5, 3.5)
+
     fig_mag.savefig(OUT_DIR / "plot_result_spectrum_magnitude.svg", bbox_inches="tight")
     fig_phase.savefig(OUT_DIR / "plot_result_spectrum_phase.svg", bbox_inches="tight")
     plt.close(fig_mag)

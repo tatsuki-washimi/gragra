@@ -22,6 +22,7 @@ def _setup_mpl() -> None:
 
 
 def fig_density_slice() -> None:
+    import matplotlib.pyplot as plt
     from astropy import units as u
 
     from gragra.fields.regular_grid import DensityPerturbationGrid
@@ -42,10 +43,10 @@ def fig_density_slice() -> None:
     )
     grid = DensityPerturbationGrid(x, y, z, density.astype(np.float64))
     fig = plot_field(grid, frame=ground, plane="xy", index=5, unit="m")
-    fig.gca().set_title(r"$\delta\rho$ slice at $z \approx -2.5\,\mathrm{m}$ [kg/m$^3$]")
+    fig.axes[0].set_title(
+        r"$\delta\rho$ slice at $z \approx -2.5\,\mathrm{m}$ [kg/m$^3$]"
+    )
     fig.savefig(OUT_DIR / "density_perturbation_xy_slice.svg", bbox_inches="tight")
-    import matplotlib.pyplot as plt
-
     plt.close(fig)
 
 
@@ -64,8 +65,8 @@ def fig_displacement_amp_phase() -> None:
     z = np.linspace(-15.0, 0.0, 6)
     xx, yy, _ = np.meshgrid(x, y, z, indexing="ij")
     phase_rad = np.arctan2(yy, xx + 1e-12)
-    amplitude_m = 2.0e-6 * (1.0 + 0.6 * np.cos(xx / 12.0)) * np.exp(
-        -(xx**2 + yy**2) / (25.0**2)
+    amplitude_m = (
+        2.0e-6 * (1.0 + 0.6 * np.cos(xx / 12.0)) * np.exp(-(xx**2 + yy**2) / (25.0**2))
     )
     disp = (
         amplitude_m[..., np.newaxis]
@@ -77,20 +78,23 @@ def fig_displacement_amp_phase() -> None:
     fig_amp = plot_field(
         grid, frame=ground, plane="xy", index=2, component="norm", part="abs", unit="m"
     )
-    fig_amp.gca().set_title(r"$|\boldsymbol{\xi}|$ at $z \approx -7.5\,\mathrm{m}$ [m]")
+    fig_amp.axes[0].set_title(
+        r"$|\boldsymbol{\xi}|$ at $z \approx -7.5\,\mathrm{m}$ [m]"
+    )
     fig_amp.savefig(OUT_DIR / "displacement_amplitude_xy.svg", bbox_inches="tight")
     plt.close(fig_amp)
     fig_phase = plot_field(
         grid, frame=ground, plane="xy", index=2, component="x", part="phase", unit="m"
     )
-    fig_phase.gca().set_title(
-        r"$\operatorname{Arg}(\boldsymbol{\xi})$ [rad]; zero amplitude masked"
+    fig_phase.axes[0].set_title(
+        r"$\operatorname{Arg}(\xi_x)$ [rad]; zero amplitude masked"
     )
     fig_phase.savefig(OUT_DIR / "displacement_phase_xy.svg", bbox_inches="tight")
     plt.close(fig_phase)
 
 
 def fig_displacement_quiver() -> None:
+    import matplotlib.pyplot as plt
     from astropy import units as u
 
     from gragra.fields.regular_grid import DisplacementGrid
@@ -109,12 +113,11 @@ def fig_displacement_quiver() -> None:
     disp[..., 2] = 5.0e-8 * np.cos(xx / 8.0)
     grid = DisplacementGrid(x, y, z, disp)
     fig = plot_field(grid, frame=ground, plane="xy", index=2, unit="m")
-    fig.gca().set_title(
-        r"True-scale $\operatorname{Re}(\boldsymbol{\xi})$ quiver at $z \approx -5\,\mathrm{m}$"
+    fig.axes[0].set_title(
+        r"True-scale $\operatorname{Re}(\boldsymbol{\xi})$ quiver "
+        r"at $z \approx -5\,\mathrm{m}$"
     )
     fig.savefig(OUT_DIR / "displacement_quiver_xy.svg", bbox_inches="tight")
-    import matplotlib.pyplot as plt
-
     plt.close(fig)
 
 

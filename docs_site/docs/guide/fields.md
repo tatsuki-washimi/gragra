@@ -170,26 +170,25 @@ addition concerns the underlying displacement-transfer potential and gradient.
 
 ## Visualizing fields with `plot_field` { #visualizing-fields }
 
-> `gragra.plotting.plot_field` is present in the package but outside the
-> documented public API scope for this release. New examples should visualize
-> values from the documented calculation API with Matplotlib directly.
-
-`plot_field` is exported from `gragra.plotting` (`__all__`) as a **visualization helper**
-for gridded fields. It does not participate in the core `Source → Geometry → Integrator →
-Observable` gravity contract the way `point_sum` does; field **builders** in `gragra.fields`
-remain the primary input path.
+`plot_field` is exported from `gragra.plotting` (`__all__`) as an auxiliary visualization helper
+for inspecting gridded fields. It is outside the documented stable public calculation API contract
+(`Source → Geometry → Integrator → Observable`) for this release and carries no downstream interface
+stability guarantee; primary integration and simulation pipelines should consume field data through
+the documented calculation APIs (or visualize native arrays directly with standard Matplotlib workflows).
+The examples and figures below demonstrate `plot_field` as a convenience tool for exploratory inspection
+and visual diagnostics.
 
 Figures below are generated with
 `python docs_site/scripts/generate_fields_figures.py` (non-uniform $\delta\rho$ and complex
 $\boldsymbol{\xi}$ models).
 
-![δρ slice through a non-uniform perturbation grid](../assets/guide/fields/density_perturbation_xy_slice.svg)
+![δρ slice through a non-uniform perturbation grid](../assets/guide/fields/density_perturbation_xy_slice.svg){ width="100%" }
 
-![Complex displacement amplitude |ξ|](../assets/guide/fields/displacement_amplitude_xy.svg)
+![Complex displacement amplitude |ξ|](../assets/guide/fields/displacement_amplitude_xy.svg){ width="100%" }
 
-![Complex displacement phase Arg(ξ_x)](../assets/guide/fields/displacement_phase_xy.svg)
+![Complex displacement phase Arg(ξ_x)](../assets/guide/fields/displacement_phase_xy.svg){ width="100%" }
 
-![True-scale displacement quiver (real field)](../assets/guide/fields/displacement_quiver_xy.svg)
+![True-scale displacement quiver (real field)](../assets/guide/fields/displacement_quiver_xy.svg){ width="100%" }
 
 `gragra.plotting.plot_field` plots a `DensityPerturbationGrid` or
 `DisplacementGrid` faithful to native grid coordinates without mutating the
