@@ -3,8 +3,16 @@
 
 ## From a displacement field to a density perturbation
 
-A displacement field `ξ(r)` perturbs the background mass density as
-`δρ = −∇·(ρ₀ξ)`. `gragra.fields` converts a displacement field
+A displacement field `ξ(r)` perturbs the background mass density. For a possibly
+non-uniform background $\rho_0(\mathbf{r})$,
+
+\[
+\delta\rho_{\mathrm{bulk}}
+= -\rho_0\nabla\cdot\boldsymbol{\xi}-\boldsymbol{\xi}\cdot\nabla\rho_0.
+\]
+
+When `ρ₀` is **uniform** over the integration region, the advection term vanishes and
+`δρ = −ρ₀∇·ξ`. `gragra.fields` converts a displacement field
 (`DisplacementGrid`, `UnstructuredDisplacementField`, or a surface
 counterpart) into the mass elements that feed `WeightedPointSource` (see
 [Point sources](point-sources.md)). The divergence decomposes into two
@@ -20,12 +28,13 @@ For a uniform background density `ρ₀`, `δρ = −ρ₀∇·ξ` is the *bulk*
 proportional to the trace of the strain tensor, evaluated at every interior
 point of the volume.
 
-### A rigid translation has no bulk term
+### A rigid translation has no bulk term (uniform ρ₀)
 
-**A rigid translation has no bulk term at all.** The bulk density
-perturbation is δρ = −∇·(ρ₀ξ), so for a rigidly translated body — ξ
-constant — the divergence is identically zero and the bulk path returns
-exactly `0`. The entire gravitational signal lives in the surface term.
+For **uniform** background density `ρ₀`, the bulk perturbation is
+`δρ_bulk = −ρ₀∇·ξ`. A rigid translation has **constant** `ξ`, hence `∇·ξ = 0` and
+the bulk path returns exactly `0`; the Newtonian signal is carried by the **surface**
+term. With **non-uniform** `ρ₀`, the advection piece `−ξ·∇ρ₀` can remain even when
+`∇·ξ = 0` — do not assume a silent bulk term without checking the background model.
 Computing only the bulk contribution for a moving rigid body gives you a
 silent, physically wrong zero.
 
@@ -58,8 +67,12 @@ detection is outside this narrow mesh contract.
 
 ## Equivalence conditions for the bulk and surface forms
 
-A bulk-only or surface-only calculation agrees with the exact field of a
-displaced or perturbed body only when **all six** of the following hold:
+The **mesh bulk + interface** sum is compared against the **closed dipole transfer**
+in `displacement_transfer_acceleration` (and related observables), not against an
+arbitrary bulk-only or surface-only truncation in isolation. When **all six** conditions
+below hold, the dipole sum and the summed bulk+surface mesh response **converge** with
+target distance from the perturbed region (see verification block). None of the following
+claims that unrelated decompositions (e.g. bulk alone vs surface alone) are interchangeable.
 
 1. The surface is a closed manifold.
 2. Triangle winding is consistent across the surface.
@@ -68,11 +81,10 @@ displaced or perturbed body only when **all six** of the following hold:
 5. The bulk volume and the surface mesh describe the same geometry.
 6. The background density is truncated outside the region of interest.
 
-A broken equivalence condition on real input produces a suspicious
-near-zero or exactly-zero residual when compared to a reference — that is
-the diagnostic working as intended, not a false alarm. See
-[Troubleshooting](../help/troubleshooting.md#an-all-zero-result) for the
-exact same statement phrased for a reader debugging an unexpected zero.
+Violating an equivalence condition can produce **large** discrepancies as well as
+misleadingly small ones (for example a bulk-only rigid translation that is correctly
+zero while the surface term carries the signal). Do not treat “small residual” as the
+only failure mode. See [Troubleshooting](../help/troubleshooting.md#an-all-zero-result).
 
 ## Strain is not displacement
 
@@ -161,6 +173,23 @@ addition concerns the underlying displacement-transfer potential and gradient.
 > `gragra.plotting.plot_field` is present in the package but outside the
 > documented public API scope for this release. New examples should visualize
 > values from the documented calculation API with Matplotlib directly.
+
+`plot_field` is exported from `gragra.plotting` (`__all__`) as a **visualization helper**
+for gridded fields. It does not participate in the core `Source → Geometry → Integrator →
+Observable` gravity contract the way `point_sum` does; field **builders** in `gragra.fields`
+remain the primary input path.
+
+Figures below are generated with
+`python docs_site/scripts/generate_fields_figures.py` (non-uniform $\delta\rho$ and complex
+$\boldsymbol{\xi}$ models).
+
+![δρ slice through a non-uniform perturbation grid](../assets/guide/fields/density_perturbation_xy_slice.svg)
+
+![Complex displacement amplitude |ξ|](../assets/guide/fields/displacement_amplitude_xy.svg)
+
+![Complex displacement phase Arg(ξ_x)](../assets/guide/fields/displacement_phase_xy.svg)
+
+![True-scale displacement quiver (real field)](../assets/guide/fields/displacement_quiver_xy.svg)
 
 `gragra.plotting.plot_field` plots a `DensityPerturbationGrid` or
 `DisplacementGrid` faithful to native grid coordinates without mutating the
