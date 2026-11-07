@@ -89,11 +89,11 @@ Format verified analytical source equations and potential formulas into LaTeX ma
 
 ::: gragra.plotting.plot_contribution_hist
 
-Display histogram distributions of directional or magnitude gravitational acceleration contributions from discrete elements.
+Histogram per-element gravitational acceleration contributions (norm or Cartesian components) towards one target.
 
 ::: gragra.plotting.plot_cumulative_contribution
 
-Graph the radial cumulative profile of gravitational acceleration as a function of source-to-target distance.
+Plot the magnitude of the cumulative acceleration vector, or a Cartesian component, versus source–target distance (see the Source diagnostics guide for the norm vs sum-of-norms distinction).
 
 ::: gragra.plotting.plot_result
 

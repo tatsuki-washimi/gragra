@@ -300,8 +300,9 @@ def plot_shape(
     ax.set_ylim(min_xyz[1], max_xyz[1])
     ax.set_zlim(min_xyz[2], max_xyz[2])
 
-    ax.set_xlabel(f"x [{display_frame.name}]")
-    ax.set_ylabel(f"y [{display_frame.name}]")
-    ax.set_zlabel(f"z [{display_frame.name}]")
+    # Axis values are SI coordinates in ``display_frame``; label frame name and metres.
+    ax.set_xlabel(f"x ({display_frame.name}) [m]")
+    ax.set_ylabel(f"y ({display_frame.name}) [m]")
+    ax.set_zlabel(f"z ({display_frame.name}) [m]")
 
     return fig, ax
