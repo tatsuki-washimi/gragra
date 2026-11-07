@@ -146,7 +146,7 @@ a separate stable plotting API contract.
 | `plot_hist` | Histogram figure | Same source diagnostics as `hist` | [Source diagnostics](source-diagnostics.md) |
 | `plot_map` | Source-by-source gravity contribution map | Discrete source / selected target; display thinning differs from physical sum | [Source diagnostics](source-diagnostics.md) |
 | `plot_shape` | Ideal analytical geometry | Documented sphere/cuboid/cylinder/shell shape support varies by entry point | [Source diagnostics](source-diagnostics.md) |
-| `plot_contribution_hist` | Gravity-acceleration contribution distribution | Per-element magnitude/components/projection | [Source diagnostics](source-diagnostics.md) |
+| `plot_contribution_hist` | Gravity-acceleration contribution distribution | Per-element norm or Cartesian components only (no arbitrary projection; use plot_map for that) | [Source diagnostics](source-diagnostics.md) |
 | `plot_cumulative_contribution` | Cumulative contribution versus source-target distance | Signed components are not the sum of absolute magnitudes | [Source diagnostics](source-diagnostics.md) |
 | `plot_result` | Static field, time series, phasor and Fourier views | Not a generic PSD/ASD plotting interface | [Source diagnostics](source-diagnostics.md) |
 | `formula_to_latex` | Convert **registered** formula expressions to LaTeX | Does not parse arbitrary model equations | [Source diagnostics](source-diagnostics.md) |

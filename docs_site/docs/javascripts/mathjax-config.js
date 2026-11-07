@@ -16,6 +16,10 @@
  */
 window.MathJax = {
   tex: {
+    /* AMS + boldsymbol: included in the vendored tex-mml-chtml bundle. Do not
+     * add the separate ``bm`` TeX package here — it is not part of that
+     * component build (see MathJax 3 component packaging). */
+    packages: {"[+]": ["base", "ams", "boldsymbol"]},
     inlineMath: [["\\(", "\\)"]],
     displayMath: [["\\[", "\\]"]],
     processEscapes: true,
