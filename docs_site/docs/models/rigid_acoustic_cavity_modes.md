@@ -357,7 +357,7 @@ Saved with `fig.savefig(path, bbox_inches='tight', metadata={'Date': None})` and
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
 - Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
-- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on archived validation records for the supported geometries. Sphere Neumann modes and cuboid modes are verified closed-form and 1D-quadrature solutions. The cylindrical cavity mode passed the formal 576-fixture matrix (`CLOSED / PASS`), though its overall catalogue status remains `PARTIAL` as general-domain accuracy is not established beyond those fixtures.
+- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on archived validation records for the supported geometries. Sphere Neumann modes and cuboid modes are verified closed-form and 1D-quadrature solutions. The cylindrical cavity mode passed the fixed 576-fixture validation gate (`CLOSED / PASS`), though its overall catalogue status remains `PARTIAL` as general-domain accuracy is not established beyond those fixtures.
 
 **Existing verification inventory:**
 

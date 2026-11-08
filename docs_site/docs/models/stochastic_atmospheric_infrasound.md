@@ -306,7 +306,7 @@ Saved with `fig.savefig(path, bbox_inches='tight', metadata={'Date': None})` and
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
 - Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
-- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on verified formula contracts and reference checks. Surface (A1) and cavern (A3) acoustic models are accepted closed-form representations. For underground infrasound (A2), the current production source demonstrates numerical agreement across 55 independent 60-digit mpmath reference checks and 84 development diagnostic fixtures; formal execution acceptance remains on HOLD pending external trust-root and protocol authorization.
+- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on verified formula contracts and reference checks. Surface (A1) and cavern (A3) acoustic models are accepted closed-form representations. For underground infrasound (A2), the current production source demonstrates numerical agreement across 55 independent 60-digit mpmath reference checks and 84 development diagnostic fixtures; F_A2 formal science acceptance remains on HOLD pending independent trust root, resource admission, durable evidence, and phase authorization.
 
 **Existing verification inventory:**
 
