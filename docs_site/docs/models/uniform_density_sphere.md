@@ -3,7 +3,7 @@
 
 ## Model overview
 
-**Level:** — (definition and assignment pending).
+**Level:** 4.
 
 **Physical domain:** static gravity  
 **Geometry:** `sphere`
@@ -278,7 +278,7 @@ This is a standard mathematical outline; a separately archived independent spher
 - Representative catalogue output-contract entries: 3.
 - Catalogue probe state: recorded (a representative API output contract, not an accuracy test).
 - Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
-- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
+- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on archived scientific validation records (established closed form / verified reference comparisons in the development repository) within the stated scope conditions.
 
 **Existing verification inventory:**
 

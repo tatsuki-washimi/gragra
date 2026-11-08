@@ -3,7 +3,7 @@
 
 ## Model overview
 
-**Level:** — (definition and assignment pending).
+**Level:** 4.
 
 **Physical domain:** rigid motion  
 **Geometry:** `point`
@@ -266,7 +266,7 @@ High-level model factories create evaluation objects; call the documented `.at(.
 - Representative catalogue output-contract entries: 0.
 - Catalogue probe state: Not assessed (no catalogue output probe registered).
 - Registered output-contract probes run during catalogue validation check selected API outputs only; they do not measure scientific accuracy.
-- Scientific accuracy tests are not part of documentation generation; no accuracy Level is assigned.
+- Scientific accuracy tests are not part of documentation generation; Level 4 is assigned based on archived scientific validation records (established closed form / verified reference comparisons in the development repository) within the stated scope conditions.
 
 **Existing verification inventory:**
 
