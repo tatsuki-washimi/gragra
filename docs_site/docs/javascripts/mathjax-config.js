@@ -16,14 +16,12 @@
  */
 window.MathJax = {
   loader: {
-    /* boldsymbol is webpack'd into tex-mml-chtml.js; this registers the handler
-     * locally (no CDN) on first paint and after Material instant navigation. */
+    /* Loads the vendored boldsymbol extension (input/tex/extensions/boldsymbol.js)
+     * locally without contacting external CDNs. */
     load: ["[tex]/boldsymbol"],
   },
   tex: {
-    /* AMS + boldsymbol: included in the vendored tex-mml-chtml bundle. Do not
-     * add the separate ``bm`` TeX package here — it is not part of that
-     * component build (see MathJax 3 component packaging). */
+    /* AMS + boldsymbol: loaded from vendored MathJax 3.2.2 bundle and extension. */
     packages: {"[+]": ["base", "ams", "boldsymbol"]},
     inlineMath: [["\\(", "\\)"]],
     displayMath: [["\\[", "\\]"]],
@@ -36,11 +34,35 @@ window.MathJax = {
   }
 };
 
+function typesetMath() {
+  if (typeof MathJax === "undefined" || !MathJax.typesetPromise) {
+    return;
+  }
+  var unrendered = Array.from(document.querySelectorAll(".arithmatex")).filter(
+    function (el) {
+      return !el.querySelector("mjx-container");
+    }
+  );
+  if (unrendered.length > 0) {
+    if (MathJax.startup && MathJax.startup.output) {
+      MathJax.startup.output.clearCache();
+    }
+    if (MathJax.typesetClear) {
+      MathJax.typesetClear(unrendered);
+    }
+    if (MathJax.texReset) {
+      MathJax.texReset();
+    }
+    MathJax.typesetPromise(unrendered);
+  }
+}
+
 if (typeof document$ !== "undefined") {
   document$.subscribe(function () {
-    MathJax.startup.output.clearCache();
-    MathJax.typesetClear();
-    MathJax.texReset();
-    MathJax.typesetPromise();
+    if (typeof MathJax !== "undefined" && MathJax.startup && MathJax.startup.promise) {
+      MathJax.startup.promise.then(typesetMath);
+    } else {
+      typesetMath();
+    }
   });
 }
