@@ -3,7 +3,7 @@
 
 ## Model overview
 
-**Level:** 4 (conditional on verified 84 fixtures; formal execution HOLD documented below).
+**Level:** 4 (within documented A1/A3 acceptance and A2 numerical-validation scopes; F_A2 formal science acceptance remains on HOLD; see details below).
 
 **Physical domain:** stochastic atmospheric  
 **Geometry:** `halfspace`, `cavity`
