@@ -28,19 +28,19 @@ jobs:
             exit 1
           fi
 
-      # Pin the distribution to the already verified public main revision.
-      # The workflow addition itself does not modify the source of the release.
+      # Pin the distribution to the release-preparation revision, including
+      # PyPI README and publication-date metadata. The workflow itself is excluded.
       - name: Check out frozen release source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: f44716387d6c894efc0e20898ca7521ca4d97e53
+          ref: 971711be3669a1e3bbd1a361322209809333ad57
           persist-credentials: false
 
       - name: Verify exact release commit and metadata
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "f44716387d6c894efc0e20898ca7521ca4d97e53"
+          test "$(git rev-parse HEAD)" = "971711be3669a1e3bbd1a361322209809333ad57"
           python - <<'PY'
           import tomllib
           from pathlib import Path
