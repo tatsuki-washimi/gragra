@@ -1,0 +1,119 @@
+name: Publish gragra 0.2.0rc1 to PyPI (manual)
+
+# One-time, opt-in launch for the ENIGMA 2026 presentation.
+# Run from the main branch on 2026-11-11 UTC, after the Trusted Publisher
+# is registered at pypi.org (owner tatsuki-washimi, repo gragra,
+# workflow publish-pypi.yml, no GitHub environment).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    name: Build and smoke-test frozen release
+    # A release can only be initiated explicitly from main.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Require UTC release day
+        shell: bash
+        run: |
+          set -euo pipefail
+          today="$(date -u +%F)"
+          if [[ "$today" != "2026-11-11" ]]; then
+            echo "::error::Publish only on 2026-11-11 UTC (09:00 KST onwards). Current UTC date: $today"
+            exit 1
+          fi
+
+      # Pin the distribution to the release-preparation revision, including
+      # PyPI README and publication-date metadata. The workflow itself is excluded.
+      - name: Check out frozen release source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: 971711be3669a1e3bbd1a361322209809333ad57
+          persist-credentials: false
+
+      - name: Verify exact release commit and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "971711be3669a1e3bbd1a361322209809333ad57"
+          python - <<'PY'
+          import tomllib
+          from pathlib import Path
+
+          project = tomllib.loads(Path("pyproject.toml").read_text())["project"]
+          assert project["name"] == "gragra", project["name"]
+          assert project["version"] == "0.2.0rc1", project["version"]
+          assert 'version: 0.2.0rc1' in Path("CITATION.cff").read_text()
+          PY
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.3.0
+        with:
+          python-version: '3.11'
+
+      - name: Build wheel and sdist
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade build twine
+          python -m build --sdist --wheel --outdir dist
+          python -m twine check dist/*
+          test -f dist/gragra-0.2.0rc1-py3-none-any.whl
+          test -f dist/gragra-0.2.0rc1.tar.gz
+          sha256sum dist/*
+
+      - name: Install each artifact into a new environment and compute gravity
+        shell: bash
+        run: |
+          set -euo pipefail
+          for artifact in "$PWD"/dist/*.whl "$PWD"/dist/*.tar.gz; do
+            venv_dir="$(mktemp -d)"
+            test_dir="$(mktemp -d)"
+            python -m venv "$venv_dir"
+            "$venv_dir/bin/python" -m pip install "$artifact"
+            (
+              cd "$test_dir"
+              "$venv_dir/bin/python" - <<'PY'
+          from importlib.metadata import version
+          import numpy as np
+          from gragra import G_SI, PointMass, point_acceleration
+
+          assert version("gragra") == "0.2.0rc1"
+          a = point_acceleration(PointMass(1.0, [-1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0]])
+          np.testing.assert_allclose(a, [[-G_SI, 0.0, 0.0]], rtol=0.0, atol=1e-25)
+          print("Fresh-install gravity smoke passed.")
+          PY
+            )
+          done
+
+      - name: Upload verified distributions for publish job
+        uses: actions/upload-artifact@v4
+        with:
+          name: gragra-0.2.0rc1-distributions
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish to PyPI using Trusted Publishing
+    needs: build-and-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+    steps:
+      - name: Download checked distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: gragra-0.2.0rc1-distributions
+          path: dist/
+
+      - name: Publish verified distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
