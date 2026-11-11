@@ -4,7 +4,7 @@
   "name": "gragra",
   "description": "Gravitational perturbation calculation package",
   "version": "0.2.0rc1",
-  "datePublished": "2026-11-08",
+  "datePublished": "2026-11-11",
   "license": "https://spdx.org/licenses/MIT",
   "codeRepository": "https://github.com/tatsuki-washimi/gragra",
   "programmingLanguage": "Python",

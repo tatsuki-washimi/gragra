@@ -26,10 +26,10 @@ scientific condition. Run research-required checks locally with the exact code
 revision, environment, inputs and conditions for the work. Public CI results
 describe only the checks selected by the repository workflow.
 
-[Installation](getting-started/installation.md) covers the source install and
-the optional extras.
-Record the exact commit you installed because a development version alone does
-not identify the contents of a changing research tree.
+[Installation](getting-started/installation.md) covers the published PyPI
+pre-release, editable source installs, and optional extras.
+For reproducibility, record the installed package version, or the exact commit
+if using a changing source checkout.
 
 ## Where to start
 

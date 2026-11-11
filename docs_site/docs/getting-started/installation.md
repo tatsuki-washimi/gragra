@@ -1,6 +1,6 @@
 # Installation
 
-Install gragra from a source checkout for local research and development.
+gragra 0.2.0rc1 is available as a [pre-release on PyPI](https://pypi.org/project/gragra/0.2.0rc1/). For local research and development, you may also install from a source checkout.
 
 ## Requirements
 
@@ -10,6 +10,16 @@ The numerical layer still uses NumPy arrays and internal types and does not
 import Astropy, pandas, or GWexpy.
 GWexpy may install SciPy, h5py, Matplotlib, and other libraries transitively;
 these are not direct gragra requirements unless an optional feature declares them.
+
+## Installing from PyPI
+
+For the published pre-release, use:
+
+```bash
+python -m pip install gragra==0.2.0rc1
+```
+
+The default NumPy implementation is included; specific features require optional extras described below.
 
 ## Installing from source
 
@@ -41,7 +51,8 @@ directional quadrature grid have separate optional extras, described next and in
 | `lebedev` | the Lebedev directional quadrature grid |
 | `field-io` | `h5py`-based HDF5 field import (structured, unstructured, batched) |
 
-Install any combination with `pip install -e ".[mesh,field-io]"` and so on.
+For a PyPI installation, for example, use `python -m pip install "gragra[mesh,field-io]==0.2.0rc1"`.
+For an editable source checkout, use `pip install -e ".[mesh,field-io]"`.
 These extras declare the dependencies needed for each feature even when a
 base dependency happens to bring one in transitively.
 
