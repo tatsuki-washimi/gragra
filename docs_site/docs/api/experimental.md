@@ -185,7 +185,7 @@ native binary output, for the single profile `ExportConfig` selects.
 
 ::: gragra.adapters.read_specfem_gll_hdf5
 
-Loads the rc1 time-sampled schema-v1 profile into a closed immutable GLL
+Loads the 0.2.0 time-sampled schema-v1 profile into a closed immutable GLL
 dataset. PML, mixed material, and non-elastic input are rejected explicitly.
 
 ::: gragra.adapters.SpecfemGLLDataset

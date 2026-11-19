@@ -9,9 +9,8 @@ and their transitive dependencies such as gwpy) are subject to their respective
 upstream licenses. GWexpy and gwpy are commonly used under MIT-style terms;
 verify the license text shipped with your installed environment.
 
-Matplotlib is a declared runtime dependency for compatibility with modules that
-may import it; `gragra.plotting` is not part of the documented public API for
-release 0.2.0rc1.
+Matplotlib is a declared runtime dependency; the visualization helpers exported
+by `gragra.plotting` use it.
 
 ## Build and optional components
 

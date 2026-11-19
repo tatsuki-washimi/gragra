@@ -1,4 +1,4 @@
-"""Regression checks for the 0.2.0rc1 public documentation boundary."""
+"""Regression checks for the 0.2.0 public documentation boundary."""
 
 import inspect
 import re
@@ -10,10 +10,10 @@ from gragra.observables import displacement_field_acceleration
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs_site" / "docs"
-VERSION = "0.2.0rc1"
+VERSION = "0.2.0"
 
 
-def test_release_metadata_identifies_rc_and_author() -> None:
+def test_release_metadata_identifies_version_and_author() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
     codemeta = (ROOT / "codemeta.json").read_text(encoding="utf-8")
