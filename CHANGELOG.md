@@ -2,9 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [0.2.0] - Unreleased
-
-The release date is set when 0.2.0 is published.
+## [0.2.0] - 2026-11-20
 
 First stable release of the 0.2 series. The library code is the same as in
 0.2.0rc1; this release makes no API or numerical-behaviour change. The
