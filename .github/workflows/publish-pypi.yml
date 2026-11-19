@@ -1,54 +1,104 @@
-name: Publish gragra 0.2.0rc1 to PyPI (manual)
+name: Publish gragra to PyPI (manual)
 
-# One-time, opt-in launch for the ENIGMA 2026 presentation.
-# Run from the main branch on 2026-11-11 UTC, after the Trusted Publisher
-# is registered at pypi.org (owner tatsuki-washimi, repo gragra,
-# workflow publish-pypi.yml, no GitHub environment).
+# Manual, opt-in publication of a single release version (see VERSION below).
+# Run from the main branch after the release commit is merged and the release
+# tag (v<VERSION>) exists on that commit. The Trusted Publisher is registered at
+# pypi.org (owner tatsuki-washimi, repo gragra, workflow publish-pypi.yml,
+# no GitHub environment); the workflow file name must not change.
+#
+# The distribution is built from the commit given in `release_sha`, not from
+# the commit that this workflow file belongs to. Before building, the workflow
+# verifies that:
+#   - `release_sha` is the full 40-character SHA, reachable from origin/main;
+#   - the tag v<VERSION> exists and points at `release_sha`;
+#   - pyproject.toml, CITATION.cff and codemeta.json all carry <VERSION>;
+#   - the release date in CITATION.cff and codemeta.json equals `release_date`
+#     and is not in the future (UTC).
 on:
   workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Full 40-character commit SHA of the release commit (must be the commit tagged v<VERSION>)
+        required: true
+        type: string
+      release_date:
+        description: Release date (YYYY-MM-DD) recorded in CITATION.cff and codemeta.json
+        required: true
+        type: string
 
 permissions:
   contents: read
 
+env:
+  VERSION: "0.2.0"
+
 jobs:
   build-and-check:
-    name: Build and smoke-test frozen release
+    name: Build and smoke-test tagged release
     # A release can only be initiated explicitly from main.
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Require UTC release day
-        shell: bash
-        run: |
-          set -euo pipefail
-          today="$(date -u +%F)"
-          if [[ "$today" != "2026-11-11" ]]; then
-            echo "::error::Publish only on 2026-11-11 UTC (09:00 KST onwards). Current UTC date: $today"
-            exit 1
-          fi
-
-      # Pin the distribution to the release-preparation revision, including
-      # PyPI README and publication-date metadata. The workflow itself is excluded.
-      - name: Check out frozen release source
+      # Build from the tagged release commit. The workflow file itself comes
+      # from main and is not part of the distribution.
+      - name: Check out release source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: 971711be3669a1e3bbd1a361322209809333ad57
+          ref: ${{ inputs.release_sha }}
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify exact release commit and metadata
+      - name: Verify release commit, tag and metadata
         shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          RELEASE_DATE: ${{ inputs.release_date }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "971711be3669a1e3bbd1a361322209809333ad57"
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "::error::release_sha must be a full 40-character lowercase hex SHA"
+            exit 1
+          }
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          git merge-base --is-ancestor "$RELEASE_SHA" origin/main || {
+            echo "::error::release_sha is not reachable from origin/main"
+            exit 1
+          }
+          tag_commit="$(git rev-parse --verify "refs/tags/v${VERSION}^{commit}")"
+          test "$tag_commit" = "$RELEASE_SHA" || {
+            echo "::error::tag v${VERSION} points at ${tag_commit}, not at release_sha"
+            exit 1
+          }
           python - <<'PY'
+          import datetime
+          import json
+          import os
+          import re
           import tomllib
           from pathlib import Path
 
+          version = os.environ["VERSION"]
+          release_date = os.environ["RELEASE_DATE"]
+          assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", release_date), release_date
+          parsed = datetime.date.fromisoformat(release_date)
+          today = datetime.datetime.now(datetime.timezone.utc).date()
+          assert parsed <= today, f"release_date {release_date} is in the future (UTC today: {today})"
+
           project = tomllib.loads(Path("pyproject.toml").read_text())["project"]
           assert project["name"] == "gragra", project["name"]
-          assert project["version"] == "0.2.0rc1", project["version"]
-          assert 'version: 0.2.0rc1' in Path("CITATION.cff").read_text()
+          assert project["version"] == version, project["version"]
+
+          cff = Path("CITATION.cff").read_text()
+          cff_version = re.search(r"^version: (\S+)$", cff, re.MULTILINE)
+          cff_date = re.search(r"^date-released: (\S+)$", cff, re.MULTILINE)
+          assert cff_version and cff_version.group(1) == version, cff_version
+          assert cff_date and cff_date.group(1) == release_date, cff_date
+
+          codemeta = json.loads(Path("codemeta.json").read_text())
+          assert codemeta["version"] == version, codemeta["version"]
+          assert codemeta["datePublished"] == release_date, codemeta["datePublished"]
+          print(f"Release metadata verified for {version} ({release_date}).")
           PY
 
       - name: Set up Python 3.11
@@ -63,8 +113,8 @@ jobs:
           python -m pip install --upgrade build twine
           python -m build --sdist --wheel --outdir dist
           python -m twine check dist/*
-          test -f dist/gragra-0.2.0rc1-py3-none-any.whl
-          test -f dist/gragra-0.2.0rc1.tar.gz
+          test -f "dist/gragra-${VERSION}-py3-none-any.whl"
+          test -f "dist/gragra-${VERSION}.tar.gz"
           sha256sum dist/*
 
       - name: Install each artifact into a new environment and compute gravity
@@ -79,11 +129,13 @@ jobs:
             (
               cd "$test_dir"
               "$venv_dir/bin/python" - <<'PY'
+          import os
           from importlib.metadata import version
+
           import numpy as np
           from gragra import G_SI, PointMass, point_acceleration
 
-          assert version("gragra") == "0.2.0rc1"
+          assert version("gragra") == os.environ["VERSION"]
           a = point_acceleration(PointMass(1.0, [-1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0]])
           np.testing.assert_allclose(a, [[-G_SI, 0.0, 0.0]], rtol=0.0, atol=1e-25)
           print("Fresh-install gravity smoke passed.")
@@ -94,7 +146,7 @@ jobs:
       - name: Upload verified distributions for publish job
         uses: actions/upload-artifact@v4
         with:
-          name: gragra-0.2.0rc1-distributions
+          name: gragra-${{ env.VERSION }}-distributions
           path: dist/*
           if-no-files-found: error
           retention-days: 14
@@ -110,7 +162,7 @@ jobs:
       - name: Download checked distributions
         uses: actions/download-artifact@v4
         with:
-          name: gragra-0.2.0rc1-distributions
+          name: gragra-${{ env.VERSION }}-distributions
           path: dist/
 
       - name: Publish verified distributions
