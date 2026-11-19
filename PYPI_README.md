@@ -9,10 +9,10 @@ gragra computes Newtonian gravitational potential, acceleration, and gravity-gra
 Requires **Python 3.11 or newer**.
 
 ```bash
-python -m pip install gragra==0.2.0rc1
+python -m pip install gragra==0.2.0
 ```
 
-Version 0.2.0rc1 is a **pre-release**. See the [model and method catalogue](https://tatsuki-washimi.github.io/gragra/guide/model-and-method-catalogue/) and [verification and limitations](https://tatsuki-washimi.github.io/gragra/verification/) for documented applicability conditions.
+See the [model and method catalogue](https://tatsuki-washimi.github.io/gragra/guide/model-and-method-catalogue/) and [verification and limitations](https://tatsuki-washimi.github.io/gragra/verification/) for documented applicability conditions.
 
 ## Minimal example
 

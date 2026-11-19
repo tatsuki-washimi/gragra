@@ -4,7 +4,7 @@ title: gragra
 authors:
   - family-names: Washimi
     given-names: Tatsuki
-version: 0.2.0rc1
+version: 0.2.0
 date-released: 2026-11-11
 license: MIT
 url: https://github.com/tatsuki-washimi/gragra

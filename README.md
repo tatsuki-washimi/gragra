@@ -34,11 +34,13 @@ scope, see the public documentation site:
 
 Python **3.11 or later** is required.
 
-Version **0.2.0rc1** was published on [PyPI](https://pypi.org/project/gragra/0.2.0rc1/) on **2026-11-11** as a pre-release.
-Install that version with:
+For PyPI availability, see https://pypi.org/project/gragra/. Before a version
+is published there, install from the public source repository as shown below.
+
+To install release 0.2.0 **after it appears on PyPI**:
 
 ```bash
-python -m pip install gragra==0.2.0rc1
+python -m pip install gragra==0.2.0
 ```
 
 ### Install from source
@@ -96,8 +98,9 @@ https://tatsuki-washimi.github.io/gragra/
 
 ### Release status
 
-- The current public `main` branch carries package version **`0.2.0rc1`**
-- **`0.2.0rc1` was released on [PyPI](https://pypi.org/project/gragra/0.2.0rc1/) on 2026-11-11**.
+- The current public `main` branch carries package version **`0.2.0`**.
+- The pre-release **`0.2.0rc1`** was published on [PyPI](https://pypi.org/project/gragra/0.2.0rc1/) on 2026-11-11.
+- Consult the [PyPI project page](https://pypi.org/project/gragra/) for the current PyPI release status.
 - Consult [GitHub Releases](https://github.com/tatsuki-washimi/gragra/releases) for available GitHub release assets and draft/publication status.
 
 For detailed change history, see:

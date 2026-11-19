@@ -32,7 +32,7 @@ The eager reader closes the HDF5 file after loading every snapshot into memory.
 requested sample, preserves element-local GLL IDs, and bounds decoded chunks,
 validation buffers, provider destinations, and immutable copies.
 Targets must be inside a cavity or above the free surface. Rock-interior
-targets require a local term that rc1 does not implement.
+targets require a local term that version 0.2.0 does not implement.
 
 The exporter's structural checks (A1–A4) have been run against one real pilot
 run and report **5 passed, 1 skipped**, **only for static, mesh-only output**.
@@ -64,7 +64,7 @@ nested check or new 1% gate. The older 6 km study remains separate.
 
 ## What is not available
 
-- **No general reader.** rc1 accepts only time-sampled schema-v1 GLL files
+- **No general reader.** Version 0.2.0 accepts only time-sampled schema-v1 GLL files
   from the documented elastic, single-material, non-PML profile.
 - **No independent second implementation.** Nothing cross-checks the
   exporter's reading of the solver's binary format against a second,
@@ -127,5 +127,5 @@ guarantee.
     | **Test evidence** | `tests/test_specfem_pilot_gate.py::test_pilot_a1_gll_ordering`, `tests/test_specfem_pilot_gate.py::test_pilot_a2_quadrature_volume`, `tests/test_specfem_pilot_gate.py::test_pilot_a3_material_mass`, `tests/test_specfem_pilot_gate.py::test_pilot_a4_masks_scalars_provenance` |
     | **Conditions** | `NGNOD=8`, 5×5×5 GLL, `ATTENUATION=.false.`, `PML_INSTEAD_OF_FREE_SURFACE=.false.`, one elastic material, explicit cadence and provenance |
     | **Not verified** | Agreement with a second independent SPECFEM reader; nested static-field byte identity and domain convergence for the new pair; behaviour on other solver profiles; raw-to-export regeneration of the older 6 km artifact |
-    | **Known limits** | The rc1 reader accepts only the documented time-sampled, single-material, non-PML profile. Check A4's continuity arm is either vacuous (static mode) or fails to pass (when displacement data is present) — see above |
+    | **Known limits** | The 0.2.0 reader accepts only the documented time-sampled, single-material, non-PML profile. Check A4's continuity arm is either vacuous (static mode) or fails to pass (when displacement data is present) — see above |
     | **Scope** | The subpackage currently supports the documented profile; broader solver configurations require separate research work |

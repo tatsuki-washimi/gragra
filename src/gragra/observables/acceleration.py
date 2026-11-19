@@ -75,12 +75,12 @@ def displacement_field_acceleration(
     Every GLL row contributes the background mass
     ``density_kg_m3 * quadrature_volume_m3``.  Its displacement is contracted
     with the existing G-free dipole kernel, then this Observable applies
-    ``G_SI`` exactly once. The rc1 reader rejects PML input and this wrapper
+    ``G_SI`` exactly once. The 0.2.0 reader rejects PML input and this wrapper
     fixes Plummer softening at zero. Targets must lie in a vacuum region
     (inside a cavity or above the free surface), because a rock-interior local
-    term is outside the rc1 contract.
+    term is outside the 0.2.0 contract.
 
-    rc1 keeps the closed dataset's complete displacement array in memory, but
+    Version 0.2.0 keeps the closed dataset's complete displacement array in memory, but
     computes the result one time index at a time. It does not stream HDF5
     snapshots. Returns a read-only array of shape ``(Nt, M, 3)``.
     """
